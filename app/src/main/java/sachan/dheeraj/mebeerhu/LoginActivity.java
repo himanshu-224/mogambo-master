@@ -13,6 +13,8 @@ import android.view.MenuItem;
 /*
 import com.facebook.FacebookSdk;
 */
+import com.facebook.FacebookSdk;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -23,9 +25,7 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-/*
         FacebookSdk.sdkInitialize(getApplicationContext());
-*/
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
                     "sachan.dheeraj.mebeerhu",PackageManager.GET_SIGNATURES);

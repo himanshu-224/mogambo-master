@@ -41,17 +41,19 @@
         android:text="Follow a few tags to get started"
         android:textColor="#A63F5A" />
 
-    <GridView
-        android:layout_margin="10dp"
-        android:id="@+id/grid_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center"
-        android:layout_gravity="center"/>
+        android:layout_weight="1">
+
+        <org.apmem.tools.layouts.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/flow_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center" />
+
+    </FrameLayout>
 
     <TextView
         android:layout_width="wrap_content"

@@ -1,18 +1,23 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/tag_smooth_container"
-    android:layout_margin="5dp"
-    android:padding="1dp">
+    android:padding="5dp">
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tv"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="test"
-        android:textColor="#A63F5A"
-        android:background="@drawable/tag_smooth">
-        </TextView>
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/tag_smooth_container"
+        android:padding="1dp">
 
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tag_smooth"
+            android:padding="5dp"
+            android:text="test"
+            android:textColor="#A63F5A"/>
+    </FrameLayout>
 </FrameLayout>

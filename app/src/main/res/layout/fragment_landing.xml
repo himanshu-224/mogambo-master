@@ -37,7 +37,7 @@
         android:src="@drawable/signup_food" />
 
 
-    <TextView
+   <!-- <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -52,7 +52,15 @@
         android:paddingTop="10dp"
         android:text="Facebook"
         android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+        android:textSize="16sp" />-->
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp" />
 
     <TextView
         android:layout_width="match_parent"
