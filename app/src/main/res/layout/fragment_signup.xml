@@ -27,35 +27,36 @@
         android:padding="10dp">
 
     <EditText
+        android:id="@+id/name"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:gravity="bottom"
         android:hint="Full Name"/>
     <EditText
+        android:id="@+id/username"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:gravity="bottom"
         android:hint="Username"/>
 
     <EditText
+        android:id="@+id/email"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:gravity="bottom"
         android:hint="Email"/>
 
     <EditText
+        android:id="@+id/password"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:gravity="bottom"
         android:hint="Password"/>
 
     </LinearLayout>
 
-    <TextView
+    <Button
+        android:id="@+id/signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF"

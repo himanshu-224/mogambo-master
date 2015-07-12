@@ -84,7 +84,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <Button
+            android:id="@+id/signup"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -102,7 +103,8 @@
 
 
 
-        <TextView
+        <Button
+            android:id="@+id/login"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"

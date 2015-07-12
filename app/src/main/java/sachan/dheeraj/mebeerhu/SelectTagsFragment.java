@@ -1,0 +1,107 @@
+package sachan.dheeraj.mebeerhu;
+
+
+import android.graphics.PorterDuff;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import org.apmem.tools.layouts.FlowLayout;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import sachan.dheeraj.mebeerhu.model.Tag;
+import sachan.dheeraj.mebeerhu.model.TagArrayList;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class SelectTagsFragment extends Fragment {
+    private static final int TYPE_NOUN = 2;
+    private static final int TYPE_ADJECTIVE = 1;
+    private HashSet<Tag> tagHashSet = new HashSet<Tag>();
+    private Button continueButton;
+
+    public SelectTagsFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_follow_tags, container, false);
+        final FlowLayout flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
+        continueButton = (Button) view.findViewById(R.id.continue_button);
+        new AsyncTask<Void, Void, TagArrayList>() {
+            @Override
+            protected TagArrayList doInBackground(Void... params) {
+                String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS, getActivity());
+                TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class);
+                return tagArrayList;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(TagArrayList tagArrayList) {
+                for (Tag tag : tagArrayList) {
+                    View view1 = inflater.inflate(R.layout.list_item_tag, null);
+                    TextView textView = (TextView) view1.findViewById(R.id.tv);
+                    FrameLayout  frameLayout = (FrameLayout) view.findViewById(R.id.frame_layout);
+                    textView.setText(tag.getTagName());
+                    view1.setOnClickListener(ON_CLICK_LISTENER);
+                    view1.setTag(new TagHolder(tag,textView));
+                    flowLayout.addView(view1);
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        return view;
+    }
+
+    private final View.OnClickListener ON_CLICK_LISTENER = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            TagHolder tagHolder = (TagHolder) v.getTag();
+            if (tagHashSet.contains(tagHolder.tag)) {
+                tagHolder.textView.setTextColor(getActivity().getResources().getColor(R.color.purple));
+                tagHashSet.remove(tagHolder.tag);
+                tagHolder.textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            } else {
+                tagHolder.textView.setTextColor(getActivity().getResources().getColor(R.color.white));
+                tagHashSet.add(tagHolder.tag);
+                if(tagHolder.tag.getTypeId() == TYPE_NOUN) {
+                    tagHolder.textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+                }else {
+                    tagHolder.textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.purple), PorterDuff.Mode.SRC_IN);
+                }
+            }
+            if (tagHashSet.size() > 4) {
+                continueButton.setEnabled(true);
+            } else {
+                continueButton.setEnabled(false);
+            }
+        }
+    };
+
+    private static final class TagHolder {
+        private Tag tag;
+        private TextView textView;
+
+        private TagHolder(Tag tag, TextView textView) {
+            this.tag = tag;
+            this.textView = textView;
+        }
+
+    }
+}

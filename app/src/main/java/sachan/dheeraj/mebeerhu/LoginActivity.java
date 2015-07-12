@@ -40,6 +40,7 @@ public class LoginActivity extends ActionBarActivity {
             Log.e(TAG,"caught exception",e);
         }
         setContentView(R.layout.activity_login);
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new LoginActivityFragment()).commit();
     }
 
 

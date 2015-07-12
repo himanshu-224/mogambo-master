@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -29,9 +31,9 @@ public class LoginActivityFragment extends Fragment {
     //ga0RGNYHvNM5d0SLGQfpQWAPGJ8=
     private static final String TAG = LoginActivityFragment.class.getSimpleName();
 
-    private LoginButton loginButton;
+    private LoginButton loginButtonFaceBook;
     private CallbackManager callbackManager;
-
+    private Button signButton;
 
     public LoginActivityFragment() {
     }
@@ -44,14 +46,23 @@ public class LoginActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_landing, container, false);
-        loginButton = (LoginButton) view.findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends");
+        loginButtonFaceBook = (LoginButton) view.findViewById(R.id.login_button);
+        signButton = (Button) view.findViewById(R.id.signup);
+        loginButtonFaceBook.setReadPermissions("user_friends");
         // If using in a fragment
-        loginButton.setFragment(this);
+        loginButtonFaceBook.setFragment(this);
         // Other app specific specialization
         callbackManager = CallbackManager.Factory.create();
         // Callback registration
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        signButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SignUpFragment()).commit();
+            }
+        });
+
+
+        loginButtonFaceBook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.i(TAG, "success");
