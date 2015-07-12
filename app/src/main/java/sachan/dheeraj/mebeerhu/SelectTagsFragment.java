@@ -11,10 +11,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import sachan.dheeraj.mebeerhu.model.Tag;
@@ -43,7 +45,7 @@ public class SelectTagsFragment extends Fragment {
         new AsyncTask<Void, Void, TagArrayList>() {
             @Override
             protected TagArrayList doInBackground(Void... params) {
-                String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS, getActivity());
+                String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());
                 TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class);
                 return tagArrayList;
             }
@@ -66,6 +68,35 @@ public class SelectTagsFragment extends Fragment {
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        continueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AsyncTask<Void,Void,Boolean>(){
+                    @Override
+                    protected Boolean doInBackground(Void... params) {
+                        ArrayList<String>stringArrayList = new ArrayList<String>();
+                        for(Tag tag : tagHashSet) {
+                            stringArrayList.add(tag.getTagName());
+                        }
+                        String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL,JsonHandler.stringifyNormal(stringArrayList),getActivity());
+                        if(data != null){
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean aBoolean) {
+                        if(aBoolean){
+                            Toast.makeText(getActivity(),"saved",Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            };
+        });
+
         return view;
     }
 

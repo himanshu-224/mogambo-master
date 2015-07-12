@@ -37,22 +37,6 @@
         android:src="@drawable/signup_food" />
 
 
-   <!-- <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:background="#476498"
-        android:gravity="center"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:text="Facebook"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />-->
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
         android:layout_width="match_parent"
@@ -60,7 +44,14 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp" />
+        android:layout_marginLeft="20dp"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:textSize="16sp"
+        android:background="@drawable/facebook_button_smooth"/>
 
     <TextView
         android:layout_width="match_parent"

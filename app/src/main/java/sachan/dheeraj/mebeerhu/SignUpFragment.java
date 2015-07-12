@@ -51,7 +51,7 @@ public class SignUpFragment extends Fragment {
                 new AsyncTask<Void,Void,Boolean>(){
                     @Override
                     protected Boolean doInBackground(Void... params) {
-                        String reply = HttpAgent.postGenericData(UrlConstants.SIGNUP_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
+                        String reply = HttpAgent.postGenericData(UrlConstants.SIGN_UP_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
                         SignUpReply signUpReply = JsonHandler.parseNormal(reply,SignUpReply.class);
                         if(signUpReply != null){
                             HttpAgent.tokenValue = signUpReply.getToken();
