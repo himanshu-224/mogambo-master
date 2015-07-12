@@ -345,7 +345,7 @@ public final class HttpAgent {
                 bearer = settings.getString(Constants.BEARER, null);
             }
             String value = "Bearer " + bearer;
-            httpPost.setHeader("Authorization", value);
+            httpPost.setHeader(Constants.X_ACCESS_TOKEN, tokenValue);
             HttpEntity entity = new ByteArrayEntity(data.getBytes("UTF-8"));
             httpPost.setEntity(entity);
             httpPost.setHeader("Content-Type","application/json");
