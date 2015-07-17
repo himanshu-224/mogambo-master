@@ -34,6 +34,7 @@ public class LoginActivityFragment extends Fragment {
     private LoginButton loginButtonFaceBook;
     private CallbackManager callbackManager;
     private Button signButton;
+    private Button googleButton;
 
     public LoginActivityFragment() {
     }
@@ -49,6 +50,7 @@ public class LoginActivityFragment extends Fragment {
         loginButtonFaceBook = (LoginButton) view.findViewById(R.id.login_button);
         signButton = (Button) view.findViewById(R.id.signup);
         loginButtonFaceBook.setReadPermissions("user_friends");
+        googleButton = (Button) view.findViewById(R.id.google);
         // If using in a fragment
         loginButtonFaceBook.setFragment(this);
         // Other app specific specialization
@@ -61,6 +63,13 @@ public class LoginActivityFragment extends Fragment {
             }
         });
 
+        googleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),GoogleActivity.class);
+                getActivity().startActivity(intent);
+            }
+        });
 
         loginButtonFaceBook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
