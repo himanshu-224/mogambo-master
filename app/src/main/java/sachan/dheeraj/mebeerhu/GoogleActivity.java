@@ -1,5 +1,7 @@
 package sachan.dheeraj.mebeerhu;
 //https://github.com/googleplus/gplus-quickstart-android.git
+import android.content.Intent;
+import android.content.IntentSender;
 import android.provider.Contacts;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -15,7 +17,17 @@ public class GoogleActivity extends ActionBarActivity  implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = GoogleActivity.class.getSimpleName();
+
+    /* Request code used to invoke sign in user interactions. */
+    private static final int RC_SIGN_IN = 0;
+
+    /* Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
+
+    /* A flag indicating that a PendingIntent is in progress and prevents
+     * us from starting further intents.
+     */
+    private boolean mIntentInProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +83,32 @@ public class GoogleActivity extends ActionBarActivity  implements
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.e(TAG,"connection suspended");
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e(TAG,"connection failed : ");
+    public void onConnectionFailed(ConnectionResult result) {
+        if (!mIntentInProgress && result.hasResolution()) {
+            try {
+                mIntentInProgress = true;
+                startIntentSenderForResult(result.getResolution().getIntentSender(),
+                        RC_SIGN_IN, null, 0, 0, 0);
+            } catch (IntentSender.SendIntentException e) {
+                // The intent was canceled before it was sent.  Return to the default
+                // state and attempt to connect to get an updated ConnectionResult.
+                mIntentInProgress = false;
+                mGoogleApiClient.connect();
+            }
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
+        if (requestCode == RC_SIGN_IN) {
+            mIntentInProgress = false;
+
+            if (!mGoogleApiClient.isConnecting()) {
+                mGoogleApiClient.connect();
+            }
+        }
     }
 }
