@@ -18,7 +18,8 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.PersonBuffer;
 
 public class GoogleActivity extends ActionBarActivity  implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,ResultCallback<People.LoadPeopleResult> {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        ResultCallback<People.LoadPeopleResult> {
 
     private static final String TAG = GoogleActivity.class.getSimpleName();
 
