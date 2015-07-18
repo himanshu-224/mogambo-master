@@ -34,7 +34,7 @@ public class LoginActivityFragment extends Fragment {
     private LoginButton loginButtonFaceBook;
     private CallbackManager callbackManager;
     private Button signButton;
-    private Button googleButton;
+    private com.google.android.gms.common.SignInButton googleButton;
 
     public LoginActivityFragment() {
     }
@@ -50,7 +50,7 @@ public class LoginActivityFragment extends Fragment {
         loginButtonFaceBook = (LoginButton) view.findViewById(R.id.login_button);
         signButton = (Button) view.findViewById(R.id.signup);
         loginButtonFaceBook.setReadPermissions("user_friends");
-        googleButton = (Button) view.findViewById(R.id.google);
+        googleButton = (com.google.android.gms.common.SignInButton) view.findViewById(R.id.google);
         // If using in a fragment
         loginButtonFaceBook.setFragment(this);
         // Other app specific specialization

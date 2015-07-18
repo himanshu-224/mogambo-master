@@ -53,7 +53,8 @@
         android:textSize="16sp"
         android:background="@drawable/facebook_button_smooth"/>
 
-    <Button
+
+    <com.google.android.gms.common.SignInButton
         android:id="@+id/google"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
