@@ -1,7 +1,10 @@
 package sachan.dheeraj.mebeerhu;
 //https://github.com/googleplus/gplus-quickstart-android.git
+import android.accounts.Account;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.media.Image;
+import android.os.AsyncTask;
 import android.provider.Contacts;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,17 +12,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
 
+import java.io.IOException;
+
 public class GoogleActivity extends ActionBarActivity  implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        ResultCallback<People.LoadPeopleResult> {
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener
+        /*,ResultCallback<People.LoadPeopleResult>*/ {
+
+    private static final String SERVER_CLIENT_ID = "722131418756-jhluff14bo2216cucfl691f92qvvhf1n.apps.googleusercontent.com";
 
     private static final String TAG = GoogleActivity.class.getSimpleName();
 
@@ -67,7 +78,7 @@ public class GoogleActivity extends ActionBarActivity  implements
     }
 
 
-    @Override
+   /* @Override
     public void onResult(People.LoadPeopleResult peopleData) {
         if (peopleData.getStatus().getStatusCode() == CommonStatusCodes.SUCCESS) {
             PersonBuffer personBuffer = peopleData.getPersonBuffer();
@@ -82,7 +93,7 @@ public class GoogleActivity extends ActionBarActivity  implements
         } else {
             Log.e(TAG, "Error requesting people data: " + peopleData.getStatus());
         }
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -102,14 +113,56 @@ public class GoogleActivity extends ActionBarActivity  implements
     @Override
     public void onConnected(Bundle bundle) {
         Log.e(TAG,"connected");
-        Plus.PeopleApi.loadVisible(mGoogleApiClient, null)
-                .setResultCallback(this);
+     /*   Plus.PeopleApi.loadVisible(mGoogleApiClient, null)
+                .setResultCallback(this);*/
+        if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+            String personName = currentPerson.getDisplayName();
+            com.google.android.gms.plus.model.people.Person.Image personPhoto = currentPerson.getImage();
+            String personGooglePlusProfile = currentPerson.getUrl();
+            String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+        }
+
+        new AsyncTask<Void,Void,String>(){
+            @Override
+            protected String doInBackground(Void... params) {
+                String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+                String scopes = "audience:server:client_id:" + SERVER_CLIENT_ID; // Not the app's client ID.
+                try {
+                    String token = GoogleAuthUtil.getToken(getApplicationContext(), account, scopes);
+                    return token;
+                } catch (IOException e) {
+                    Log.e(TAG, "Error retrieving ID token.", e);
+                    return null;
+                } catch (GoogleAuthException e) {
+                    Log.e(TAG, "Error retrieving ID token.", e);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                Log.i(TAG, "ID token: " + result);
+                if (result != null) {
+                    // Successfully retrieved ID Token
+                    // ...
+                } else {
+                    // There was some error getting the ID Token
+                    // ...
+                }
+            }
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
 
 
     @Override
-    public void onConnectionSuspended(int i) {
+    public void onConnectionSuspended(int i)  {
         Log.e(TAG,"connection suspended");
     }
 
