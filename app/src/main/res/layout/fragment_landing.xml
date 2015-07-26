@@ -53,24 +53,16 @@
         android:textSize="16sp"
         android:background="@drawable/facebook_button_smooth"/>
 
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/google"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:background="#E30C0C"
-        android:gravity="center"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:text="Google"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+     <com.google.android.gms.common.SignInButton
+         android:id="@+id/google"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="20dp"
+         android:layout_marginRight="20dp"
+         android:layout_marginLeft="20dp"
+         android:layout_gravity="center"
+         android:gravity="center"
+         android:background="@drawable/google_button_smooth"/>
 
     <LinearLayout
         android:layout_width="match_parent"

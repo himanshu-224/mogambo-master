@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.login.widget.LoginButton;
+
 import java.util.HashMap;
 
 import sachan.dheeraj.mebeerhu.model.SignUpReply;
@@ -23,6 +25,9 @@ public class SignUpFragment extends Fragment {
 
     private Button signUpButton;
     private EditText fullNameEditText,userNameEditText,emailEditText,passwordEditText;
+
+    private LoginButton loginButtonFaceBook;
+    private com.google.android.gms.common.SignInButton googleButton;
 
     public SignUpFragment() {
         // Required empty public constructor

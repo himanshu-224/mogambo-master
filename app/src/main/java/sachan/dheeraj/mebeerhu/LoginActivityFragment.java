@@ -31,9 +31,10 @@ public class LoginActivityFragment extends Fragment {
     //ga0RGNYHvNM5d0SLGQfpQWAPGJ8=
     private static final String TAG = LoginActivityFragment.class.getSimpleName();
 
-    private LoginButton loginButtonFaceBook;
     private CallbackManager callbackManager;
     private Button signButton;
+
+    private LoginButton loginButtonFaceBook;
     private com.google.android.gms.common.SignInButton googleButton;
 
     public LoginActivityFragment() {
