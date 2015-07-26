@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="sachan.dheeraj.mebeerhu" >
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
     <meta-data
         android:name="com.google.android.gms.version"
         android:value="@integer/google_play_services_version" />
@@ -40,6 +44,14 @@
         <activity
             android:name=".GoogleActivity"
             android:label="@string/title_activity_test" >
+        </activity>
+        <activity
+            android:name=".CreatePostActivity"
+            android:label="@string/title_activity_create_post" >
+       <!--     <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
         </activity>
     </application>
 

@@ -2,6 +2,7 @@ package sachan.dheeraj.mebeerhu;
 
 
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,7 +30,8 @@ public class SelectTagsFragment extends Fragment {
     private static final int TYPE_NOUN = 2;
     private static final int TYPE_ADJECTIVE = 1;
     private HashSet<Tag> tagHashSet = new HashSet<Tag>();
-    private Button continueButton;
+    private TextView continueTextView;
+    Typeface typeface;
 
     public SelectTagsFragment() {
         // Required empty public constructor
@@ -39,9 +41,15 @@ public class SelectTagsFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        typeface = Typeface.createFromAsset(getActivity().getBaseContext().getResources().getAssets(), "gothic.ttf");
         final View view = inflater.inflate(R.layout.fragment_follow_tags, container, false);
+        ((TextView) view.findViewById(R.id.header)).setTypeface(typeface);
+        ((TextView) view.findViewById(R.id.hook)).setTypeface(typeface);
+        ((TextView) view.findViewById(R.id.fine)).setTypeface(typeface);
+
         final FlowLayout flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
-        continueButton = (Button) view.findViewById(R.id.continue_button);
+        continueTextView = (TextView) view.findViewById(R.id.continue_button);
+        continueTextView.setTypeface(typeface);
         new AsyncTask<Void, Void, TagArrayList>() {
             @Override
             protected TagArrayList doInBackground(Void... params) {
@@ -57,30 +65,35 @@ public class SelectTagsFragment extends Fragment {
 
             @Override
             protected void onPostExecute(TagArrayList tagArrayList) {
-                for (Tag tag : tagArrayList) {
-                    View view1 = inflater.inflate(R.layout.list_item_tag, null);
-                    TextView textView = (TextView) view1.findViewById(R.id.tv);
-                    FrameLayout  frameLayout = (FrameLayout) view.findViewById(R.id.frame_layout);
-                    textView.setText(tag.getTagName());
-                    view1.setOnClickListener(ON_CLICK_LISTENER);
-                    view1.setTag(new TagHolder(tag,textView));
-                    flowLayout.addView(view1);
+                if (tagArrayList != null) {
+                    for (int i = 0; i < 10; i++) {
+                        for (Tag tag : tagArrayList) {
+                            View view1 = inflater.inflate(R.layout.list_item_tag, null);
+                            TextView textView = (TextView) view1.findViewById(R.id.tv);
+                            FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.frame_layout);
+                            textView.setText(tag.getTagName());
+                            textView.setTypeface(typeface);
+                            view1.setOnClickListener(ON_CLICK_LISTENER);
+                            view1.setTag(new TagHolder(tag, textView));
+                            flowLayout.addView(view1);
+                        }
+                    }
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        continueButton.setOnClickListener(new View.OnClickListener() {
+        continueTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AsyncTask<Void,Void,Boolean>(){
+                new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... params) {
-                        ArrayList<String>stringArrayList = new ArrayList<String>();
-                        for(Tag tag : tagHashSet) {
+                        ArrayList<String> stringArrayList = new ArrayList<String>();
+                        for (Tag tag : tagHashSet) {
                             stringArrayList.add(tag.getTagName());
                         }
-                        String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL,JsonHandler.stringifyNormal(stringArrayList),getActivity());
-                        if(data != null){
+                        String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL, JsonHandler.stringifyNormal(stringArrayList), getActivity());
+                        if (data != null) {
                             return true;
                         }
                         return false;
@@ -88,13 +101,15 @@ public class SelectTagsFragment extends Fragment {
 
                     @Override
                     protected void onPostExecute(Boolean aBoolean) {
-                        if(aBoolean){
-                            Toast.makeText(getActivity(),"saved",Toast.LENGTH_LONG).show();
+                        if (aBoolean) {
+                            Toast.makeText(getActivity(), "saved", Toast.LENGTH_LONG).show();
                         }
                     }
 
                 }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            };
+            }
+
+            ;
         });
 
         return view;
@@ -111,16 +126,16 @@ public class SelectTagsFragment extends Fragment {
             } else {
                 tagHolder.textView.setTextColor(getActivity().getResources().getColor(R.color.white));
                 tagHashSet.add(tagHolder.tag);
-                if(tagHolder.tag.getTypeId() == TYPE_NOUN) {
+                if (tagHolder.tag.getTypeId() == TYPE_NOUN) {
                     tagHolder.textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
-                }else {
+                } else {
                     tagHolder.textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.purple), PorterDuff.Mode.SRC_IN);
                 }
             }
             if (tagHashSet.size() > 4) {
-                continueButton.setEnabled(true);
+                continueTextView.setBackgroundColor(getResources().getColor(R.color.purple));
             } else {
-                continueButton.setEnabled(false);
+                continueTextView.setBackgroundColor(getResources().getColor(R.color.tatti));
             }
         }
     };
