@@ -40,8 +40,10 @@
          android:layout_marginRight="20dp"
          android:layout_marginLeft="20dp"
          android:layout_gravity="center"
-         android:gravity="center"
-         android:background="@drawable/google_button_smooth"/>
+         android:gravity="center"/>
+
+
+    <!--     android:background="@drawable/google_button_smooth"/> -->
 
     <LinearLayout
         android:layout_width="match_parent"

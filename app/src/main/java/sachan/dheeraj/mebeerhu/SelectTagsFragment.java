@@ -50,41 +50,15 @@ public class SelectTagsFragment extends Fragment {
         final FlowLayout flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
         continueTextView = (TextView) view.findViewById(R.id.continue_button);
         continueTextView.setTypeface(typeface);
-        new AsyncTask<Void, Void, TagArrayList>() {
-            @Override
-            protected TagArrayList doInBackground(Void... params) {
-                String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());
-                TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class);
-                return tagArrayList;
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-
-            @Override
-            protected void onPostExecute(TagArrayList tagArrayList) {
-                if (tagArrayList != null) {
-                    for (int i = 0; i < 10; i++) {
-                        for (Tag tag : tagArrayList) {
-                            View view1 = inflater.inflate(R.layout.list_item_tag, null);
-                            TextView textView = (TextView) view1.findViewById(R.id.tv);
-                            FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.frame_layout);
-                            textView.setText(tag.getTagName());
-                            textView.setTypeface(typeface);
-                            view1.setOnClickListener(ON_CLICK_LISTENER);
-                            view1.setTag(new TagHolder(tag, textView));
-                            flowLayout.addView(view1);
-                        }
-                    }
-                }
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         continueTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(tagHashSet.size() <= 4){
+                    return;
+                }
+
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... params) {
@@ -112,6 +86,39 @@ public class SelectTagsFragment extends Fragment {
             ;
         });
 
+        new AsyncTask<Void, Void, TagArrayList>() {
+            @Override
+            protected TagArrayList doInBackground(Void... params) {
+                String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());
+                TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class);
+                return tagArrayList;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(TagArrayList tagArrayList) {
+                if (tagArrayList != null) {
+                        for (Tag tag : tagArrayList) {
+                            View view1 = inflater.inflate(R.layout.list_item_tag, null);
+                            TextView textView = (TextView) view1.findViewById(R.id.tv);
+                            FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.frame_layout);
+                            textView.setText(tag.getTagName());
+                            textView.setTypeface(typeface);
+                            view1.setOnClickListener(ON_CLICK_LISTENER);
+                            view1.setTag(new TagHolder(tag, textView));
+                            flowLayout.addView(view1);
+                        }
+                    continueTextView.setEnabled(true);
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
+
         return view;
     }
 
@@ -133,9 +140,9 @@ public class SelectTagsFragment extends Fragment {
                 }
             }
             if (tagHashSet.size() > 4) {
-                continueTextView.setBackgroundColor(getResources().getColor(R.color.purple));
+                continueTextView.setBackground(getResources().getDrawable(R.drawable.button_smooth));
             } else {
-                continueTextView.setBackgroundColor(getResources().getColor(R.color.tatti));
+                continueTextView.setBackground(getResources().getDrawable(R.drawable.button_smooth_tatti));
             }
         }
     };

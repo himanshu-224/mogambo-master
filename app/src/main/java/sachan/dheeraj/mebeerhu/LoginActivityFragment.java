@@ -13,6 +13,7 @@ import android.widget.EditText;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginFragment;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -33,6 +34,7 @@ public class LoginActivityFragment extends Fragment {
 
     private CallbackManager callbackManager;
     private Button signButton;
+    private Button loginButton;
 
     private LoginButton loginButtonFaceBook;
     private com.google.android.gms.common.SignInButton googleButton;
@@ -50,6 +52,7 @@ public class LoginActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_landing, container, false);
         loginButtonFaceBook = (LoginButton) view.findViewById(R.id.login_button);
         signButton = (Button) view.findViewById(R.id.signup);
+        loginButton = (Button) view.findViewById(R.id.login);
         loginButtonFaceBook.setReadPermissions("user_friends");
         googleButton = (com.google.android.gms.common.SignInButton) view.findViewById(R.id.google);
         // If using in a fragment
@@ -57,10 +60,17 @@ public class LoginActivityFragment extends Fragment {
         // Other app specific specialization
         callbackManager = CallbackManager.Factory.create();
         // Callback registration
-        signButton.setOnClickListener(new View.OnClickListener() {
+       signButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SignUpFragment()).commit();
+            }
+        });
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SplatterLoginFragment()).commit();
             }
         });
 
@@ -76,6 +86,9 @@ public class LoginActivityFragment extends Fragment {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.i(TAG, "success");
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SelectTagsFragment()).commit();
+
+
             }
 
             @Override

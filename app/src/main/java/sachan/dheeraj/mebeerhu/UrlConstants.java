@@ -8,7 +8,9 @@ public class UrlConstants {
 
     public static final String GET_TRENDY_TAGS_URL = BASE_URL + "tag/getTrendyTags";
     public static final String SIGN_UP_URL = BASE_URL + "auth/signup";
+    public static final String LOGIN_URL = BASE_URL + "auth/login";
     public static final String FOLLOW_TAGS_URL = BASE_URL + "tag/followTag";
+    public static final String GET_FEED = BASE_URL + "feed/getFeed";
 
 
 
