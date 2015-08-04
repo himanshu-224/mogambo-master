@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/circular_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -84,18 +85,18 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/main_image"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="10dp"
         android:scaleType="fitXY"
         android:src="@drawable/signup_food" />
 
     <org.apmem.tools.layouts.FlowLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/flow_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:gravity="center" />
+        android:gravity="left" />
 
     <View
         android:layout_width="match_parent"
@@ -116,6 +117,7 @@
             android:gravity="center"/>
 
         <TextView
+            android:id="@+id/location"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -127,6 +129,7 @@
             android:textSize="20sp"/>
 
         <TextView
+            android:id="@+id/likes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"

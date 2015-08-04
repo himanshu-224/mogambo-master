@@ -9,11 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import sachan.dheeraj.mebeerhu.model.Feeds;
 import sachan.dheeraj.mebeerhu.model.Post;
+import sachan.dheeraj.mebeerhu.model.Tag;
+import sachan.dheeraj.mebeerhu.viewHolders.PostViewHolder;
 
 
 public class PostListFragment extends Fragment {
@@ -50,9 +54,37 @@ public class PostListFragment extends Fragment {
                     @Override
                     public View getView(int position, View convertView, ViewGroup parent) {
                         Post post = getItem(position);
+                        PostViewHolder postViewHolder;
                         if (convertView == null) {
                             convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_post, null);
+                            postViewHolder = PostViewHolder.getInstance(convertView);
+                            convertView.setTag(postViewHolder);
+                        }else {
+                            postViewHolder = (PostViewHolder) convertView.getTag();
                         }
+                        postViewHolder.getPosterNameTextView().setText(post.getParentUsername());
+                        if(post.getAccompaniedWith() != null && post.getAccompaniedWith().size() > 0){
+                            postViewHolder.getWithTextView().setText("with");
+                            postViewHolder.getxOthersTextView().setText(post.getAccompaniedWith().size()+ " others");
+                        }else{
+                            postViewHolder.getWithTextView().setVisibility(View.GONE);
+                            postViewHolder.getxOthersTextView().setVisibility(View.GONE);
+                        }
+
+                        if(post.getTagList() != null && post.getTagList().size() > 0){
+                            for(Tag tag :post.getTagList()){
+                                View view1 = getLayoutInflater(null).inflate(R.layout.list_item_tag, null);
+                                TextView textView = (TextView) view1.findViewById(R.id.tv);
+                                textView.setText(tag.getTagName());
+                                postViewHolder.getFlowLayout().addView(view1);
+                            }
+                        }
+
+                        postViewHolder.getLocationTextView().setText(post.getPostLocation());
+                        postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount()+" likes");
+                        postViewHolder.setPost(post);
+                        postViewHolder.loadImages(getContext());
+
                         return convertView;
                     }
                 };

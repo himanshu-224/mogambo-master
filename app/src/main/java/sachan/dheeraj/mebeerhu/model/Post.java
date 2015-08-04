@@ -6,8 +6,6 @@ import java.util.ArrayList;
  * Created by naveen.goel on 01/08/15.
  */
 public class Post {
-
-
     private String postId;
     private String username;
     private String parentUsername;
@@ -24,6 +22,15 @@ public class Post {
     private String city;
     private String state;
     private String country;
+    private String userImageURL;
+
+    public String getUserImageURL() {
+        return userImageURL;
+    }
+
+    public void setUserImageURL(String userImageURL) {
+        this.userImageURL = userImageURL;
+    }
 
     public String getPostId() {
         return postId;

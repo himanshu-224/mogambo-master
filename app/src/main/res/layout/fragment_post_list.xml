@@ -2,24 +2,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="sachan.dheeraj.mebeerhu.PostListFragment">
+    tools:context="sachan.dheeraj.mebeerhu.PostListFragment"
+    android:background="@color/gray"
+    android:padding="5dp">
 
-<ListView
-    android:id="@+id/list_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:persistentDrawingCache="none"
-    android:dividerHeight="5dp"
-    android:divider="@color/material_blue_grey_800"
-    android:visibility="gone"/>
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@color/gray"
+        android:dividerHeight="5dp"
+        android:persistentDrawingCache="none"
+        android:visibility="gone" />
 
     <ProgressBar
+        android:id="@+id/loader"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="?android:attr/progressBarStyleLarge"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:id="@+id/loader"/>
+        android:gravity="center" />
 
 
 </FrameLayout>
