@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +37,7 @@ public class PostListFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
 
-        new AsyncTask<Void,Void,Feeds>(){
+        new AsyncTask<Void, Void, Feeds>() {
 
             @Override
             protected void onPreExecute() {
@@ -46,12 +46,12 @@ public class PostListFragment extends Fragment {
 
             @Override
             protected void onPostExecute(Feeds feeds) {
-                ArrayAdapter<Post> postArrayAdapter = new ArrayAdapter<Post>(getActivity(),0,feeds){
+                ArrayAdapter<Post> postArrayAdapter = new ArrayAdapter<Post>(getActivity(), 0, feeds) {
                     @Override
                     public View getView(int position, View convertView, ViewGroup parent) {
-                          Post post = getItem(position);
-                        if(convertView == null){
-                            convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_post,null);
+                        Post post = getItem(position);
+                        if (convertView == null) {
+                            convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_post, null);
                         }
                         return convertView;
                     }
@@ -65,12 +65,12 @@ public class PostListFragment extends Fragment {
 
             @Override
             protected Feeds doInBackground(Void... params) {
-                String feedString = HttpAgent.get(UrlConstants.GET_FEED,getActivity());
-                Feeds feeds =  JsonHandler.parseNormal(feedString,Feeds.class);
-                if(feeds == null){
+                String feedString = HttpAgent.get(UrlConstants.GET_FEED, getActivity());
+                Feeds feeds = JsonHandler.parseNormal(feedString, Feeds.class);
+                if (feeds == null) {
                     throw new RuntimeException("json parse failed");
-                }else{
-                  return feeds;
+                } else {
+                    return feeds;
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

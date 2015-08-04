@@ -1,6 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="sachan.dheeraj.mebeerhu.PostListFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="sachan.dheeraj.mebeerhu.PostListFragment">
 
 <ListView
     android:id="@+id/list_view"
@@ -14,9 +16,9 @@
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_gravity="center"
         android:gravity="center"
-        android:style="?android:attr/progressBarStyle"
         android:id="@+id/loader"/>
 
 

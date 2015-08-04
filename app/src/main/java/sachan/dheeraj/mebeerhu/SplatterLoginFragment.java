@@ -62,7 +62,7 @@ public class SplatterLoginFragment extends Fragment {
                     @Override
                     protected void onPostExecute(Boolean aBoolean) {
                         if (aBoolean) {
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new SelectTagsFragment()).commit();
+                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new PostListFragment()).commit();
                         } else {
                             Toast.makeText(getActivity(), "Something fucked up", Toast.LENGTH_SHORT).show();
                         }
