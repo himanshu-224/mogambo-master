@@ -1,8 +1,5 @@
 package sachan.dheeraj.mebeerhu;
 
-import android.app.Activity;
-import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,23 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import sachan.dheeraj.mebeerhu.model.Feeds;
 import sachan.dheeraj.mebeerhu.model.Post;
-import sachan.dheeraj.mebeerhu.model.Tag;
 import sachan.dheeraj.mebeerhu.viewHolders.PostViewHolder;
 
 
 public class PostListFragment extends Fragment {
-    public static PostListFragment newInstance(String param1, String param2) {
-        PostListFragment fragment = new PostListFragment();
-        return fragment;
-    }
-
     private ListView listView;
     private ProgressBar progressBar;
 
@@ -75,22 +63,8 @@ public class PostListFragment extends Fragment {
                         postViewHolder.getLocationTextView().setText(post.getPostLocation());
                         postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount() + " likes");
                         postViewHolder.setPost(post);
+                        postViewHolder.loadTagsInThreeLines(getActivity());
                         postViewHolder.initAndLoadImages(getContext());
-                        postViewHolder.getFlowLayoutFull().removeAllViews();
-                        if (post.getTagList() != null && post.getTagList().size() > 0) {
-                            for (Tag tag : post.getTagList()) {
-                                View view1 = getLayoutInflater(null).inflate(R.layout.list_item_tag, null);
-                                TextView textView = (TextView) view1.findViewById(R.id.tv);
-                                textView.setText(tag.getTagName());
-                                textView.setTextColor(getActivity().getResources().getColor(R.color.white));
-                                if (tag.getTypeId() == Tag.TYPE_NOUN) {
-                                    textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
-                                } else {
-                                    textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.purple), PorterDuff.Mode.SRC_IN);
-                                }
-                                postViewHolder.getFlowLayoutFull().addView(view1);
-                            }
-                        }
                         return convertView;
                     }
                 };

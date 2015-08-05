@@ -12,6 +12,7 @@ import android.view.ViewDebug;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import sachan.dheeraj.mebeerhu.R;
@@ -22,24 +23,26 @@ public class FlowLayout extends ViewGroup {
     public static final int LAYOUT_DIRECTION_LTR = 0;
     public static final int LAYOUT_DIRECTION_RTL = 1;
 
-    private int maxChildrenSupprotedDheeraj = -1;
-    private int childCount;
     private int maxLinesSupported = -1;
 
-    public void setMaxLinesSupported(int maxLinesSupported) {
-        if(maxLinesSupported > 0) {
-            if(this.maxLinesSupported == -1) {
-                this.maxLinesSupported = maxLinesSupported;
-            }else{
-                throw new RuntimeException("max lines supported cannot be reset");
-            }
-        }else{
-            throw new RuntimeException("max lines supported must be greater than 0");
+    private HashSet<View> goneViewHashSet = new HashSet<View>();
+
+    public void showAll() {
+        for (View view : goneViewHashSet) {
+            view.setVisibility(VISIBLE);
         }
     }
 
-    public int getMaxChildrenSupprotedDheeraj() {
-        return maxChildrenSupprotedDheeraj == -1 ? childCount : maxChildrenSupprotedDheeraj;
+    public boolean isSomeThingHidden(){
+        return !goneViewHashSet.isEmpty();
+    }
+
+    public void setMaxLinesSupported(int maxLinesSupported) {
+        if (maxLinesSupported > 0) {
+            this.maxLinesSupported = maxLinesSupported;
+        } else {
+            throw new RuntimeException("max lines supported must be greater than 0");
+        }
     }
 
     private final LayoutConfiguration config;
@@ -76,7 +79,6 @@ public class FlowLayout extends ViewGroup {
         lines.add(currentLine);
 
         final int count = this.getChildCount();
-        childCount = count;
         for (int i = 0; i < count; i++) {
             final View child = this.getChildAt(i);
             if (child.getVisibility() == GONE) {
@@ -98,8 +100,11 @@ public class FlowLayout extends ViewGroup {
                 lp.setLength(child.getMeasuredHeight());
                 lp.setThickness(child.getMeasuredWidth());
             }
-            if (maxLinesSupported !=  -1 && lines.size() <= maxLinesSupported) {
-                maxChildrenSupprotedDheeraj = i;
+            if (maxLinesSupported != -1 && lines.size() <= maxLinesSupported) {
+                //everything is fine
+            } else {
+                child.setVisibility(GONE);
+                goneViewHashSet.add(child);
             }
             boolean newLine = lp.newLine || (modeLength != MeasureSpec.UNSPECIFIED && !currentLine.canFit(child));
             if (newLine) {

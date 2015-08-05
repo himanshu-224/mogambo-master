@@ -1,16 +1,20 @@
 package sachan.dheeraj.mebeerhu.viewHolders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -18,6 +22,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import sachan.dheeraj.mebeerhu.R;
 import sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout;
 import sachan.dheeraj.mebeerhu.model.Post;
+import sachan.dheeraj.mebeerhu.model.Tag;
 import sachan.dheeraj.mebeerhu.utils.ImageUtils;
 
 /**
@@ -31,12 +36,12 @@ public class PostViewHolder {
     private TextView postFollowersTextView;
     private TextView timeTextView;
     private ImageView mainImageView;
-    private FlowLayout flowLayoutFull;
-    private FlowLayout flowLayoutThree;
+    private FlowLayout flowLayout;
     private TextView locationTextView;
     private TextView likesTextView;
     private Post post;
     private ImageLoaderAsyncTask imageLoaderAsyncTask;
+    private TextView moreTextView;
 
     public CircleImageView getProfileCircleImageView() {
         return profileCircleImageView;
@@ -66,14 +71,6 @@ public class PostViewHolder {
         return mainImageView;
     }
 
-    public FlowLayout getFlowLayoutFull() {
-        return flowLayoutFull;
-    }
-
-    public FlowLayout getFlowLayoutThree() {
-        return flowLayoutThree;
-    }
-
     public TextView getLocationTextView() {
         return locationTextView;
     }
@@ -90,8 +87,8 @@ public class PostViewHolder {
         this.post = post;
     }
 
-    public static PostViewHolder getInstance(View view){
-        PostViewHolder postViewHolder = new PostViewHolder();
+    public static PostViewHolder getInstance(View view) {
+        final PostViewHolder postViewHolder = new PostViewHolder();
         postViewHolder.profileCircleImageView = (CircleImageView) view.findViewById(R.id.circular_image);
         postViewHolder.posterNameTextView = (TextView) view.findViewById(R.id.poster_name);
         postViewHolder.withTextView = (TextView) view.findViewById(R.id.with);
@@ -99,26 +96,60 @@ public class PostViewHolder {
         postViewHolder.postFollowersTextView = (TextView) view.findViewById(R.id.post_followers);
         postViewHolder.timeTextView = (TextView) view.findViewById(R.id.time);
         postViewHolder.mainImageView = (ImageView) view.findViewById(R.id.main_image);
-        postViewHolder.flowLayoutFull = (FlowLayout) view.findViewById(R.id.flow_layout_full);
-        postViewHolder.flowLayoutThree = (FlowLayout) view.findViewById(R.id.flow_layout_three);
         postViewHolder.locationTextView = (TextView) view.findViewById(R.id.location);
         postViewHolder.likesTextView = (TextView) view.findViewById(R.id.likes);
-
+        postViewHolder.flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
+        postViewHolder.moreTextView = (TextView) view.findViewById(R.id.more);
+        postViewHolder.setMoreOnClickListener();
         return postViewHolder;
     }
 
-    public void initAndLoadImages(final Context context){
-            if(imageLoaderAsyncTask != null){
-                if(!imageLoaderAsyncTask.getCurrentRunningPost().equals(post)){
-                    imageLoaderAsyncTask.cancel(true);
-                }
+    private void setMoreOnClickListener() {
+        moreTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moreTextView.setVisibility(View.GONE);
+                flowLayout.showAll();
             }
-        imageLoaderAsyncTask = new ImageLoaderAsyncTask(post,context);
+        });
+    }
+
+    public void initAndLoadImages(final Context context) {
+        if (imageLoaderAsyncTask != null) {
+            if (!imageLoaderAsyncTask.getCurrentRunningPost().equals(post)) {
+                imageLoaderAsyncTask.cancel(true);
+            }
+        }
+        imageLoaderAsyncTask = new ImageLoaderAsyncTask(post, context);
         imageLoaderAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 
-    private class ImageLoaderAsyncTask extends AsyncTask<Void,Void,Void>{
+    public void loadTagsInThreeLines(final Activity activity) {
+        flowLayout.removeAllViews();
+        flowLayout.setMaxLinesSupported(3);
+        if (post.getTagList() != null && post.getTagList().size() > 0) {
+            for (Tag tag : post.getTagList()) {
+                View view1 = activity.getLayoutInflater().inflate(R.layout.list_item_tag, null);
+                TextView textView = (TextView) view1.findViewById(R.id.tv);
+                textView.setText(tag.getTagName());
+                textView.setTextColor(activity.getResources().getColor(R.color.white));
+                if (tag.getTypeId() == Tag.TYPE_NOUN) {
+                    textView.getBackground().setColorFilter(activity.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+                } else {
+                    textView.getBackground().setColorFilter(activity.getResources().getColor(R.color.purple), PorterDuff.Mode.SRC_IN);
+                }
+                flowLayout.addView(view1);
+            }
+        }
+        if (flowLayout.isSomeThingHidden()) {
+            moreTextView.setVisibility(View.VISIBLE);
+        } else {
+            moreTextView.setVisibility(View.GONE);
+        }
+    }
+
+    private class ImageLoaderAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private ImageLoaderAsyncTask(Post currentRunningPost, Context context) {
             this.currentRunningPost = currentRunningPost;
@@ -145,7 +176,7 @@ public class PostViewHolder {
 
         @Override
         protected Void doInBackground(Void... params) {
-            if(!isCancelled()) {
+            if (!isCancelled()) {
                 profileBitmap = ImageUtils.getBitmapFromUrl(post.getUserImageURL());
                 mainBitmap = ImageUtils.getBitmapFromUrl(post.getPostImageURL());
             }
@@ -154,7 +185,7 @@ public class PostViewHolder {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if(!isCancelled()) {
+            if (!isCancelled()) {
                 try {
                     if (profileBitmap != null) {
                         profileCircleImageView.setImageBitmap(profileBitmap);
@@ -174,7 +205,6 @@ public class PostViewHolder {
             }
         }
     }
-
 
 
 }
