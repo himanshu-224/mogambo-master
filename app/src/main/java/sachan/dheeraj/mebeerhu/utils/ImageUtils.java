@@ -12,11 +12,11 @@ import java.util.Hashtable;
 public class ImageUtils {
     private static final String TAG = ImageUtils.class.getSimpleName();
 
-    private static Hashtable<String,Bitmap> stringBitmapHashtable = new Hashtable<>();
+    private static Hashtable<String,Bitmap> stringBitmapHashtable = new Hashtable<String,Bitmap>();
 
     public static Bitmap getBitmapFromUrl(String url) {
         try {
-            if(stringBitmapHashtable.contains(url)){
+            if(stringBitmapHashtable.get(url) != null){
                 return stringBitmapHashtable.get(url);
             }
             InputStream in = new URL(url).openStream();
