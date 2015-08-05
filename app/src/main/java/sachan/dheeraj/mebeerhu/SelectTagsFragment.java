@@ -14,12 +14,11 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apmem.tools.layouts.FlowLayout;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout;
 import sachan.dheeraj.mebeerhu.model.Tag;
 import sachan.dheeraj.mebeerhu.model.TagArrayList;
 
@@ -27,8 +26,6 @@ import sachan.dheeraj.mebeerhu.model.TagArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class SelectTagsFragment extends Fragment {
-    private static final int TYPE_NOUN = 2;
-    private static final int TYPE_ADJECTIVE = 1;
     private HashSet<Tag> tagHashSet = new HashSet<Tag>();
     private TextView continueTextView;
     Typeface typeface;
@@ -133,7 +130,7 @@ public class SelectTagsFragment extends Fragment {
             } else {
                 tagHolder.textView.setTextColor(getActivity().getResources().getColor(R.color.white));
                 tagHashSet.add(tagHolder.tag);
-                if (tagHolder.tag.getTypeId() == TYPE_NOUN) {
+                if (tagHolder.tag.getTypeId() == Tag.TYPE_NOUN) {
                     tagHolder.textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
                 } else {
                     tagHolder.textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.purple), PorterDuff.Mode.SRC_IN);

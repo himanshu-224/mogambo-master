@@ -48,7 +48,8 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <org.apmem.tools.layouts.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/flow_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

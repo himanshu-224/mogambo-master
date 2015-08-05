@@ -159,4 +159,15 @@ public class Post {
     public void setCountry(String country) {
         this.country = country;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        Post post = (Post) o;
+        return postId.equals(post.getPostId());
+    }
+
+    @Override
+    public int hashCode() {
+        return postId.hashCode();
+    }
 }

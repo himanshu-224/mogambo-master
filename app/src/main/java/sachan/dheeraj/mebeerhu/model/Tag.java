@@ -4,6 +4,9 @@ package sachan.dheeraj.mebeerhu.model;
  * Created by naveen.goel on 12/07/15.
  */
 public class Tag {
+    public static final int TYPE_NOUN = 2;
+    public static final int TYPE_ADJECTIVE = 1;
+
     private String tagName;
     private String tagMeaning;
     private int        typeId;

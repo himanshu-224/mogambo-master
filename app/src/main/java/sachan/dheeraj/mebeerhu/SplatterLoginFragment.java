@@ -43,6 +43,7 @@ public class SplatterLoginFragment extends Fragment {
         loginInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loginInButton.setEnabled(false);
                 final HashMap<String, String> stringStringHashMap = new HashMap<String, String>();
                 stringStringHashMap.put("username", userNameEditText.getText().toString());
                 stringStringHashMap.put("password", passwordEditText.getText().toString());

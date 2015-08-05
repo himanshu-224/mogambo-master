@@ -1,6 +1,7 @@
 package sachan.dheeraj.mebeerhu;
 
 import android.app.Activity;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -59,32 +60,37 @@ public class PostListFragment extends Fragment {
                             convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_post, null);
                             postViewHolder = PostViewHolder.getInstance(convertView);
                             convertView.setTag(postViewHolder);
-                        }else {
+                        } else {
                             postViewHolder = (PostViewHolder) convertView.getTag();
                         }
                         postViewHolder.getPosterNameTextView().setText(post.getParentUsername());
-                        if(post.getAccompaniedWith() != null && post.getAccompaniedWith().size() > 0){
+                        if (post.getAccompaniedWith() != null && post.getAccompaniedWith().size() > 0) {
                             postViewHolder.getWithTextView().setText("with");
-                            postViewHolder.getxOthersTextView().setText(post.getAccompaniedWith().size()+ " others");
-                        }else{
+                            postViewHolder.getxOthersTextView().setText(post.getAccompaniedWith().size() + " others");
+                        } else {
                             postViewHolder.getWithTextView().setVisibility(View.GONE);
                             postViewHolder.getxOthersTextView().setVisibility(View.GONE);
                         }
 
-                        if(post.getTagList() != null && post.getTagList().size() > 0){
-                            for(Tag tag :post.getTagList()){
+                        postViewHolder.getLocationTextView().setText(post.getPostLocation());
+                        postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount() + " likes");
+                        postViewHolder.setPost(post);
+                        postViewHolder.initAndLoadImages(getContext());
+                        postViewHolder.getFlowLayoutFull().removeAllViews();
+                        if (post.getTagList() != null && post.getTagList().size() > 0) {
+                            for (Tag tag : post.getTagList()) {
                                 View view1 = getLayoutInflater(null).inflate(R.layout.list_item_tag, null);
                                 TextView textView = (TextView) view1.findViewById(R.id.tv);
                                 textView.setText(tag.getTagName());
-                                postViewHolder.getFlowLayout().addView(view1);
+                                textView.setTextColor(getActivity().getResources().getColor(R.color.white));
+                                if (tag.getTypeId() == Tag.TYPE_NOUN) {
+                                    textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+                                } else {
+                                    textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.purple), PorterDuff.Mode.SRC_IN);
+                                }
+                                postViewHolder.getFlowLayoutFull().addView(view1);
                             }
                         }
-
-                        postViewHolder.getLocationTextView().setText(post.getPostLocation());
-                        postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount()+" likes");
-                        postViewHolder.setPost(post);
-                        postViewHolder.loadImages(getContext());
-
                         return convertView;
                     }
                 };
