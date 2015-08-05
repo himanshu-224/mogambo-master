@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Hashtable;
 
 /**
