@@ -9,8 +9,8 @@ public class Tag {
 
     private String tagName;
     private String tagMeaning;
-    private int        typeId;
-    private boolean     approved;
+    private int typeId;
+    private boolean approved;
 
     public String getTagName() {
         return tagName;
@@ -54,4 +54,13 @@ public class Tag {
     public int hashCode() {
         return tagName.hashCode();
     }
+
+    public Tag(String tagName, String tagMeaning, int typeId, boolean approved) {
+        this.tagName = tagName;
+        this.tagMeaning = tagMeaning;
+        this.typeId = typeId;
+        this.approved = approved;
+    }
+
+    public Tag(){}
 }

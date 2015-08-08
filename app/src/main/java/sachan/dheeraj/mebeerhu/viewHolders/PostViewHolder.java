@@ -87,7 +87,7 @@ public class PostViewHolder {
         this.post = post;
     }
 
-    public static PostViewHolder getInstance(View view) {
+    public static PostViewHolder getInstance(View view,Activity activity) {
         final PostViewHolder postViewHolder = new PostViewHolder();
         postViewHolder.profileCircleImageView = (CircleImageView) view.findViewById(R.id.circular_image);
         postViewHolder.posterNameTextView = (TextView) view.findViewById(R.id.poster_name);
@@ -100,16 +100,31 @@ public class PostViewHolder {
         postViewHolder.likesTextView = (TextView) view.findViewById(R.id.likes);
         postViewHolder.flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
         postViewHolder.moreTextView = (TextView) view.findViewById(R.id.more);
-        postViewHolder.setMoreOnClickListener();
+        postViewHolder.setMoreOnClickListener(activity);
         return postViewHolder;
     }
 
-    private void setMoreOnClickListener() {
+    private void setMoreOnClickListener(final Activity activity) {
         moreTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 moreTextView.setVisibility(View.GONE);
-                flowLayout.showAll();
+                flowLayout.removeAllViews();
+                flowLayout.setMaxLinesSupported(Integer.MAX_VALUE);
+                if (post.getTagList() != null && post.getTagList().size() > 0) {
+                    for (Tag tag : post.getTagList()) {
+                        View view1 = activity.getLayoutInflater().inflate(R.layout.list_item_tag, null);
+                        TextView textView = (TextView) view1.findViewById(R.id.tv);
+                        textView.setText(tag.getTagName());
+                        textView.setTextColor(activity.getResources().getColor(R.color.white));
+                        if (tag.getTypeId() == Tag.TYPE_NOUN) {
+                            textView.getBackground().setColorFilter(activity.getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+                        } else {
+                            textView.getBackground().setColorFilter(activity.getResources().getColor(R.color.purple), PorterDuff.Mode.SRC_IN);
+                        }
+                        flowLayout.addView(view1);
+                    }
+                }
             }
         });
     }
@@ -127,7 +142,7 @@ public class PostViewHolder {
 
     public void loadTagsInThreeLines(final Activity activity) {
         flowLayout.removeAllViews();
-        flowLayout.setMaxLinesSupported(3);
+        flowLayout.setMaxLinesSupported(2);
         if (post.getTagList() != null && post.getTagList().size() > 0) {
             for (Tag tag : post.getTagList()) {
                 View view1 = activity.getLayoutInflater().inflate(R.layout.list_item_tag, null);

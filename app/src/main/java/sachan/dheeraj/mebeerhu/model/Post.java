@@ -160,6 +160,28 @@ public class Post {
         this.country = country;
     }
 
+    public Post(){}
+
+    public Post(String postId, String username, String parentUsername, String postLocation, Long timestamp, String priceCurrency, Long postPrice, String postImageURL, Long locationGeoCode, Long aggregatedVoteCount, Long retweetCount, ArrayList<Tag> tagList, ArrayList<User> accompaniedWith, String city, String state, String country, String userImageURL) {
+        this.postId = postId;
+        this.username = username;
+        this.parentUsername = parentUsername;
+        this.postLocation = postLocation;
+        this.timestamp = timestamp;
+        this.priceCurrency = priceCurrency;
+        this.postPrice = postPrice;
+        this.postImageURL = postImageURL;
+        this.locationGeoCode = locationGeoCode;
+        this.aggregatedVoteCount = aggregatedVoteCount;
+        this.retweetCount = retweetCount;
+        this.tagList = tagList;
+        this.accompaniedWith = accompaniedWith;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+        this.userImageURL = userImageURL;
+    }
+
     @Override
     public boolean equals(Object o) {
         Post post = (Post) o;

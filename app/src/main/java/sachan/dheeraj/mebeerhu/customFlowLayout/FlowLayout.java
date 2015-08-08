@@ -28,6 +28,7 @@ public class FlowLayout extends ViewGroup {
     private HashSet<View> goneViewHashSet = new HashSet<View>();
 
     public void showAll() {
+        maxLinesSupported = -1;
         for (View view : goneViewHashSet) {
             view.setVisibility(VISIBLE);
         }

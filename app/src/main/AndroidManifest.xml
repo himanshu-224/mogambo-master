@@ -5,6 +5,9 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
     <meta-data
         android:name="com.google.android.gms.version"
@@ -39,19 +42,24 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".TestA"
-            android:label="@string/title_activity_test" >
-        </activity>
+            android:label="@string/title_activity_test" />
         <activity
             android:name=".GoogleActivity"
-            android:label="@string/title_activity_test" >
-        </activity>
+            android:label="@string/title_activity_test" />
         <activity
             android:name=".CreatePostActivity"
             android:label="@string/title_activity_create_post" >
-       <!--     <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+
+            <!--
+                     <intent-filter>
+                     <action android:name="android.intent.action.MAIN" />
+                     <category android:name="android.intent.category.LAUNCHER" />
+                 </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".CreatePostActivityNew"
+            android:label="@string/title_activity_create_post_activity_new" >
         </activity>
     </application>
 

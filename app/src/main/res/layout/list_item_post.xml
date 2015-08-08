@@ -96,11 +96,11 @@
         android:layout_height="wrap_content">
 
         <sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout
-            android:id="@+id/flow_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:gravity="left" />
+        android:id="@+id/flow_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:gravity="left" />
 
         <TextView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/more"

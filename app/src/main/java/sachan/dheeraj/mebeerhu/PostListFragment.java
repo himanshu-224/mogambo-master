@@ -1,7 +1,11 @@
 package sachan.dheeraj.mebeerhu;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
+
 import sachan.dheeraj.mebeerhu.model.Feeds;
 import sachan.dheeraj.mebeerhu.model.Post;
 import sachan.dheeraj.mebeerhu.viewHolders.PostViewHolder;
@@ -30,6 +37,15 @@ public class PostListFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
 
+        FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.button);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),CreatePostActivityNew.class);
+                startActivity(intent);
+            }
+        });
+
         new AsyncTask<Void, Void, Feeds>() {
 
             @Override
@@ -46,7 +62,7 @@ public class PostListFragment extends Fragment {
                         PostViewHolder postViewHolder;
                         if (convertView == null) {
                             convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_post, null);
-                            postViewHolder = PostViewHolder.getInstance(convertView);
+                            postViewHolder = PostViewHolder.getInstance(convertView,getActivity());
                             convertView.setTag(postViewHolder);
                         } else {
                             postViewHolder = (PostViewHolder) convertView.getTag();
@@ -77,6 +93,7 @@ public class PostListFragment extends Fragment {
 
             @Override
             protected Feeds doInBackground(Void... params) {
+                if(true) return Feeds.feedsBuilder();
                 String feedString = HttpAgent.get(UrlConstants.GET_FEED, getActivity());
                 Feeds feeds = JsonHandler.parseNormal(feedString, Feeds.class);
                 if (feeds == null) {
