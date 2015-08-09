@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewDebug;
@@ -86,6 +87,14 @@ public class FlowLayout extends ViewGroup {
                 continue;
             }
 
+            if (maxLinesSupported != -1 && lines.size() <= maxLinesSupported) {
+                Log.e("","");
+            } else {
+                child.setVisibility(GONE);
+                goneViewHashSet.add(child);
+                continue;
+            }
+
             final LayoutParams lp = (LayoutParams) child.getLayoutParams();
 
             child.measure(
@@ -101,12 +110,7 @@ public class FlowLayout extends ViewGroup {
                 lp.setLength(child.getMeasuredHeight());
                 lp.setThickness(child.getMeasuredWidth());
             }
-            if (maxLinesSupported != -1 && lines.size() <= maxLinesSupported) {
-                //everything is fine
-            } else {
-                child.setVisibility(GONE);
-                goneViewHashSet.add(child);
-            }
+
             boolean newLine = lp.newLine || (modeLength != MeasureSpec.UNSPECIFIED && !currentLine.canFit(child));
             if (newLine) {
                 currentLine = new LineDefinition(controlMaxLength, config);

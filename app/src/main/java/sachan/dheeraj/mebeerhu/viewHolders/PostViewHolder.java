@@ -87,7 +87,7 @@ public class PostViewHolder {
         this.post = post;
     }
 
-    public static PostViewHolder getInstance(View view,Activity activity) {
+    public static PostViewHolder getInstance(View view, Activity activity) {
         final PostViewHolder postViewHolder = new PostViewHolder();
         postViewHolder.profileCircleImageView = (CircleImageView) view.findViewById(R.id.circular_image);
         postViewHolder.posterNameTextView = (TextView) view.findViewById(R.id.poster_name);
@@ -101,6 +101,7 @@ public class PostViewHolder {
         postViewHolder.flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
         postViewHolder.moreTextView = (TextView) view.findViewById(R.id.more);
         postViewHolder.setMoreOnClickListener(activity);
+        postViewHolder.moreTextView.setVisibility(View.GONE);
         return postViewHolder;
     }
 
@@ -141,6 +142,7 @@ public class PostViewHolder {
     }
 
     public void loadTagsInThreeLines(final Activity activity) {
+        moreTextView.setVisibility(View.GONE);
         flowLayout.removeAllViews();
         flowLayout.setMaxLinesSupported(2);
         if (post.getTagList() != null && post.getTagList().size() > 0) {
@@ -157,11 +159,19 @@ public class PostViewHolder {
                 flowLayout.addView(view1);
             }
         }
-        if (flowLayout.isSomeThingHidden()) {
-            moreTextView.setVisibility(View.VISIBLE);
-        } else {
-            moreTextView.setVisibility(View.GONE);
-        }
+
+        ViewTreeObserver vto = flowLayout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                flowLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                if (flowLayout.isSomeThingHidden()) {
+                    moreTextView.setVisibility(View.VISIBLE);
+                } else {
+                    moreTextView.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private class ImageLoaderAsyncTask extends AsyncTask<Void, Void, Void> {
