@@ -112,7 +112,7 @@ public final class JsonHandler {
         return null;
     }
 
-    public static String stringify(Object object) {
+    public static String stringifyToUnderScored(Object object) {
         try {
             return underScoreToCamelCaseMapper.writeValueAsString(object);
 

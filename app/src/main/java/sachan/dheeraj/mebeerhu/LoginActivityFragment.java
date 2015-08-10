@@ -87,6 +87,7 @@ public class LoginActivityFragment extends Fragment {
             public void onSuccess(LoginResult loginResult) {
                 Log.i(TAG, "success");
                 LoginResult loginResult1 = loginResult;
+                String k = JsonHandler.stringifyNormal(loginResult);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SelectTagsFragment()).commit();
             }
 
