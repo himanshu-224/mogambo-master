@@ -68,19 +68,19 @@ public class PostListFragment extends Fragment implements GoogleApiClient.Connec
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent(getActivity(),CreatePostActivityNew.class);
-                startActivity(intent);*/
+                Intent intent = new Intent(getActivity(),CreatePostActivityNew.class);
+                startActivity(intent);
               /*  try {
                     PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                     startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
                 }catch (Exception e){
                     Log.e("", "");
                 }*/
-                 mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+              /*   mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                         .addApi(Places.GEO_DATA_API)
                         .enableAutoManage(getActivity(), 0, PostListFragment.this)
                         .addConnectionCallbacks(PostListFragment.this)
-                        .build();
+                        .build();*/
             }
         });
 
