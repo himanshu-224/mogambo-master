@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
 
     <application
         android:allowBackup="true"
@@ -61,6 +63,12 @@
             android:name=".CreatePostActivityNew"
             android:label="@string/title_activity_create_post_activity_new" >
         </activity>
+
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyARk4d7gBrh_WKs7ADeJvRnp54pnM3Npd8"/>
+
     </application>
 
 </manifest>
