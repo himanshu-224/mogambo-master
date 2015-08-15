@@ -151,7 +151,7 @@ public class PostListFragment extends Fragment implements GoogleApiClient.Connec
         Log.e("","");
         final PendingResult<AutocompletePredictionBuffer> results =
                 Places.GeoDataApi
-                        .getAutocompletePredictions(mGoogleApiClient, "bangalore paratha",
+                        .getAutocompletePredictions(mGoogleApiClient, "paratha plaza koramangla",
                                 new LatLngBounds(
                                         new LatLng(-90,-180), new LatLng(90, 180)), null);
         // Wait for predictions, set the timeout.
