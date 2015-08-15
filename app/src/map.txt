@@ -1,0 +1,23 @@
+      /*  int PLACE_PICKER_REQUEST = 1;
+        try {
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            startActivityForResult(builder.build(GooglePlacesActivity.this), PLACE_PICKER_REQUEST);
+        }catch (Exception e){
+            Log.e("","");
+        }*/
+
+        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+                .getCurrentPlace(new GoogleApiClient.Builder(GooglePlacesActivity.this)
+                        .addApi(Places.PLACE_DETECTION_API)
+                        .build(), null);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+            @Override
+            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                    Log.i("", String.format("Place '%s' has likelihood: %g",
+                            placeLikelihood.getPlace().getName(),
+                            placeLikelihood.getLikelihood()));
+                }
+                likelyPlaces.release();
+            }
+        });
