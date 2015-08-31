@@ -92,5 +92,6 @@
         <item>Antarctica</item>
     </string-array>
     <string name="title_activity_create_post_activity_new">CreatePostActivityNew</string>
+    <string name="title_activity_place_suggestion">PlaceSuggestionActivity</string>
 
 </resources>

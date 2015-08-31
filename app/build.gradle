@@ -11,6 +11,8 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        multiDexEnabled = true
+
     }
     buildTypes {
         release {
@@ -41,4 +43,5 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'com.facebook.android:facebook-android-sdk:4.0.0'
     compile 'com.getbase:floatingactionbutton:1.10.0'
+    compile 'com.google.maps:google-maps-services:0.1.7'
 }

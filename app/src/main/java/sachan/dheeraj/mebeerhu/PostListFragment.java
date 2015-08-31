@@ -35,7 +35,7 @@ import sachan.dheeraj.mebeerhu.model.Post;
 import sachan.dheeraj.mebeerhu.viewHolders.PostViewHolder;
 
 
-public class PostListFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
+public class PostListFragment extends Fragment{
     public static final int PLACE_PICKER_REQUEST = 100;
 
     private ListView listView;
@@ -54,7 +54,7 @@ public class PostListFragment extends Fragment implements GoogleApiClient.Connec
             }
         }
     }
-    GoogleApiClient mGoogleApiClient;
+
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post_list, container, false);
@@ -76,11 +76,6 @@ public class PostListFragment extends Fragment implements GoogleApiClient.Connec
                 }catch (Exception e){
                     Log.e("", "");
                 }*/
-              /*   mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                        .addApi(Places.GEO_DATA_API)
-                        .enableAutoManage(getActivity(), 0, PostListFragment.this)
-                        .addConnectionCallbacks(PostListFragment.this)
-                        .build();*/
             }
         });
 
@@ -93,39 +88,43 @@ public class PostListFragment extends Fragment implements GoogleApiClient.Connec
 
             @Override
             protected void onPostExecute(Feeds feeds) {
-                ArrayAdapter<Post> postArrayAdapter = new ArrayAdapter<Post>(getActivity(), 0, feeds) {
-                    @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
-                        Post post = getItem(position);
-                        PostViewHolder postViewHolder;
-                        if (convertView == null) {
-                            convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_post, null);
-                            postViewHolder = PostViewHolder.getInstance(convertView, getActivity());
-                            convertView.setTag(postViewHolder);
-                        } else {
-                            postViewHolder = (PostViewHolder) convertView.getTag();
-                        }
-                        postViewHolder.getPosterNameTextView().setText(post.getParentUsername());
-                        if (post.getAccompaniedWith() != null && post.getAccompaniedWith().size() > 0) {
-                            postViewHolder.getWithTextView().setText("with");
-                            postViewHolder.getxOthersTextView().setText(post.getAccompaniedWith().size() + " others");
-                        } else {
-                            postViewHolder.getWithTextView().setVisibility(View.GONE);
-                            postViewHolder.getxOthersTextView().setVisibility(View.GONE);
-                        }
+                try {
+                    ArrayAdapter<Post> postArrayAdapter = new ArrayAdapter<Post>(getActivity(), 0, feeds) {
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            Post post = getItem(position);
+                            PostViewHolder postViewHolder;
+                            if (convertView == null) {
+                                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_post, null);
+                                postViewHolder = PostViewHolder.getInstance(convertView, getActivity());
+                                convertView.setTag(postViewHolder);
+                            } else {
+                                postViewHolder = (PostViewHolder) convertView.getTag();
+                            }
+                            postViewHolder.getPosterNameTextView().setText(post.getParentUsername());
+                            if (post.getAccompaniedWith() != null && post.getAccompaniedWith().size() > 0) {
+                                postViewHolder.getWithTextView().setText("with");
+                                postViewHolder.getxOthersTextView().setText(post.getAccompaniedWith().size() + " others");
+                            } else {
+                                postViewHolder.getWithTextView().setVisibility(View.GONE);
+                                postViewHolder.getxOthersTextView().setVisibility(View.GONE);
+                            }
 
-                        postViewHolder.getLocationTextView().setText(post.getPostLocation());
-                        postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount() + " likes");
-                        postViewHolder.setPost(post);
-                        postViewHolder.loadTagsInThreeLines(getActivity());
-                        postViewHolder.initAndLoadImages(getContext());
-                        return convertView;
-                    }
-                };
+                            postViewHolder.getLocationTextView().setText(post.getPostLocation());
+                            postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount() + " likes");
+                            postViewHolder.setPost(post);
+                            postViewHolder.loadTagsInThreeLines(getActivity());
+                            postViewHolder.initAndLoadImages(getContext());
+                            return convertView;
+                        }
+                    };
 
-                listView.setAdapter(postArrayAdapter);
-                listView.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
+                    listView.setAdapter(postArrayAdapter);
+                    listView.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                }catch (Exception e){
+                    Log.e("","");
+                }
 
             }
 
@@ -145,62 +144,4 @@ public class PostListFragment extends Fragment implements GoogleApiClient.Connec
         return view;
     }
 
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        Log.e("","");
-        final PendingResult<AutocompletePredictionBuffer> results =
-                Places.GeoDataApi
-                        .getAutocompletePredictions(mGoogleApiClient, "paratha plaza koramangla",
-                                new LatLngBounds(
-                                        new LatLng(-90,-180), new LatLng(90, 180)), null);
-        // Wait for predictions, set the timeout.
-        new AsyncTask<Void,Void,Void>() {
-            AutocompletePredictionBuffer autocompletePredictions;
-            @Override
-            protected Void doInBackground(Void... params) {
-                 autocompletePredictions = results.await(60, TimeUnit.SECONDS);
-            return null;
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                final com.google.android.gms.common.api.Status status = autocompletePredictions.getStatus();
-                if (!status.isSuccess()) {
-                    Toast.makeText(getActivity(), "Error: " + status.toString(),
-                            Toast.LENGTH_SHORT).show();
-                    Log.e("", "Error getting place predictions: " + status
-                            .toString());
-                    autocompletePredictions.release();
-                    return;
-                }
-                Iterator<AutocompletePrediction> iterator = autocompletePredictions.iterator();
-                int k = autocompletePredictions.getCount();
-                ArrayList resultList = new ArrayList<>(autocompletePredictions.getCount());
-                while (iterator.hasNext()) {
-                    AutocompletePrediction prediction = iterator.next();
-                    String s = prediction.getDescription();
-                    Log.e("","");
-                }
-                // Buffer release
-                autocompletePredictions.release();
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.e("","");
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e("","");
-    }
 }
