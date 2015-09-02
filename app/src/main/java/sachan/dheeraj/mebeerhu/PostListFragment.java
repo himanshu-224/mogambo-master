@@ -38,6 +38,7 @@ import sachan.dheeraj.mebeerhu.viewHolders.PostViewHolder;
 public class PostListFragment extends Fragment{
     public static final int PLACE_PICKER_REQUEST = 100;
 
+    private static final String LOG_TAG = PostListFragment.class.getSimpleName();
     private ListView listView;
     private ProgressBar progressBar;
 
@@ -45,6 +46,8 @@ public class PostListFragment extends Fragment{
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.v(LOG_TAG, String.format("onActivityResult, requestCode = %d, result = %d",
+                requestCode, resultCode));
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 Place place = PlacePicker.getPlace(data, getActivity());
@@ -57,6 +60,7 @@ public class PostListFragment extends Fragment{
 
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "onCreateView for PostListFragment");
         View view = inflater.inflate(R.layout.fragment_post_list, container, false);
         listView = (ListView) view.findViewById(R.id.list_view);
         progressBar = (ProgressBar) view.findViewById(R.id.loader);
@@ -123,7 +127,7 @@ public class PostListFragment extends Fragment{
                     listView.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.GONE);
                 }catch (Exception e){
-                    Log.e("","");
+                    Log.e(LOG_TAG,"While displaying Feeds, Exception: ",e);
                 }
 
             }

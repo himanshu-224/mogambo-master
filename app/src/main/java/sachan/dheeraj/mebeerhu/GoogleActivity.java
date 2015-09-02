@@ -32,7 +32,7 @@ public class GoogleActivity extends ActionBarActivity  implements
 
     private static final String SERVER_CLIENT_ID = "722131418756-jhluff14bo2216cucfl691f92qvvhf1n.apps.googleusercontent.com";
 
-    private static final String TAG = GoogleActivity.class.getSimpleName();
+    private static final String LOG_TAG = GoogleActivity.class.getSimpleName();
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -112,7 +112,7 @@ public class GoogleActivity extends ActionBarActivity  implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.e(TAG,"connected");
+        Log.e(LOG_TAG,"connected");
      /*   Plus.PeopleApi.loadVisible(mGoogleApiClient, null)
                 .setResultCallback(this);*/
         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
@@ -133,17 +133,17 @@ public class GoogleActivity extends ActionBarActivity  implements
                     String token = GoogleAuthUtil.getToken(getApplicationContext(), account, scopes);
                     return token;
                 } catch (IOException e) {
-                    Log.e(TAG, "Error retrieving ID token.", e);
+                    Log.e(LOG_TAG, "Error retrieving ID token.", e);
                     return null;
                 } catch (GoogleAuthException e) {
-                    Log.e(TAG, "Error retrieving ID token.", e);
+                    Log.e(LOG_TAG, "Error retrieving ID token.", e);
                     return null;
                 }
             }
 
             @Override
             protected void onPostExecute(String result) {
-                Log.i(TAG, "ID token: " + result);
+                Log.i(LOG_TAG, "ID token: " + result);
                 if (result != null) {
                     // Successfully retrieved ID Token
                     // ...
@@ -163,7 +163,7 @@ public class GoogleActivity extends ActionBarActivity  implements
 
     @Override
     public void onConnectionSuspended(int i)  {
-        Log.e(TAG,"connection suspended");
+        Log.e(LOG_TAG,"connection suspended");
     }
 
     @Override
@@ -190,7 +190,7 @@ public class GoogleActivity extends ActionBarActivity  implements
                 mGoogleApiClient.connect();
             }
         }else{
-            Log.e(TAG,"can not sign in");
+            Log.e(LOG_TAG,"can not sign in");
         }
     }
 }

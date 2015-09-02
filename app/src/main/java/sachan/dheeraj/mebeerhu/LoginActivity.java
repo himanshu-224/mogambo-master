@@ -20,11 +20,13 @@ import java.security.NoSuchAlgorithmException;
 
 
 public class LoginActivity extends ActionBarActivity {
-    private static final String TAG = LoginActivity.class.getSimpleName();
+    private static final String LOG_TAG = LoginActivity.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v(LOG_TAG, "Initializing app, OnCreate for LoginActivity called" );
+
         getSupportActionBar().hide();
         FacebookSdk.sdkInitialize(getApplicationContext());
         try {
@@ -36,9 +38,9 @@ public class LoginActivity extends ActionBarActivity {
                 Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG,"caught exception",e);
+            Log.e(LOG_TAG,"Caught Package Manager exception: ",e);
         } catch (NoSuchAlgorithmException e) {
-            Log.e(TAG,"caught exception",e);
+            Log.e(LOG_TAG,"Caught Algorithm exception: ",e);
         }
         setContentView(R.layout.activity_login);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new LoginActivityFragment()).commit();

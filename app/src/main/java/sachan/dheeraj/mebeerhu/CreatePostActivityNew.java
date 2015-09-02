@@ -62,10 +62,13 @@ import sachan.dheeraj.mebeerhu.model.Tag;
 public class CreatePostActivityNew extends ActionBarActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 100;
 
+    private final String LOG_TAG = ActionBarActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.v(LOG_TAG, "onCreate for CreatePost Activity");
         setContentView(R.layout.activity_create_post_activity_new);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -105,6 +108,8 @@ public class CreatePostActivityNew extends ActionBarActivity {
      */
     public static class PlaceholderFragment extends Fragment {
 
+        public final String LOG_TAG = PlaceholderFragment.class.getSimpleName();
+
         private ImageView mainImageView;
         private EditText editText;
 
@@ -116,6 +121,7 @@ public class CreatePostActivityNew extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            Log.v(LOG_TAG, "On onCreateView for PlaceHolder Fragment ");
             View rootView = inflater.inflate(R.layout.fragment_create_post_activity_new, container, false);
             mainImageView = (ImageView) rootView.findViewById(R.id.main_image);
             editText = (EditText) rootView.findViewById(R.id.edit_text);
@@ -134,6 +140,7 @@ public class CreatePostActivityNew extends ActionBarActivity {
         @Override
         public void onResume() {
             super.onResume();
+            Log.v(LOG_TAG, "On resume for PlaceHolder Fragment");
             if (!picTaken) {
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -144,7 +151,10 @@ public class CreatePostActivityNew extends ActionBarActivity {
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            Log.v(LOG_TAG, String.format("onActivityResult, requestCode = %d, result = %d",
+                    requestCode, resultCode));
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+                Log.v(LOG_TAG, "IMAGE CAPTURE successful");
                 picTaken = true;
                 Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
@@ -164,6 +174,8 @@ public class CreatePostActivityNew extends ActionBarActivity {
 
     public static class TagFillerFragment extends Fragment {
 
+        public final String LOG_TAG = TagFillerFragment.class.getSimpleName();
+
         private AutoCompleteTextView autoCompleteTextView;
         private LinearLayout linearLayout;
         private HorizontalScrollView horizontalScrollView;
@@ -174,6 +186,8 @@ public class CreatePostActivityNew extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
+            Log.v(LOG_TAG, "On onCreateView for TagFillerFragment");
             View rootView = inflater.inflate(R.layout.fragment_tag_filler, container, false);
             autoCompleteTextView = (AutoCompleteTextView) rootView.findViewById(R.id.auto_complete);
             linearLayout = (LinearLayout) rootView.findViewById(R.id.linear_layout);

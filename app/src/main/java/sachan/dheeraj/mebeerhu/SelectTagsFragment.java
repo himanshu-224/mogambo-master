@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import sachan.dheeraj.mebeerhu.model.TagArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class SelectTagsFragment extends Fragment {
+    private final String LOG_TAG = SelectTagsFragment.class.getSimpleName();
     private HashSet<Tag> tagHashSet = new HashSet<Tag>();
     private TextView continueTextView;
     Typeface typeface;
@@ -38,6 +40,7 @@ public class SelectTagsFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "onCreateView for SelectTags Fragment");
         typeface = Typeface.createFromAsset(getActivity().getBaseContext().getResources().getAssets(), "gothic.ttf");
         final View view = inflater.inflate(R.layout.fragment_follow_tags, container, false);
         ((TextView) view.findViewById(R.id.header)).setTypeface(typeface);
@@ -52,6 +55,8 @@ public class SelectTagsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                Log.v(LOG_TAG, "Continue button clicked, no of tags selected = " + tagHashSet.size() );
+
                 if(tagHashSet.size() <= 4){
                     return;
                 }
@@ -63,16 +68,20 @@ public class SelectTagsFragment extends Fragment {
                         for (Tag tag : tagHashSet) {
                             stringArrayList.add(tag.getTagName());
                         }
+                        Log.v(LOG_TAG, "Sending User Selected Tags to server");
                         String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL, JsonHandler.stringifyNormal(stringArrayList), getActivity());
                         if (data != null) {
+                            Log.v(LOG_TAG, "Non-null response from server for saving tags");
                             return true;
                         }
+                        Log.v(LOG_TAG, "Server response null, couldn't save tags at server");
                         return false;
                     }
 
                     @Override
                     protected void onPostExecute(Boolean aBoolean) {
                         if (aBoolean) {
+                            Log.d(LOG_TAG, "User Tags saved at server");
                             Toast.makeText(getActivity(), "saved", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -99,16 +108,19 @@ public class SelectTagsFragment extends Fragment {
             @Override
             protected void onPostExecute(TagArrayList tagArrayList) {
                 if (tagArrayList != null) {
+                    Log.v(LOG_TAG, "Temporary TAGs list size = " + tagArrayList.size());
                         for (Tag tag : tagArrayList) {
                             View view1 = inflater.inflate(R.layout.list_item_tag, null);
                             TextView textView = (TextView) view1.findViewById(R.id.tv);
                             FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.frame_layout);
                             textView.setText(tag.getTagName());
+                            Log.v(LOG_TAG, "Adding TAG : " + tag.getTagName());
                             textView.setTypeface(typeface);
                             view1.setOnClickListener(ON_CLICK_LISTENER);
                             view1.setTag(new TagHolder(tag, textView));
                             flowLayout.addView(view1);
                         }
+                    Log.v(LOG_TAG, "Tags fetched from server, enabled continue button" );
                     continueTextView.setEnabled(true);
                 }
             }
@@ -124,10 +136,12 @@ public class SelectTagsFragment extends Fragment {
         public void onClick(View v) {
             TagHolder tagHolder = (TagHolder) v.getTag();
             if (tagHashSet.contains(tagHolder.tag)) {
+                Log.v(LOG_TAG, String.format("Tag %s already selected, de-selecting it", tagHolder.tag.getTagName()) );
                 tagHolder.textView.setTextColor(getActivity().getResources().getColor(R.color.purple));
                 tagHashSet.remove(tagHolder.tag);
                 tagHolder.textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
             } else {
+                Log.v(LOG_TAG, String.format("Selected tag: %s, type %d", tagHolder.tag.getTagName(), tagHolder.tag.getTypeId()));
                 tagHolder.textView.setTextColor(getActivity().getResources().getColor(R.color.white));
                 tagHashSet.add(tagHolder.tag);
                 if (tagHolder.tag.getTypeId() == Tag.TYPE_NOUN) {
@@ -137,8 +151,10 @@ public class SelectTagsFragment extends Fragment {
                 }
             }
             if (tagHashSet.size() > 4) {
+                Log.v(LOG_TAG, "Min req tags selected, enable continue button" );
                 continueTextView.setBackground(getResources().getDrawable(R.drawable.button_smooth));
             } else {
+                Log.v(LOG_TAG, "Min req tags not selected, num selected tags = " + tagHashSet.size());
                 continueTextView.setBackground(getResources().getDrawable(R.drawable.button_smooth_tatti));
             }
         }

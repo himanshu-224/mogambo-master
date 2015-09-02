@@ -2,6 +2,7 @@ package sachan.dheeraj.mebeerhu;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -10,8 +11,11 @@ import android.widget.AutoCompleteTextView;
 
 public class CreatePostActivity extends ActionBarActivity {
 
+    private final static String LOG_TAG = CreatePostActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "onCreate for CreatePostActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_post);
 

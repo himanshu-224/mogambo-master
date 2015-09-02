@@ -4,6 +4,7 @@ package sachan.dheeraj.mebeerhu;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,8 @@ public class SplatterLoginFragment extends Fragment {
     private EditText userNameEditText, passwordEditText;
     private Button loginInButton;
 
+    private static final String LOG_TAG = SplatterLoginFragment.class.getSimpleName();
+
     public SplatterLoginFragment() {
         // Required empty public constructor
     }
@@ -34,6 +37,8 @@ public class SplatterLoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.v(LOG_TAG, "onCreateView for SplatterLoginFragment");
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         loginInButton = (Button) view.findViewById(R.id.login_button);
 
@@ -43,6 +48,7 @@ public class SplatterLoginFragment extends Fragment {
         loginInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.v(LOG_TAG, "Login button clicked, attempting to login");
                 loginInButton.setEnabled(false);
                 final HashMap<String, String> stringStringHashMap = new HashMap<String, String>();
                 stringStringHashMap.put("username", userNameEditText.getText().toString());
@@ -52,20 +58,25 @@ public class SplatterLoginFragment extends Fragment {
                     @Override
                     protected Boolean doInBackground(Void... params) {
                         if (true) return true;
+                        Log.d(LOG_TAG, "Posted login information to server");
                         String reply = HttpAgent.postGenericData(UrlConstants.LOGIN_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
                         AccessTokenCredentials accessTokenCredentials = JsonHandler.parseNormal(reply, AccessTokenCredentials.class);
                         if (accessTokenCredentials != null) {
+                            Log.v(LOG_TAG, "Sign-in reply received, getting authentication token");
                             HttpAgent.tokenValue = accessTokenCredentials.getToken();
                             return true;
                         }
+                        Log.v(LOG_TAG, "Access credentials returned as Null, login unsuccessful");
                         return false;
                     }
 
                     @Override
                     protected void onPostExecute(Boolean aBoolean) {
                         if (aBoolean) {
+                            Log.d(LOG_TAG, "Log-in successful, starting subsequent activities");
                             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new PostListFragment()).commit();
                         } else {
+                            Log.d(LOG_TAG, "Log-in unsuccessful");
                             Toast.makeText(getActivity(), "Something fucked up", Toast.LENGTH_SHORT).show();
                         }
                     }

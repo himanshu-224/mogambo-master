@@ -30,7 +30,7 @@ import com.facebook.login.widget.LoginButton;
  */
 public class LoginActivityFragment extends Fragment {
     //ga0RGNYHvNM5d0SLGQfpQWAPGJ8=
-    private static final String TAG = LoginActivityFragment.class.getSimpleName();
+    private static final String LOG_TAG = LoginActivityFragment.class.getSimpleName();
 
     private CallbackManager callbackManager;
     private Button signButton;
@@ -49,6 +49,7 @@ public class LoginActivityFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "OnCreateView for LoginActivity Fragment");
         View view = inflater.inflate(R.layout.fragment_landing, container, false);
         loginButtonFaceBook = (LoginButton) view.findViewById(R.id.login_button);
         signButton = (Button) view.findViewById(R.id.signup);
@@ -63,6 +64,7 @@ public class LoginActivityFragment extends Fragment {
        signButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.v(LOG_TAG, "Signup button clicked, switching to SignUp fragment");
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SignUpFragment()).commit();
             }
         });
@@ -70,6 +72,7 @@ public class LoginActivityFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.v(LOG_TAG, "Login button clicked, switching to SplatterLogin fragment");
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SplatterLoginFragment()).commit();
             }
         });
@@ -77,6 +80,7 @@ public class LoginActivityFragment extends Fragment {
         googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.v(LOG_TAG, "Sign-in with Google clicked, switching to Google activity");
                 Intent intent = new Intent(getActivity(),GoogleActivity.class);
                 getActivity().startActivity(intent);
             }
@@ -85,7 +89,7 @@ public class LoginActivityFragment extends Fragment {
         loginButtonFaceBook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.i(TAG, "success");
+                Log.i(LOG_TAG, "Sign-in with Facebook successful");
                 LoginResult loginResult1 = loginResult;
                 String k = JsonHandler.stringifyNormal(loginResult);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SelectTagsFragment()).commit();
@@ -93,13 +97,13 @@ public class LoginActivityFragment extends Fragment {
 
             @Override
             public void onCancel() {
-                Log.e(TAG, "cancel");
+                Log.i(LOG_TAG, "Facebook login operation cancelled");
             }
 
             @Override
             public void onError(FacebookException exception) {
                 Exception exception1 = exception;
-                Log.e(TAG, "caught exception", exception);
+                Log.e(LOG_TAG, "In Facebook Sign-in, got exception: ", exception);
             }
         });
         return view;
@@ -108,6 +112,7 @@ public class LoginActivityFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.v(LOG_TAG, "Received Activity Result, passed to callback manager");
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }
