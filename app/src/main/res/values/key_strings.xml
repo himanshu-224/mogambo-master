@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="google_api_key">Enter_google_API_key_here</string>
-    <string name="google_server_client_id">Enter_Google_Server_Client_ID_here</string>
-
-    <string name="facebook_app_id">Enter_facebook_app_id_here</string>
-</resources>
