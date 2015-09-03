@@ -15,9 +15,11 @@ import android.view.MenuItem;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
@@ -30,7 +32,7 @@ public class GoogleActivity extends ActionBarActivity  implements
         GoogleApiClient.OnConnectionFailedListener
         /*,ResultCallback<People.LoadPeopleResult>*/ {
 
-    private static final String SERVER_CLIENT_ID = "722131418756-jhluff14bo2216cucfl691f92qvvhf1n.apps.googleusercontent.com";
+    private static String SERVER_CLIENT_ID;
 
     private static final String LOG_TAG = GoogleActivity.class.getSimpleName();
 
@@ -48,13 +50,19 @@ public class GoogleActivity extends ActionBarActivity  implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.v(LOG_TAG, "onCreate for Google activity");
+        SERVER_CLIENT_ID = getString(R.string.google_server_client_id);
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
-                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addScope(new Scope(Scopes.PROFILE))
                 .build();
         setContentView(R.layout.activity_google);
+
+        //findViewById(R.id.sign_in_button).setOnClickListener(this);
     }
 
     @Override
@@ -112,7 +120,7 @@ public class GoogleActivity extends ActionBarActivity  implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.e(LOG_TAG,"connected");
+        Log.v(LOG_TAG,"User connected with google");
      /*   Plus.PeopleApi.loadVisible(mGoogleApiClient, null)
                 .setResultCallback(this);*/
         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
@@ -121,6 +129,8 @@ public class GoogleActivity extends ActionBarActivity  implements
             com.google.android.gms.plus.model.people.Person.Image personPhoto = currentPerson.getImage();
             String personGooglePlusProfile = currentPerson.getUrl();
             String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+
+            Log.v(LOG_TAG,String.format("User details : name %s, email %s", personName, email));
         }
 
         new AsyncTask<Void,Void,String>(){
@@ -131,6 +141,7 @@ public class GoogleActivity extends ActionBarActivity  implements
                 String scopes = "audience:server:client_id:" + SERVER_CLIENT_ID; // Not the app's client ID.
                 try {
                     String token = GoogleAuthUtil.getToken(getApplicationContext(), account, scopes);
+                    Log.v(LOG_TAG,"Obtained google token = " + token);
                     return token;
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "Error retrieving ID token.", e);
@@ -160,7 +171,6 @@ public class GoogleActivity extends ActionBarActivity  implements
     }
 
 
-
     @Override
     public void onConnectionSuspended(int i)  {
         Log.e(LOG_TAG,"connection suspended");
@@ -168,6 +178,7 @@ public class GoogleActivity extends ActionBarActivity  implements
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
+        Log.e(LOG_TAG,"connection failed");
         if (!mIntentInProgress && result.hasResolution()) {
             try {
                 mIntentInProgress = true;

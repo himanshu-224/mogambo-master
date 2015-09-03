@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
@@ -56,19 +57,8 @@ public class FeedsActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.logout_menu_item)
+        if (id == R.id.action_settings)
         {
-            Log.v(LOG_TAG, "Logout menu item selected, clearing cached user credentials");
-            SharedPreferences sharedPref = getSharedPreferences(
-                    getString(R.string.preference_file), Context.MODE_PRIVATE);
-            SharedPreferences.Editor prefEdit = sharedPref.edit();
-            prefEdit.clear();
-            prefEdit.commit();
-
-            Log.v(LOG_TAG, "Jumping to landing screen for login");
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

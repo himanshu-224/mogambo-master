@@ -91,11 +91,12 @@ public class SignUpFragment extends Fragment {
                             SharedPreferences sharedPref = getActivity().getSharedPreferences(
                                     getString(R.string.preference_file), Context.MODE_PRIVATE);
                             SharedPreferences.Editor prefEdit = sharedPref.edit();
+                            prefEdit.putString(getString(R.string.login_method), getString(R.string.app_login));
                             prefEdit.putString(getString(R.string.key_username), username);
                             prefEdit.putString(getString(R.string.key_fullname), fullname);
                             prefEdit.putString(getString(R.string.key_email), emailId);
                             prefEdit.putString(getString(R.string.access_token), HttpAgent.tokenValue);
-                            prefEdit.commit();
+                            prefEdit.apply();
 
                             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new SelectTagsFragment()).commit();
                         } else {

@@ -56,7 +56,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyARk4d7gBrh_WKs7ADeJvRnp54pnM3Npd8" />
+            android:value="@string/google_api_key" />
 
         <activity
             android:name=".PlaceSuggestionActivity"

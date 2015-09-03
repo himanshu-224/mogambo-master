@@ -1,6 +1,9 @@
 package sachan.dheeraj.mebeerhu;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInstaller;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,13 +13,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginFragment;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
 /*
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -31,7 +34,6 @@ import com.facebook.login.widget.LoginButton;
 public class LoginActivityFragment extends Fragment {
     //ga0RGNYHvNM5d0SLGQfpQWAPGJ8=
     private static final String LOG_TAG = LoginActivityFragment.class.getSimpleName();
-
     private CallbackManager callbackManager;
     private Button signButton;
     private Button loginButton;
@@ -90,7 +92,19 @@ public class LoginActivityFragment extends Fragment {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.i(LOG_TAG, "Sign-in with Facebook successful");
-                LoginResult loginResult1 = loginResult;
+                String username = loginResult.getAccessToken().getUserId();
+                HttpAgent.tokenValue = loginResult.getAccessToken().toString();
+
+                Log.v(LOG_TAG, String.format("Username %s, AccessToken %s",
+                         username, HttpAgent.tokenValue));
+                SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                        getString(R.string.preference_file), Context.MODE_PRIVATE);
+                SharedPreferences.Editor prefEdit = sharedPref.edit();
+                prefEdit.putString(getString(R.string.login_method), getString(R.string.facebook_login));
+                prefEdit.putString(getString(R.string.key_username), username);
+                prefEdit.putString(getString(R.string.access_token), HttpAgent.tokenValue);
+                prefEdit.apply();
+
                 String k = JsonHandler.stringifyNormal(loginResult);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SelectTagsFragment()).commit();
             }
@@ -102,7 +116,6 @@ public class LoginActivityFragment extends Fragment {
 
             @Override
             public void onError(FacebookException exception) {
-                Exception exception1 = exception;
                 Log.e(LOG_TAG, "In Facebook Sign-in, got exception: ", exception);
             }
         });

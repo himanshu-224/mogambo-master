@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">mebeerhu</string>
     <string name="hello_world">Hello world!</string>
-    <string name="facebook_app_id">916953601699078</string>
 
     <!-- Title of all the app activities -->
     <string name="title_activity_test">Test</string>
@@ -19,7 +18,11 @@
     <string name="key_username">key_username</string>
     <string name="key_fullname">key_fullname</string>
     <string name="key_email">key_email</string>
+    <string name="login_method">login_method</string>
     <string name="access_token">access_token</string>
+    <string name="facebook_login">Facebook</string>
+    <string name="google_login">Google</string>
+    <string name="app_login">AppLogin</string>
 
     <string-array name="countries_array">
         <item>Afghanistan</item>

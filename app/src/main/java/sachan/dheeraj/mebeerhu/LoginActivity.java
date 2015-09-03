@@ -16,6 +16,7 @@ import android.view.MenuItem;
 /*
 import com.facebook.FacebookSdk;
 */
+import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 
 import java.security.MessageDigest;
@@ -46,20 +47,55 @@ public class LoginActivity extends ActionBarActivity {
             Log.e(LOG_TAG,"Caught Algorithm exception: ",e);
         }
         setContentView(R.layout.activity_login);
+
+        /* Check if auto login can be performed */
+        boolean login_req = true;
         SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.preference_file), Context.MODE_PRIVATE);
         String access_token = sharedPref.getString(getString(R.string.access_token), null);
-        if (access_token != null)
+        String login_method = sharedPref.getString(getString(R.string.login_method), null);
+        if (access_token != null && login_method != null)
         {
-            Log.i(LOG_TAG, "User already logged in, token = " + access_token );
-            HttpAgent.tokenValue = access_token;
-            Intent intent = new Intent(this, FeedsActivity.class);
-            startActivity(intent);
+            Log.v(LOG_TAG, String.format("Cached token found %s, method = %s",
+                    access_token, login_method ));
+            if (login_method.equals(getString(R.string.facebook_login)))
+            {
+                AccessToken fbToken = AccessToken.getCurrentAccessToken();
+                if (fbToken != null)
+                {
+                    Log.v(LOG_TAG, "FB access token valid, token = "+ fbToken.toString());
+                    login_req = false;
+                    HttpAgent.tokenValue = access_token.toString();
+                }
+            }
+            else if (login_method.equals(getString(R.string.google_login)))
+            {
+                login_req = false;
+                HttpAgent.tokenValue = access_token;
+            }
+            else if (login_method.equals(getString(R.string.app_login)))
+            {
+                login_req = false;
+                HttpAgent.tokenValue = access_token;
+            }
+            else
+            {
+                Log.e(LOG_TAG, String.format("Invalid Login Method %s from cached preferences", login_method));
+                HttpAgent.tokenValue = null;
+            }
+        }
+
+        if(login_req) {
+            HttpAgent.tokenValue = null;
+            Log.i(LOG_TAG, "User not logged in, opening login landing page");
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new LoginActivityFragment()).commit();
         }
         else
         {
-            Log.i(LOG_TAG, "User not logged in, opening login landing page" );
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new LoginActivityFragment()).commit();
+            Log.i(LOG_TAG, String.format("User already logged in through %s, token = %s",
+                    login_method, access_token ));
+            Intent intent = new Intent(this, FeedsActivity.class);
+            startActivity(intent);
         }
     }
 

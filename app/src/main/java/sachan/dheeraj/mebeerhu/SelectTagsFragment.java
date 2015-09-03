@@ -22,6 +22,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,17 +63,26 @@ public class SelectTagsFragment extends Fragment {
         if (id == R.id.logout_menu_item)
         {
             Log.v(LOG_TAG, "Logout menu item selected, clearing cached user credentials");
+
             SharedPreferences sharedPref = getActivity().getSharedPreferences(
                     getString(R.string.preference_file), Context.MODE_PRIVATE);
+
+            /* If we are logged-in through facebook, logout from facebook along
+             * with clearing locally stored access credentials */
+            if( (getString(R.string.facebook_login)).
+                    equals(sharedPref.getString(getString(R.string.login_method),null )) )
+            {
+                Log.i(LOG_TAG, "Logging out from facebook");
+                LoginManager.getInstance().logOut();
+            }
             SharedPreferences.Editor prefEdit = sharedPref.edit();
             prefEdit.clear();
-            prefEdit.commit();
+            prefEdit.apply();
 
             Log.v(LOG_TAG, "Jumping to landing screen for login");
-            Context context = getActivity();
-            Intent intent = new Intent(context, LoginActivity.class);
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
