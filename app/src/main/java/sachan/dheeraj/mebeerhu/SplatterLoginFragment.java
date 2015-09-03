@@ -1,6 +1,9 @@
 package sachan.dheeraj.mebeerhu;
 
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +30,8 @@ public class SplatterLoginFragment extends Fragment {
     private EditText userNameEditText, passwordEditText;
     private Button loginInButton;
 
+    private String username;
+
     private static final String LOG_TAG = SplatterLoginFragment.class.getSimpleName();
 
     public SplatterLoginFragment() {
@@ -51,12 +56,15 @@ public class SplatterLoginFragment extends Fragment {
                 Log.v(LOG_TAG, "Login button clicked, attempting to login");
                 loginInButton.setEnabled(false);
                 final HashMap<String, String> stringStringHashMap = new HashMap<String, String>();
-                stringStringHashMap.put("username", userNameEditText.getText().toString());
+                username = userNameEditText.getText().toString();
+                stringStringHashMap.put("username", username);
                 stringStringHashMap.put("password", passwordEditText.getText().toString());
+
                 new AsyncTask<Void, Void, Boolean>() {
 
                     @Override
                     protected Boolean doInBackground(Void... params) {
+                        /* Temp */ HttpAgent.tokenValue = "abcdxyz";
                         if (true) return true;
                         Log.d(LOG_TAG, "Posted login information to server");
                         String reply = HttpAgent.postGenericData(UrlConstants.LOGIN_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
@@ -73,8 +81,16 @@ public class SplatterLoginFragment extends Fragment {
                     @Override
                     protected void onPostExecute(Boolean aBoolean) {
                         if (aBoolean) {
-                            Log.d(LOG_TAG, "Log-in successful, starting subsequent activities");
-                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new PostListFragment()).commit();
+                            Log.d(LOG_TAG, "Log-in successful, starting Feeds Activity");
+                            SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                                    getString(R.string.preference_file), Context.MODE_PRIVATE);
+                            SharedPreferences.Editor prefEdit = sharedPref.edit();
+                            prefEdit.putString(getString(R.string.key_username), username);
+                            prefEdit.putString(getString(R.string.access_token), HttpAgent.tokenValue);
+                            prefEdit.commit();
+
+                            Intent intent = new Intent(getActivity(),FeedsActivity.class);
+                            startActivity(intent);
                         } else {
                             Log.d(LOG_TAG, "Log-in unsuccessful");
                             Toast.makeText(getActivity(), "Something fucked up", Toast.LENGTH_SHORT).show();

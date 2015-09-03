@@ -1,5 +1,8 @@
 package sachan.dheeraj.mebeerhu;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -25,9 +28,9 @@ public class LoginActivity extends ActionBarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(LOG_TAG, "Initializing app, OnCreate for LoginActivity called" );
+        Log.v(LOG_TAG, "Initializing app, OnCreate for LoginActivity called");
 
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
         FacebookSdk.sdkInitialize(getApplicationContext());
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
@@ -43,7 +46,21 @@ public class LoginActivity extends ActionBarActivity {
             Log.e(LOG_TAG,"Caught Algorithm exception: ",e);
         }
         setContentView(R.layout.activity_login);
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new LoginActivityFragment()).commit();
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.preference_file), Context.MODE_PRIVATE);
+        String access_token = sharedPref.getString(getString(R.string.access_token), null);
+        if (access_token != null)
+        {
+            Log.i(LOG_TAG, "User already logged in, token = " + access_token );
+            HttpAgent.tokenValue = access_token;
+            Intent intent = new Intent(this, FeedsActivity.class);
+            startActivity(intent);
+        }
+        else
+        {
+            Log.i(LOG_TAG, "User not logged in, opening login landing page" );
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new LoginActivityFragment()).commit();
+        }
     }
 
 

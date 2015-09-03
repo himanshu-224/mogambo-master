@@ -43,25 +43,15 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".TestA"
-            android:label="@string/title_activity_test" />
-        <activity
             android:name=".GoogleActivity"
             android:label="@string/title_activity_test" />
         <activity
-            android:name=".CreatePostActivity"
-            android:label="@string/title_activity_create_post" >
+            android:name=".FeedsActivity"
+            android:label="@string/title_feeds_activity" />
 
-            <!--
-                     <intent-filter>
-                     <action android:name="android.intent.action.MAIN" />
-                     <category android:name="android.intent.category.LAUNCHER" />
-                 </intent-filter>
-            -->
-        </activity>
         <activity
-            android:name=".CreatePostActivityNew"
-            android:label="@string/title_activity_create_post_activity_new" >
+            android:name=".CreatePostActivity"
+            android:label="@string/title_create_post_activity" >
         </activity>
 
         <meta-data
