@@ -23,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,13 +69,30 @@ public class SelectTagsFragment extends Fragment {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(
                     getString(R.string.preference_file), Context.MODE_PRIVATE);
 
-            /* If we are logged-in through facebook, logout from facebook along
-             * with clearing locally stored access credentials */
+            /* If we are logged-in through facebook/google, logout from facebook/google
+             * along with clearing locally stored access credentials */
             if( (getString(R.string.facebook_login)).
                     equals(sharedPref.getString(getString(R.string.login_method),null )) )
             {
                 Log.i(LOG_TAG, "Logging out from facebook");
                 LoginManager.getInstance().logOut();
+            }
+            else if ( (getString(R.string.google_login)).
+                    equals(sharedPref.getString(getString(R.string.login_method),null )) )
+            {
+                Log.i(LOG_TAG, "Logging out from google");
+                GoogleApiClient mGoogleApiClient = GoogleHelper.getGoogleApiClient();
+                if (mGoogleApiClient != null)
+                {
+                    if (mGoogleApiClient.isConnected()) {
+                        Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                        mGoogleApiClient.disconnect();
+                        //mGoogleApiClient.connect(); /* Why is this needed? */
+                    }
+                }
+                else{
+                    Log.e(LOG_TAG, "Can't logout from Google, googleApiClient instance null");
+                }
             }
             SharedPreferences.Editor prefEdit = sharedPref.edit();
             prefEdit.clear();
@@ -120,7 +139,8 @@ public class SelectTagsFragment extends Fragment {
                             stringArrayList.add(tag.getTagName());
                         }
                         Log.v(LOG_TAG, "Sending User Selected Tags to server");
-                        String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL, JsonHandler.stringifyNormal(stringArrayList), getActivity());
+                        //String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL, JsonHandler.stringifyNormal(stringArrayList), getActivity());
+                        String data = null;
                         if (data != null) {
                             Log.v(LOG_TAG, "Non-null response from server for saving tags");
                             return true;
@@ -137,7 +157,7 @@ public class SelectTagsFragment extends Fragment {
                         }
                     }
 
-                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }.execute();
             }
 
             ;
@@ -146,7 +166,8 @@ public class SelectTagsFragment extends Fragment {
         new AsyncTask<Void, Void, TagArrayList>() {
             @Override
             protected TagArrayList doInBackground(Void... params) {
-                String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());
+                /*String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());*/
+                String data = null;
                 TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class);
                 return tagArrayList;
             }
@@ -175,7 +196,7 @@ public class SelectTagsFragment extends Fragment {
                     continueTextView.setEnabled(true);
                 }
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.execute();
 
 
 

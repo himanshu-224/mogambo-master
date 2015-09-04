@@ -1,6 +1,7 @@
 package sachan.dheeraj.mebeerhu;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,12 +37,32 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import sachan.dheeraj.mebeerhu.model.Tag;
+import java.util.HashSet;
 
-public class CreatePostActivity extends ActionBarActivity {
+public class CreatePostActivity extends ActionBarActivity implements LocationFragment.OnLocationSelectedListener{
+
     private static final int REQUEST_IMAGE_CAPTURE = 100;
 
     private final String LOG_TAG = ActionBarActivity.class.getSimpleName();
+
+    @Override
+    public void onLocationSelected(String location) {
+        Log.v(LOG_TAG, "onLocationSelected called for CreatePost activity");
+        PlaceholderFragment placeholder = (PlaceholderFragment)getSupportFragmentManager()
+                                           .findFragmentByTag(getString(R.string.fragment_post_holder));
+
+        if (placeholder != null) {
+            placeholder.setLocationText(location);
+            Log.v(LOG_TAG, "Done setting location text for post holder fragment");
+        }
+        else
+        {
+            Log.e(LOG_TAG, "Could not find post Holder Fragment, NULL returned");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +72,10 @@ public class CreatePostActivity extends ActionBarActivity {
         setContentView(R.layout.activity_create_post);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new PlaceholderFragment(),getString(R.string.fragment_post_holder))
                     .commit();
+
+            Log.v(LOG_TAG, "Done adding Post Holder Fragment in create post activity");
         }
     }
 
@@ -72,12 +96,9 @@ public class CreatePostActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-/*
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, PlaceSuggestionFragment.newInstance()).commit();
-*/
-            startActivity(new Intent(CreatePostActivity.this, PlaceSuggestionActivity.class));
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -90,8 +111,13 @@ public class CreatePostActivity extends ActionBarActivity {
 
         private ImageView mainImageView;
         private EditText editText;
+        private TextView locationText;
+
+        private Bitmap imageBitmap = null;
 
         private boolean picTaken = false;
+
+        public String locationString = null;
 
         public PlaceholderFragment() {
         }
@@ -100,14 +126,33 @@ public class CreatePostActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             Log.v(LOG_TAG, "On onCreateView for PlaceHolder Fragment ");
+            if (locationString == null) {
+                locationString = getString(R.string.location_text_default);
+            }
+
             View rootView = inflater.inflate(R.layout.fragment_create_post_activity, container, false);
             mainImageView = (ImageView) rootView.findViewById(R.id.main_image);
             editText = (EditText) rootView.findViewById(R.id.edit_text);
+            locationText = (TextView) rootView.findViewById(R.id.location);
 
             editText.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, new TagFillerFragment()).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, new TagFillerFragment(), getString(R.string.fragment_tag_filler))
+                            .addToBackStack(getString(R.string.fragment_tag_filler))
+                            .commit();
+                    return true;
+                }
+            });
+
+            locationText.setOnTouchListener(new View.OnTouchListener(){
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, new LocationFragment(), getString(R.string.fragment_location))
+                            .addToBackStack(getString(R.string.fragment_location))
+                            .commit();
                     return true;
                 }
             });
@@ -125,27 +170,46 @@ public class CreatePostActivity extends ActionBarActivity {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 }
             }
+            if (picTaken && imageBitmap != null)
+            {
+                Log.v(LOG_TAG, "OnResume called and setting image again");
+                setImage();
+            }
+            locationText.setText(locationString);
         }
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             Log.v(LOG_TAG, String.format("onActivityResult, requestCode = %d, result = %d",
                     requestCode, resultCode));
-            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) 
+            {
                 Log.v(LOG_TAG, "IMAGE CAPTURE successful");
                 picTaken = true;
                 Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                mainImageView.setImageBitmap(imageBitmap);
-                ViewGroup.LayoutParams layoutParams = mainImageView.getLayoutParams();
-                WindowManager windowManager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
-                DisplayMetrics dimension = new DisplayMetrics();
-                windowManager.getDefaultDisplay().getMetrics(dimension);
-                layoutParams.height = dimension.widthPixels * imageBitmap.getHeight() / imageBitmap.getWidth();
-                mainImageView.setLayoutParams(layoutParams);
-            } else {
+                imageBitmap = (Bitmap) extras.get("data");
+            } 
+            else {
                 getActivity().finish();
             }
+        }
+
+        public void setImage()
+        {
+            Log.v(LOG_TAG, "Applying image bitmap");
+            mainImageView.setImageBitmap(imageBitmap);
+            ViewGroup.LayoutParams layoutParams = mainImageView.getLayoutParams();
+            WindowManager windowManager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+            DisplayMetrics dimension = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(dimension);
+            layoutParams.height = dimension.widthPixels * imageBitmap.getHeight() / imageBitmap.getWidth();
+            mainImageView.setLayoutParams(layoutParams);
+        }
+
+        public void setLocationText(String location)
+        {
+            locationString = location;
+            Log.v(LOG_TAG, "Updated location text in post holder fragment");
         }
     }
 
@@ -154,6 +218,8 @@ public class CreatePostActivity extends ActionBarActivity {
 
         public final String LOG_TAG = TagFillerFragment.class.getSimpleName();
 
+        private HashSet<Tag> tags = new HashSet<Tag>();
+
         private AutoCompleteTextView autoCompleteTextView;
         private LinearLayout linearLayout;
         private HorizontalScrollView horizontalScrollView;
@@ -161,6 +227,17 @@ public class CreatePostActivity extends ActionBarActivity {
         public TagFillerFragment() {
         }
 
+        public boolean addTags(String tag)
+        {
+            /* Here we need to determine if that tag exists in our database or not.
+             * If yes we need to populate the parameters for the TAG from our database.
+             * Else we need to save the TAG in the database with some default
+             * parameters and mark that it is not approved yet.
+             * Someone needs to define the parameters for all the non-approved TAGs in
+             * the database regularly. I guess this process has to be manual for now */
+            Log.v(LOG_TAG, "Adding Tag " + tag);
+            return tags.add(new Tag(tag, "taste", Tag.TYPE_NOUN, true));
+        }
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -180,6 +257,14 @@ public class CreatePostActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String s = adapter.getItem(position);
+
+                    /* Store the Tags locally, and also check if it has not already been entered
+                     * by the user. If already entered, inform the user and return from here */
+                    if(!addTags(s.replace("\n", ""))) {
+                        autoCompleteTextView.setText("");
+                        Toast.makeText(getActivity(),"Tag Already Added", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     View view1 = getActivity().getLayoutInflater().inflate(R.layout.list_item_tag, null);
                     TextView textView = (TextView) view1.findViewById(R.id.tv);
                     textView.setText(s.replace("\n", ""));
@@ -212,6 +297,14 @@ public class CreatePostActivity extends ActionBarActivity {
                 @Override
                 public void afterTextChanged(final Editable s) {
                     if (s.toString().contains("\n")) {
+
+                    /* Store the Tags locally, and also check if it has not already been entered
+                     * by the user. If already entered, inform the user and return from here */
+                        if(!addTags(s.toString().replace("\n", ""))) {
+                            autoCompleteTextView.setText("");
+                            Toast.makeText(getActivity(),"Tag Already Added", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         //move to flow layout
                         View view1 = getActivity().getLayoutInflater().inflate(R.layout.list_item_tag, null);
                         TextView textView = (TextView) view1.findViewById(R.id.tv);
@@ -236,6 +329,21 @@ public class CreatePostActivity extends ActionBarActivity {
                 }
             });
 
+            rootView.setFocusableInTouchMode(true);
+            rootView.requestFocus();
+            rootView.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    Log.v(LOG_TAG, "keyCode: " + keyCode);
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        Log.v(LOG_TAG, "onKey Back listener pressed");
+                        getFragmentManager().popBackStack(getString(R.string.fragment_tag_filler), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
             return rootView;
         }
 

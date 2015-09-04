@@ -21,8 +21,10 @@ import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.plus.Plus;
 
 import sachan.dheeraj.mebeerhu.model.Feeds;
 import sachan.dheeraj.mebeerhu.model.Post;
@@ -64,13 +66,30 @@ public class FeedsFragment extends Fragment {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(
                     getString(R.string.preference_file), Context.MODE_PRIVATE);
 
-            /* If we are logged-in through facebook, logout from facebook along
-             * with clearing locally stored access credentials */
+            /* If we are logged-in through facebook/google, logout from facebook/google
+             * along with clearing locally stored access credentials */
             if( (getString(R.string.facebook_login)).
                     equals(sharedPref.getString(getString(R.string.login_method),null )) )
             {
                 Log.i(LOG_TAG, "Logging out from facebook");
                 LoginManager.getInstance().logOut();
+            }
+            else if ( (getString(R.string.google_login)).
+                    equals(sharedPref.getString(getString(R.string.login_method),null )) )
+            {
+                Log.i(LOG_TAG, "Logging out from google");
+                GoogleApiClient mGoogleApiClient = GoogleHelper.getGoogleApiClient();
+                if (mGoogleApiClient != null)
+                {
+                    if (mGoogleApiClient.isConnected()) {
+                        Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                        mGoogleApiClient.disconnect();
+                        mGoogleApiClient.connect(); /* Why is this needed? */
+                    }
+                }
+                else{
+                    Log.e(LOG_TAG, "Can't logout from Google, googleApiClient instance null");
+                }
             }
             SharedPreferences.Editor prefEdit = sharedPref.edit();
             prefEdit.clear();
@@ -183,7 +202,7 @@ public class FeedsFragment extends Fragment {
                     return feeds;
                 }
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.execute();
 
         return view;
     }

@@ -137,7 +137,7 @@ public class PostViewHolder {
             }
         }
         imageLoaderAsyncTask = new ImageLoaderAsyncTask(post, context);
-        imageLoaderAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        imageLoaderAsyncTask.execute();
 
     }
 

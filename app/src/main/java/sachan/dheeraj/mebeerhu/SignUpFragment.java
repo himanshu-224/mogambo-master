@@ -71,7 +71,8 @@ public class SignUpFragment extends Fragment {
                     protected Boolean doInBackground(Void... params) {
                         Log.v(LOG_TAG, "Submitting Sign-Up info to server");
 
-                        String reply = HttpAgent.postGenericData(UrlConstants.SIGN_UP_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
+                        //String reply = HttpAgent.postGenericData(UrlConstants.SIGN_UP_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
+                        String reply = null;
                         SignUpReply signUpReply = JsonHandler.parseNormal(reply, SignUpReply.class);
                         if (signUpReply != null) {
                             Log.v(LOG_TAG, "Sign-up reply received, getting authentication token");
@@ -104,7 +105,7 @@ public class SignUpFragment extends Fragment {
                             Toast.makeText(getActivity(), "Something fucked up", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }.execute();
             }
         });
 

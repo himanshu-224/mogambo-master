@@ -56,7 +56,7 @@ public final class HttpAgent {
         Log.i(TAG, "making GET request to : " + url);
         String data = getImplementation(url, activity);
         Log.i(TAG, "response to request " + url + " is " + data);
-        if (data == null) {
+      /*  if (data == null) {
             try {
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -102,7 +102,7 @@ public final class HttpAgent {
             } catch (Exception e) {
                 Log.e(TAG, "caught exception in thread interrupt", e);
             }
-        }
+        } */
         return data;
     }
 
@@ -117,7 +117,7 @@ public final class HttpAgent {
         Log.i(TAG, "making POST request to : " + url + "with params" + params);
         String data = postImplementationNameValuePair(url, params, activity);
         Log.i(TAG, "response to request " + url + " is " + data);
-        if (data == null) {
+        /* if (data == null) {
             try {
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -163,7 +163,7 @@ public final class HttpAgent {
             } catch (Exception e) {
                 Log.e(TAG, "caught exception in thread interrupt", e);
             }
-        }
+        } */
         return data;
     }
 
@@ -171,7 +171,7 @@ public final class HttpAgent {
         Log.i(TAG, "making POST request to : " + url + "with params" + postData);
         String data = postImplementationRawString(url, postData, activity);
         Log.i(TAG, "response to request " + url + " is " + data);
-        if (data == null) {
+        /* if (data == null) {
             try {
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -217,7 +217,7 @@ public final class HttpAgent {
             } catch (Exception e) {
                 Log.e(TAG, "caught exception in thread interrupt", e);
             }
-        }
+        } */
         return data;
     }
 

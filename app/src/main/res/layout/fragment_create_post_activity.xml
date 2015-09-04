@@ -156,7 +156,6 @@
                 android:gravity="left|center"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:text="toit indiranagar bangalore"
                 android:textSize="20sp" />
 
             <TextView

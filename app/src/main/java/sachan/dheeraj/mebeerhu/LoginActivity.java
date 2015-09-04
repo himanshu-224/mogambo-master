@@ -70,6 +70,7 @@ public class LoginActivity extends ActionBarActivity {
             }
             else if (login_method.equals(getString(R.string.google_login)))
             {
+                Log.v(LOG_TAG, "Auto-login through Google, token = ");
                 login_req = false;
                 HttpAgent.tokenValue = access_token;
             }

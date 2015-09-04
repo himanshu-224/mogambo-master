@@ -97,7 +97,7 @@ public class SplatterLoginFragment extends Fragment {
                             Toast.makeText(getActivity(), "Something fucked up", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }.execute();
             }
         });
 

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">mebeerhu</string>
     <string name="hello_world">Hello world!</string>
+    <string name="location_text_default">Enter your Location</string>
 
     <!-- Title of all the app activities -->
     <string name="title_activity_test">Test</string>
@@ -8,6 +9,11 @@
     <string name="title_create_post_activity">CreatePostActivity</string>
     <string name="title_feeds_activity">Feeds</string>
     <string name="title_activity_place_suggestion">PlaceSuggestionActivity</string>
+
+    <!-- Title of all app Fragments -->
+    <string name="fragment_post_holder">PostHolder</string>
+    <string name="fragment_location">Location</string>
+    <string name="fragment_tag_filler">tagFiller</string>
 
     <!-- Strings for Menu items -->
     <string name="logout_menu_item">Logout</string>

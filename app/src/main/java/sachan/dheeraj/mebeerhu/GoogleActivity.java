@@ -1,8 +1,10 @@
 package sachan.dheeraj.mebeerhu;
 //https://github.com/googleplus/gplus-quickstart-android.git
 import android.accounts.Account;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.provider.Contacts;
@@ -60,9 +62,9 @@ public class GoogleActivity extends ActionBarActivity  implements
                 .addApi(Plus.API)
                 .addScope(new Scope(Scopes.PROFILE))
                 .build();
-        setContentView(R.layout.activity_google);
 
-        //findViewById(R.id.sign_in_button).setOnClickListener(this);
+        GoogleHelper.setGoogleApiClient(mGoogleApiClient);
+        setContentView(R.layout.activity_google);
     }
 
     @Override
@@ -120,25 +122,18 @@ public class GoogleActivity extends ActionBarActivity  implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.v(LOG_TAG,"User connected with google");
-     /*   Plus.PeopleApi.loadVisible(mGoogleApiClient, null)
-                .setResultCallback(this);*/
-        if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            String personName = currentPerson.getDisplayName();
-            com.google.android.gms.plus.model.people.Person.Image personPhoto = currentPerson.getImage();
-            String personGooglePlusProfile = currentPerson.getUrl();
-            String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-
-            Log.v(LOG_TAG,String.format("User details : name %s, email %s", personName, email));
-        }
+        Log.v(LOG_TAG,"User connected with Google");
 
         new AsyncTask<Void,Void,String>(){
             @Override
             protected String doInBackground(Void... params) {
                 String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
+
+                Log.v(LOG_TAG,"Account name = " + accountName);
+
                 Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-                String scopes = "audience:server:client_id:" + SERVER_CLIENT_ID; // Not the app's client ID.
+                //String scopes = "audience:server:client_id:" + SERVER_CLIENT_ID; // Not the app's client ID. Enable this with the CLIENT_ID generated for the server (WEB) */
+                String scopes = "oauth2:profile";
                 try {
                     String token = GoogleAuthUtil.getToken(getApplicationContext(), account, scopes);
                     Log.v(LOG_TAG,"Obtained google token = " + token);
@@ -153,32 +148,59 @@ public class GoogleActivity extends ActionBarActivity  implements
             }
 
             @Override
-            protected void onPostExecute(String result) {
-                Log.i(LOG_TAG, "ID token: " + result);
-                if (result != null) {
-                    // Successfully retrieved ID Token
-                    // ...
-                } else {
-                    // There was some error getting the ID Token
-                    // ...
+            protected void onPostExecute(String token) {
+                if (token != null)
+                {
+                    Log.i(LOG_TAG, "Google auth token retrieved successfully, token = " + token);
+                    HttpAgent.tokenValue = token;
+                    SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor prefEdit = sharedPref.edit();
+                    prefEdit.putString(getString(R.string.login_method), getString(R.string.google_login));
+                    prefEdit.putString(getString(R.string.access_token), HttpAgent.tokenValue);
+
+                    if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null)
+                    {
+                        Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+                        String personName = currentPerson.getDisplayName();
+                        Person.Image personPhoto = currentPerson.getImage();
+                        String personGooglePlusProfile = currentPerson.getUrl();
+                        String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                        Log.v(LOG_TAG, String.format("User details : name %s, email %s", personName, email));
+
+                        prefEdit.putString(getString(R.string.key_username), email);
+                        prefEdit.putString(getString(R.string.key_fullname), personName);
+                        prefEdit.putString(getString(R.string.key_email), email);
+                    }
+                    else
+                    {
+                        Log.e(LOG_TAG,"Google Signed-in but could not retrieve user's details");
+                    }
+
+                    prefEdit.apply();
                 }
+                else
+                {
+                    Log.i(LOG_TAG, "Error retrieving Google auth token, token is null");
+                }
+                getSupportFragmentManager().beginTransaction().add(R.id.google_frame_layout, new SelectTagsFragment()).commit();
             }
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.execute();
     }
 
 
     @Override
     public void onConnectionSuspended(int i)  {
-        Log.e(LOG_TAG,"connection suspended");
+        Log.e(LOG_TAG,"Google Connection suspended, attempting to re-connect");
+        mGoogleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.e(LOG_TAG,"connection failed");
+        Log.e(LOG_TAG,"Google Connection failed");
         if (!mIntentInProgress && result.hasResolution()) {
             try {
                 mIntentInProgress = true;
@@ -201,7 +223,8 @@ public class GoogleActivity extends ActionBarActivity  implements
                 mGoogleApiClient.connect();
             }
         }else{
-            Log.e(LOG_TAG,"can not sign in");
+            Log.e(LOG_TAG, String.format( "Cannot sign in with Google, requestCode %d, responseCode %d",
+                                          requestCode, responseCode));
         }
     }
 }
