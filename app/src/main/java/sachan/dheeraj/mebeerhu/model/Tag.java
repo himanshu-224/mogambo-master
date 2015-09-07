@@ -9,8 +9,8 @@ public class Tag {
 
     private String tagName;
     private String tagMeaning;
-    private int typeId;
-    private boolean approved;
+    private Integer typeId;
+    private Boolean approved;
 
     public String getTagName() {
         return tagName;
@@ -28,7 +28,7 @@ public class Tag {
         this.tagMeaning = tagMeaning;
     }
 
-    public int getTypeId() {
+    public Integer getTypeId() {
         return typeId;
     }
 
@@ -36,7 +36,7 @@ public class Tag {
         this.typeId = typeId;
     }
 
-    public boolean isApproved() {
+    public Boolean isApproved() {
         return approved;
     }
 

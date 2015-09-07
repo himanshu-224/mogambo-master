@@ -29,6 +29,8 @@ import sachan.dheeraj.mebeerhu.utils.ImageUtils;
  * Created by naveen.goel on 01/08/15.
  */
 public class PostViewHolder {
+    static final String LOG_TAG = PostViewHolder.class.getSimpleName();
+
     private CircleImageView profileCircleImageView;
     private TextView posterNameTextView;
     private TextView withTextView;
@@ -202,6 +204,8 @@ public class PostViewHolder {
         @Override
         protected Void doInBackground(Void... params) {
             if (!isCancelled()) {
+                //Log.v(LOG_TAG, "UserImage Url: " + post.getUserImageURL() );
+                //Log.v(LOG_TAG, "PostImage Url: " + post.getPostImageURL() );
                 profileBitmap = ImageUtils.getBitmapFromUrl(post.getUserImageURL());
                 mainBitmap = ImageUtils.getBitmapFromUrl(post.getPostImageURL());
             }

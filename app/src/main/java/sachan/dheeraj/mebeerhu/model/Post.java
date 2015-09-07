@@ -9,10 +9,11 @@ public class Post {
     private String postId;
     private String username;
     private String parentUsername;
+    private String name;
     private String postLocation;
     private Long timestamp;
     private String priceCurrency;
-    private Long postPrice;
+    private Float postPrice;
     private String postImageURL;
     private Long locationGeoCode;
     private Long aggregatedVoteCount;
@@ -56,6 +57,14 @@ public class Post {
         this.parentUsername = parentUsername;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getPostLocation() {
         return postLocation;
     }
@@ -80,11 +89,11 @@ public class Post {
         this.priceCurrency = priceCurrency;
     }
 
-    public Long getPostPrice() {
+    public Float getPostPrice() {
         return postPrice;
     }
 
-    public void setPostPrice(Long postPrice) {
+    public void setPostPrice(Float postPrice) {
         this.postPrice = postPrice;
     }
 
@@ -160,12 +169,14 @@ public class Post {
         this.country = country;
     }
 
-    public Post(){}
+    public Post(){
+    }
 
-    public Post(String postId, String username, String parentUsername, String postLocation, Long timestamp, String priceCurrency, Long postPrice, String postImageURL, Long locationGeoCode, Long aggregatedVoteCount, Long retweetCount, ArrayList<Tag> tagList, ArrayList<User> accompaniedWith, String city, String state, String country, String userImageURL) {
+    public Post(String postId, String username, String parentUsername, String name, String postLocation, Long timestamp, String priceCurrency, Float postPrice, String postImageURL, Long locationGeoCode, Long aggregatedVoteCount, Long retweetCount, ArrayList<Tag> tagList, ArrayList<User> accompaniedWith, String city, String state, String country, String userImageURL) {
         this.postId = postId;
         this.username = username;
         this.parentUsername = parentUsername;
+        this.name = name;
         this.postLocation = postLocation;
         this.timestamp = timestamp;
         this.priceCurrency = priceCurrency;

@@ -25,11 +25,15 @@ import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends ActionBarActivity {
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
+    public static String PACKAGE_NAME;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(LOG_TAG, "Initializing app, OnCreate for LoginActivity called");
+
+        PACKAGE_NAME = getApplicationContext().getPackageName();
+        Log.v(LOG_TAG, "Package name = "+PACKAGE_NAME);
 
         //getSupportActionBar().hide();
         FacebookSdk.sdkInitialize(getApplicationContext());
