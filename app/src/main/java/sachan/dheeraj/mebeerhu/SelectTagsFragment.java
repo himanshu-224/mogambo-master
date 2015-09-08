@@ -128,6 +128,7 @@ public class SelectTagsFragment extends Fragment {
                 Log.v(LOG_TAG, "Continue button clicked, no of tags selected = " + tagHashSet.size() );
 
                 if(tagHashSet.size() <= 4){
+                    Toast.makeText(getActivity(), "Select atleast 5 tags to continue", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -139,21 +140,24 @@ public class SelectTagsFragment extends Fragment {
                             stringArrayList.add(tag.getTagName());
                         }
                         Log.v(LOG_TAG, "Sending User Selected Tags to server");
-                        //String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL, JsonHandler.stringifyNormal(stringArrayList), getActivity());
-                        String data = null;
+                        /* String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL, JsonHandler.stringifyNormal(stringArrayList), getActivity());                        
                         if (data != null) {
                             Log.v(LOG_TAG, "Non-null response from server for saving tags");
                             return true;
                         }
                         Log.v(LOG_TAG, "Server response null, couldn't save tags at server");
-                        return false;
+                        return false; */
+                        return true;
                     }
 
                     @Override
                     protected void onPostExecute(Boolean aBoolean) {
                         if (aBoolean) {
-                            Log.d(LOG_TAG, "User Tags saved at server");
-                            Toast.makeText(getActivity(), "saved", Toast.LENGTH_LONG).show();
+                            //Log.d(LOG_TAG, "User Tags saved at server");
+                            //Toast.makeText(getActivity(), "saved", Toast.LENGTH_LONG).show();
+                            Log.d(LOG_TAG, "Minimum tags selected, continuing to show feeds");
+                            Intent mIntent = new Intent(getActivity(), FeedsActivity.class);
+                            startActivity(mIntent);
                         }
                     }
 
@@ -166,10 +170,31 @@ public class SelectTagsFragment extends Fragment {
         new AsyncTask<Void, Void, TagArrayList>() {
             @Override
             protected TagArrayList doInBackground(Void... params) {
-                /*String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());*/
-                String data = null;
-                TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class);
-                return tagArrayList;
+                /* String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());
+                 * TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class); */
+                Log.v(LOG_TAG, "Creating temporary TAGs" );
+                TagArrayList testTagList = new TagArrayList();
+                testTagList.add(new Tag("Dessert", "DishType", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Sweet", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Smooth", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Royal", "Ambiance", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Bangalore", "City", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Homemade", "DishType", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Jumbo", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Marinated", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Vanilla", "Ambiance", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Veg", "City", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Fizzy", "DishType", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Grilled", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Burger", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Caramelized", "Ambiance", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Ice Cream", "City", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Hot", "DishType", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Pizza", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Tatalizing", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Royal", "Ambiance", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Non Veg", "City", Tag.TYPE_NOUN, true));
+                return testTagList;
             }
 
             @Override
@@ -180,6 +205,8 @@ public class SelectTagsFragment extends Fragment {
             @Override
             protected void onPostExecute(TagArrayList tagArrayList) {
                 if (tagArrayList != null) {
+                    flowLayout.removeAllViews();
+                    flowLayout.setMaxLinesSupported(Integer.MAX_VALUE);
                     Log.v(LOG_TAG, "Temporary TAGs list size = " + tagArrayList.size());
                         for (Tag tag : tagArrayList) {
                             View view1 = inflater.inflate(R.layout.list_item_tag, null);

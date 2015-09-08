@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
@@ -64,6 +66,19 @@ public class FeedsFragment extends Fragment{
     private ProgressBar progressBar;
 
     private AppDbHelper mDbHelper;
+
+    private View.OnLongClickListener LONG_CLICK_LISTENER = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            TextView tView = (TextView) view;
+            Log.v(LOG_TAG, "Long Pressed Tag with value = " + tView.getText());
+            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            FeedsActivity mActivity =  (FeedsActivity)getActivity();
+            mActivity.showDialog(String.valueOf(tView.getText()), "This is some description", true);
+
+            return true;
+        }
+    };
 
     void deleteTheDatabase()
     {
@@ -456,7 +471,7 @@ public class FeedsFragment extends Fragment{
                             postViewHolder.getLocationTextView().setText(post.getPostLocation());
                             postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount() + " likes");
                             postViewHolder.setPost(post);
-                            postViewHolder.loadTagsInThreeLines(getActivity());
+                            postViewHolder.loadTagsInThreeLines(getActivity(), LONG_CLICK_LISTENER);
                             postViewHolder.initAndLoadImages(getContext());
                             return convertView;
                         }

@@ -4,26 +4,37 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import sachan.dheeraj.mebeerhu.FeedsActivity;
 import sachan.dheeraj.mebeerhu.R;
 import sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout;
 import sachan.dheeraj.mebeerhu.model.Post;
 import sachan.dheeraj.mebeerhu.model.Tag;
 import sachan.dheeraj.mebeerhu.utils.ImageUtils;
+import android.view.ViewGroup.LayoutParams;
 
 /**
  * Created by naveen.goel on 01/08/15.
@@ -44,6 +55,8 @@ public class PostViewHolder {
     private Post post;
     private ImageLoaderAsyncTask imageLoaderAsyncTask;
     private TextView moreTextView;
+
+    private static View.OnLongClickListener LONG_CLICK_LISTENER;
 
     public CircleImageView getProfileCircleImageView() {
         return profileCircleImageView;
@@ -101,9 +114,20 @@ public class PostViewHolder {
         postViewHolder.locationTextView = (TextView) view.findViewById(R.id.location);
         postViewHolder.likesTextView = (TextView) view.findViewById(R.id.likes);
         postViewHolder.flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
+      /*  postViewHolder.flowLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                TextView textView = (TextView) view.findViewById(R.id.tv);
+                Log.v(LOG_TAG, "Long Pressed Tag with value = " + textView.getText());
+                return true;
+            }
+        }); */
         postViewHolder.moreTextView = (TextView) view.findViewById(R.id.more);
         postViewHolder.setMoreOnClickListener(activity);
         postViewHolder.moreTextView.setVisibility(View.GONE);
+
+        final FeedsActivity feedsActivity = (FeedsActivity)activity;
+
         return postViewHolder;
     }
 
@@ -143,7 +167,7 @@ public class PostViewHolder {
 
     }
 
-    public void loadTagsInThreeLines(final Activity activity) {
+    public void loadTagsInThreeLines(final Activity activity, View.OnLongClickListener LONG_CLICK_LISTENER) {
         moreTextView.setVisibility(View.GONE);
         flowLayout.removeAllViews();
         flowLayout.setMaxLinesSupported(2);
@@ -158,6 +182,8 @@ public class PostViewHolder {
                 } else {
                     textView.getBackground().setColorFilter(activity.getResources().getColor(R.color.purple), PorterDuff.Mode.SRC_IN);
                 }
+                textView.setOnLongClickListener(LONG_CLICK_LISTENER);
+                textView.setHapticFeedbackEnabled(true);
                 flowLayout.addView(view1);
             }
         }
