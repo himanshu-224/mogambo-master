@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout;
+import sachan.dheeraj.mebeerhu.globalData.CommonData;
 import sachan.dheeraj.mebeerhu.model.Tag;
 import sachan.dheeraj.mebeerhu.model.TagArrayList;
 
@@ -138,7 +139,9 @@ public class SelectTagsFragment extends Fragment {
                         ArrayList<String> stringArrayList = new ArrayList<String>();
                         for (Tag tag : tagHashSet) {
                             stringArrayList.add(tag.getTagName());
+                            CommonData.followedTags.put(tag.getTagName(), tag);
                         }
+
                         Log.v(LOG_TAG, "Sending User Selected Tags to server");
                         /* String data = HttpAgent.postGenericData(UrlConstants.FOLLOW_TAGS_URL, JsonHandler.stringifyNormal(stringArrayList), getActivity());                        
                         if (data != null) {

@@ -14,6 +14,8 @@
     <string name="fragment_post_holder">PostHolder</string>
     <string name="fragment_location">Location</string>
     <string name="fragment_tag_filler">tagFiller</string>
+    <string name="fragment_tag_search">tagSearch</string>
+    <string name="fragment_feeds">feedsViewer</string>
 
     <!-- Strings for Menu items -->
     <string name="logout_menu_item">Logout</string>
@@ -29,6 +31,9 @@
     <string name="facebook_login">Facebook</string>
     <string name="google_login">Google</string>
     <string name="app_login">AppLogin</string>
+
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
 
     <string-array name="countries_array">
         <item>Afghanistan</item>
@@ -111,5 +116,6 @@
         <item>Anguilla</item>
         <item>Antarctica</item>
     </string-array>
+    <string name="title_activity_tag_search">TagSearchActivity</string>
 
 </resources>

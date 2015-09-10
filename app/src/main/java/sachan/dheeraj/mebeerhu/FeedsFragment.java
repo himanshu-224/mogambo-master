@@ -53,6 +53,7 @@ import sachan.dheeraj.mebeerhu.localData.AppContract.UserTagEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.PostAccompanyingUserEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.UserFollowingEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.UserFollowerEntry;
+import sachan.dheeraj.mebeerhu.globalData.CommonData;
 
 /**
  * Created by agarwalh on 9/3/2015.
@@ -74,17 +75,22 @@ public class FeedsFragment extends Fragment{
             Log.v(LOG_TAG, "Long Pressed Tag with value = " + tView.getText());
             view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
             FeedsActivity mActivity =  (FeedsActivity)getActivity();
-            mActivity.showDialog(String.valueOf(tView.getText()), "This is some description", true);
+            String tagName = String.valueOf(tView.getText());
+            Tag tag = CommonData.tags.get(tagName);
+            String description="";
+            boolean isFollowed = false;
+            if ( tag != null)
+            {
+                description = tag.getTagMeaning();
+            }
+            tag = CommonData.followedTags.get(tagName);
+            if (tag != null )
+                isFollowed = true;
+            mActivity.showDialog(tagName, description, isFollowed);
 
             return true;
         }
     };
-
-    void deleteTheDatabase()
-    {
-        boolean success = getActivity().deleteDatabase(mDbHelper.DATABASE_NAME);
-        Log.v(LOG_TAG,"Deleted the database to start afresh, success = " + success);
-    }
 
     public FeedsFragment() {
     }
@@ -92,63 +98,8 @@ public class FeedsFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        deleteTheDatabase();
+        //setHasOptionsMenu(true);
         mDbHelper =  new AppDbHelper(getActivity());
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_logout, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.logout_menu_item)
-        {
-            Log.v(LOG_TAG, "Logout menu item selected, clearing cached user credentials");
-
-            SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                    getString(R.string.preference_file), Context.MODE_PRIVATE);
-
-            /* If we are logged-in through facebook/google, logout from facebook/google
-             * along with clearing locally stored access credentials */
-            if( (getString(R.string.facebook_login)).
-                    equals(sharedPref.getString(getString(R.string.login_method),null )) )
-            {
-                Log.i(LOG_TAG, "Logging out from facebook");
-                LoginManager.getInstance().logOut();
-            }
-            else if ( (getString(R.string.google_login)).
-                    equals(sharedPref.getString(getString(R.string.login_method),null )) )
-            {
-                Log.i(LOG_TAG, "Logging out from google");
-                GoogleApiClient mGoogleApiClient = GoogleHelper.getGoogleApiClient();
-                if (mGoogleApiClient != null)
-                {
-                    if (mGoogleApiClient.isConnected()) {
-                        Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-                        mGoogleApiClient.disconnect();
-                        mGoogleApiClient.connect(); /* Why is this needed? */
-                    }
-                }
-                else{
-                    Log.e(LOG_TAG, "Can't logout from Google, googleApiClient instance null");
-                }
-            }
-            SharedPreferences.Editor prefEdit = sharedPref.edit();
-            prefEdit.clear();
-            prefEdit.apply();
-
-            Log.v(LOG_TAG, "Jumping to landing screen for login");
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -162,6 +113,24 @@ public class FeedsFragment extends Fragment{
                 Toast.makeText(getActivity(), toastMsg, Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.v(LOG_TAG, "onResume for FeedsFragment");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.v(LOG_TAG, "onDestroy for FeedsFragment");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.v(LOG_TAG, "onPause for FeedsFragment");
     }
 
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
@@ -188,6 +157,8 @@ public class FeedsFragment extends Fragment{
                 }*/
             }
         });
+
+
 
         class DBLoaderTask extends AsyncTask<Void, Void, ArrayList<Post>>
         {
@@ -447,6 +418,7 @@ public class FeedsFragment extends Fragment{
             protected void onPostExecute(ArrayList<Post> posts) {
                 try {
                     Log.v(LOG_TAG, "PostExecute in task for loading feeds");
+
                     ArrayAdapter<Post> postArrayAdapter = new ArrayAdapter<Post>(getActivity(), 0, posts) {
                         @Override
                         public View getView(int position, View convertView, ViewGroup parent) {
@@ -627,6 +599,9 @@ public class FeedsFragment extends Fragment{
                             }
                             else
                             {
+                                /* Store tag info into common data for quick access */
+                                CommonData.tags.put(tag.getTagName(), tag);
+
                                 cValue = new ContentValues();
                                 cValue.put(TagEntry.COLUMN_TAG_NAME, tag.getTagName());
                                 cValue.put(TagEntry.COLUMN_TAG_MEANING, tag.getTagMeaning());
@@ -669,6 +644,8 @@ public class FeedsFragment extends Fragment{
                         }
                     }
                 }
+
+                Log.v(LOG_TAG, "Total unique tags received = " + CommonData.tags.size());
 
                 Log.v(LOG_TAG, "Inserting User data, num rows = " + cValuesUser.size());
                 /* Insert all the user records created */
