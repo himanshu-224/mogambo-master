@@ -3,6 +3,7 @@ package sachan.dheeraj.mebeerhu.globalData;
 import java.util.HashMap;
 import java.util.Map;
 
+import sachan.dheeraj.mebeerhu.model.AppLocation;
 import sachan.dheeraj.mebeerhu.model.Tag;
 
 /**
@@ -11,5 +12,5 @@ import sachan.dheeraj.mebeerhu.model.Tag;
 public class CommonData {
     public static Map<String, Tag> tags = new HashMap<>();
     public static Map<String, Tag> followedTags = new HashMap<>();
-
+    public static Map<String, AppLocation> locations = new HashMap<>();
 }

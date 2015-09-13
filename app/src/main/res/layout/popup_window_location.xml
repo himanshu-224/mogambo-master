@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:id = "@+id/location_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:paddingTop="20dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp"
+        android:textColor="@color/red"
+        android:text="Location"/>
+
+    <TextView
+        android:id = "@+id/location_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+
+        android:text="The complete address should be displayed here"/>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/search_location_icon"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="15dp"
+            android:baselineAlignBottom="true"
+            android:src= "@drawable/search_icon"
+            android:contentDescription="Search" />
+
+        <TextView
+            android:id = "@+id/search_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingLeft="15dp"
+            android:paddingBottom="10dp"
+            android:layout_gravity="center_vertical"
+            android:textSize="20dp"
+            android:text = "Search"
+            />
+    </LinearLayout>
+</LinearLayout>

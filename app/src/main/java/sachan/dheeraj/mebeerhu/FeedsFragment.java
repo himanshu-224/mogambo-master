@@ -1,12 +1,8 @@
 package sachan.dheeraj.mebeerhu;
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -16,9 +12,6 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -27,18 +20,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.login.LoginManager;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.plus.Plus;
 
 import java.util.ArrayList;
 import java.util.Vector;
 
-import sachan.dheeraj.mebeerhu.localData.AppContract;
 import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
+import sachan.dheeraj.mebeerhu.model.AppLocation;
 import sachan.dheeraj.mebeerhu.model.Feeds;
 import sachan.dheeraj.mebeerhu.model.Post;
 import sachan.dheeraj.mebeerhu.model.Tag;
@@ -49,10 +39,7 @@ import sachan.dheeraj.mebeerhu.localData.AppContract.PostEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.UserEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.TagEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.PostTagEntry;
-import sachan.dheeraj.mebeerhu.localData.AppContract.UserTagEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.PostAccompanyingUserEntry;
-import sachan.dheeraj.mebeerhu.localData.AppContract.UserFollowingEntry;
-import sachan.dheeraj.mebeerhu.localData.AppContract.UserFollowerEntry;
 import sachan.dheeraj.mebeerhu.globalData.CommonData;
 
 /**
@@ -68,7 +55,7 @@ public class FeedsFragment extends Fragment{
 
     private AppDbHelper mDbHelper;
 
-    private View.OnLongClickListener LONG_CLICK_LISTENER = new View.OnLongClickListener() {
+    private View.OnLongClickListener TAG_LONG_CLICK_LISTENER = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View view) {
             TextView tView = (TextView) view;
@@ -86,7 +73,27 @@ public class FeedsFragment extends Fragment{
             tag = CommonData.followedTags.get(tagName);
             if (tag != null )
                 isFollowed = true;
-            mActivity.showDialog(tagName, description, isFollowed);
+            mActivity.showTagDialog(tagName, description, isFollowed);
+
+            return true;
+        }
+    };
+
+    private View.OnLongClickListener LOCATION_LONG_CLICK_LISTENER = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            TextView tView = (TextView) view;
+            Log.v(LOG_TAG, "Long Pressed Location with value = " + tView.getText());
+            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            FeedsActivity mActivity =  (FeedsActivity)getActivity();
+            String locationName = String.valueOf(tView.getText());
+            AppLocation location = CommonData.locations.get(locationName);
+            String description="";
+            if ( location != null)
+            {
+                description = location.getLocDescription();
+            }
+            mActivity.showLocationDialog(locationName, description);
 
             return true;
         }
@@ -441,9 +448,10 @@ public class FeedsFragment extends Fragment{
                             }
 
                             postViewHolder.getLocationTextView().setText(post.getPostLocation());
+                            postViewHolder.getLocationTextView().setOnLongClickListener(LOCATION_LONG_CLICK_LISTENER);
                             postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount() + " likes");
                             postViewHolder.setPost(post);
-                            postViewHolder.loadTagsInThreeLines(getActivity(), LONG_CLICK_LISTENER);
+                            postViewHolder.loadTagsInThreeLines(getActivity(), TAG_LONG_CLICK_LISTENER);
                             postViewHolder.initAndLoadImages(getContext());
                             return convertView;
                         }
@@ -526,6 +534,14 @@ public class FeedsFragment extends Fragment{
                         cValue.put(PostEntry.COLUMN_USERNAME, thisPost.getUsername());
                         cValue.put(PostEntry.COLUMN_PARENT_USERNAME, thisPost.getParentUsername());
                         cValue.put(PostEntry.COLUMN_POST_LOCATION, thisPost.getPostLocation());
+
+                        AppLocation thisLocation = new AppLocation(thisPost.getPostLocation());
+
+                        /** TEMP. Need to get proper description from data fetched from server **/
+                        thisLocation.createSetDescription("68 A, 4th Block", "Koramangala",
+                                "Bangalore", "Karnataka", "India", "560034"  );
+                        CommonData.locations.put(thisLocation.getLocationName(),thisLocation);
+
                         cValue.put(PostEntry.COLUMN_POST_IMAGE_URL, thisPost.getPostImageURL());
                         cValue.put(PostEntry.COLUMN_AGGREGATED_VOTE_COUNT, thisPost.getAggregatedVoteCount());
 
