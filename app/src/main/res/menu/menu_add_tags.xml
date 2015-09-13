@@ -1,9 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="sachan.dheeraj.mebeerhu.CreatePostActivity">
+    tools:context="sachan.dheeraj.mebeerhu.TagsAddActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/next_button" android:title="@string/next_button"
-        android:orderInCategory="50" app:showAsAction="ifRoom" />
+    <item android:id="@+id/done_button" android:title="@string/done_button"
+        android:orderInCategory="40" app:showAsAction="ifRoom" />
 </menu>

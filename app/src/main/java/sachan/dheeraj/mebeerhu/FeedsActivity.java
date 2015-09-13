@@ -16,21 +16,38 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 
+import sachan.dheeraj.mebeerhu.globalData.CommonData;
 import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
 
 /**
  * Created by agarwalh on 9/3/2015.
  */
-public class FeedsActivity extends ActionBarActivity
+public class FeedsActivity extends ActionBarActivity implements CreatePostDialogFragment.onCreatePostDialogListener
 {
-    public static final int PLACE_PICKER_REQUEST = 100;
-
     private static final String LOG_TAG = FeedsActivity.class.getSimpleName();
 
     void deleteTheDatabase()
     {
         boolean success = deleteDatabase(AppDbHelper.DATABASE_NAME);
         Log.v(LOG_TAG, "Deleted the database to start afresh, success = " + success);
+    }
+
+
+    @Override
+    public void onTakePicture() {
+        Log.v(LOG_TAG, "onTakePicture callback called");
+        Intent picIntent = new Intent(this, CreatePostActivity.class);
+        picIntent.putExtra("action", CommonData.TAKE_PICTURE);
+        startActivity(picIntent);
+    }
+
+    @Override
+    public void onPickFromGallery() {
+        Log.v(LOG_TAG, "onPickFromGallery callback called");
+        Intent picIntent = new Intent(this, CreatePostActivity.class);
+        picIntent.putExtra("action", CommonData.PICK_FROM_GALLERY);
+        startActivity(picIntent);
+
     }
 
     @Override
@@ -45,6 +62,28 @@ public class FeedsActivity extends ActionBarActivity
                     .addToBackStack(getString(R.string.fragment_feeds))
                     .commit();
         }
+    }
+
+     @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        //Remove all pop-up dialogs when activity is resumed */
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("locationDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        prev = getSupportFragmentManager().findFragmentByTag("tagDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        prev = getSupportFragmentManager().findFragmentByTag("createPostDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.commit();
     }
 
     @Override
@@ -133,5 +172,18 @@ public class FeedsActivity extends ActionBarActivity
         // Create and show the dialog.
         DialogFragment newFragment = LocationDialogFragment.newInstance(locName, locDescription);
         newFragment.show(ft, "locationDialog");
+    }
+    public void showCreatePostDialog()
+    {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("createPostDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        //ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        CreatePostDialogFragment newFragment = CreatePostDialogFragment.newInstance();
+        newFragment.show(ft, "createPostDialog");
     }
 }

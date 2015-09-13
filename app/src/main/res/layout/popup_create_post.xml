@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:id = "@+id/new_post_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:paddingTop="20dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp"
+        android:textColor="@color/red"
+        android:text="New Post"/>
+
+    <TextView
+        android:id = "@+id/new_post_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:textStyle="italic"
+        android:text="Take a picture or choose from gallery"/>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/picture_icon"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="15dp"
+            android:baselineAlignBottom="true"
+            android:src= "@drawable/camera_icon"
+            android:contentDescription="Take a picture" />
+
+        <TextView
+            android:id = "@+id/take_picture_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingLeft="15dp"
+            android:paddingBottom="10dp"
+            android:layout_gravity="center_vertical"
+            android:textSize="20dp"
+            android:text = "Take a picture"
+            />
+    </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/gallery_icon"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="10dp"
+
+            android:baselineAlignBottom="true"
+            android:src= "@drawable/gallery_icon"
+            android:contentDescription="Gallery" />
+
+        <TextView
+            android:id = "@+id/open_gallery_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:layout_gravity="center_vertical"
+            android:textSize="20dp"
+            android:text = "Gallery"
+            />
+    </LinearLayout>
+
+</LinearLayout>

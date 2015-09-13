@@ -50,13 +50,33 @@
             android:label="@string/title_feeds_activity" />
         <activity
             android:name=".CreatePostActivity"
-            android:label="@string/title_create_post_activity" >
+            android:label="@string/title_create_post_activity"
+            android:parentActivityName=".FeedsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="FeedsActivity" />
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
 
+        <activity
+            android:name=".LocationActivity"
+            android:label="@string/title_activity_location"
+            android:parentActivityName=".CreatePostActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="CreatePostActivity" />
+        </activity>
+        <activity
+            android:name=".TagsAddActivity"
+            android:label="@string/title_activity_tags_add"
+            android:parentActivityName=".LocationActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="LocationActivity" />
+        </activity>
     </application>
 
 </manifest>

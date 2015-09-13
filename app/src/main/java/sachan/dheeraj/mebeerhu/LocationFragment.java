@@ -56,30 +56,6 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
     private static final double distance = 5.0;
     private static LatLngBounds boundsMyLocation;
 
-    OnLocationSelectedListener lcallBack;
-
-    // Container Activity must implement this interface
-    public interface OnLocationSelectedListener {
-        public void onLocationSelected(String location);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try
-        {
-            lcallBack = (OnLocationSelectedListener)activity;
-            Log.v(LOG_TAG, "Location Fragment attached to activity successfully");
-        }
-        catch(ClassCastException ex)
-        {
-            Log.e(LOG_TAG, "Container activity hasn't implemented OnLocationSelectedListener");
-            throw new ClassCastException(activity.toString()
-                     + " must implement OnLocationSelectedListener interface");
-        }
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
@@ -161,14 +137,10 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
             final String placeId = String.valueOf(item.placeId);
             Log.i(LOG_TAG, "Autocomplete item selected: " + item.description);
 
-            Log.v(LOG_TAG, "Sending location data to place holder fragment");
-            lcallBack.onLocationSelected(String.valueOf(item.description));
-            Log.v(LOG_TAG, "Sent location data to place holder fragment");
-
             Toast.makeText(getActivity(), "Clicked: " + item.description,
                     Toast.LENGTH_SHORT).show();
             Log.i(LOG_TAG, "Called getPlaceById to get Place details for " + item.placeId);
-            getFragmentManager().popBackStack(getString(R.string.fragment_location), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            //getFragmentManager().popBackStack(getString(R.string.fragment_location), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     };
 

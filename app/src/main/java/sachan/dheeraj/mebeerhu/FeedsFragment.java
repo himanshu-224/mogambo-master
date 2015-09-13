@@ -152,20 +152,12 @@ public class FeedsFragment extends Fragment{
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.button);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CreatePostActivity.class);
-                startActivity(intent);
-              /*  try {
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                    startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
-                }catch (Exception e){
-                    Log.e("", "");
-                }*/
+                @Override
+                public void onClick(View v) {
+                    FeedsActivity mActivity = (FeedsActivity)getActivity();
+                    mActivity.showCreatePostDialog();
             }
         });
-
-
 
         class DBLoaderTask extends AsyncTask<Void, Void, ArrayList<Post>>
         {
