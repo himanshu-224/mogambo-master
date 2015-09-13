@@ -21,11 +21,9 @@ import sachan.dheeraj.mebeerhu.model.Tag;
 public class TagDialogFragment extends DialogFragment {
 
     public static final int DISMISS_POPUP = 0;
-    public static final int SEARCH_TAG = 1;
-    public static final int FOLLOW_TAG = 2;
+    public static final int FOLLOW_TAG = 1;
 
     public int userResponse = DISMISS_POPUP;
-    public String searchTag = "";
 
     private static final String LOG_TAG = TagDialogFragment.class.getSimpleName();
 
@@ -37,17 +35,6 @@ public class TagDialogFragment extends DialogFragment {
             int res = v.getId();
             Log.v(LOG_TAG, String.format("tagname %s, res_id %d", tagName, res));
             switch (res) {
-                case R.id.search_tag_icon:
-                case R.id.search_tag: {
-                    Log.v(LOG_TAG, "Tag dialog: Clicked Search for Tag = " + tagName);
-                    //tagCallBack.onTagSearch(tagName);
-                   //Log.v(LOG_TAG, "Sent tag Search done event to main activity");
-                    userResponse = SEARCH_TAG;
-                    searchTag = tagName;
-                    getDialog().dismiss();
-                    Log.v(LOG_TAG, "Dismissed dialog: starting tag search");
-                    break;
-                }
                 case R.id.follow_tag_icon:
                 case R.id.follow_tag: {
                     Log.v(LOG_TAG, "Tag dialog: Clicked Follow for Tag = " + tagName);
@@ -78,13 +65,6 @@ public class TagDialogFragment extends DialogFragment {
         }
     };
 
-    private onTagSearchedListener tagCallBack;
-
-    // Container Activity must implement this interface
-    public interface onTagSearchedListener {
-        public void onTagSearch(String tagName);
-    }
-
     static TagDialogFragment newInstance(String tagName, String tagDescription, boolean isFollowed) {
         TagDialogFragment instance = new TagDialogFragment();
         Bundle args = new Bundle();
@@ -96,29 +76,9 @@ public class TagDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try
-        {
-            tagCallBack = (onTagSearchedListener)activity;
-            Log.v(LOG_TAG, "TagSearch Fragment attached to activity successfully");
-        }
-        catch(ClassCastException ex)
-        {
-            Log.e(LOG_TAG, "Container activity hasn't implemented TagSearch Fragment");
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnTagSearchListener interface");
-        }
-
-    }
-
-    @Override
     public void onDismiss(DialogInterface dialog)
     {
         Log.v(LOG_TAG, "OnDismiss Tag popup dismiss, user selected: " + userResponse);
-        if (userResponse == SEARCH_TAG) {
-            tagCallBack.onTagSearch(searchTag);
-        }
     }
 
     @Override
@@ -132,8 +92,6 @@ public class TagDialogFragment extends DialogFragment {
 
         TextView title = (TextView) dialog.findViewById(R.id.tag_title);
         TextView description = (TextView) dialog.findViewById(R.id.tag_description);
-        ImageView searchIcon = (ImageView) dialog.findViewById(R.id.search_tag_icon);
-        TextView searchTV = (TextView) dialog.findViewById(R.id.search_tag);
         ImageView followIcon = (ImageView) dialog.findViewById(R.id.follow_tag_icon);
         TextView followTV = (TextView) dialog.findViewById(R.id.follow_tag);
 
@@ -144,8 +102,6 @@ public class TagDialogFragment extends DialogFragment {
             followTV.setText(getString(R.string.unfollow));
         else
             followTV.setText(getString(R.string.follow));
-        searchIcon.setOnClickListener(DIALOG_TAG_CLICK_LISTENER);
-        searchTV.setOnClickListener(DIALOG_TAG_CLICK_LISTENER);
         followIcon.setOnClickListener(DIALOG_TAG_CLICK_LISTENER);
         followTV.setOnClickListener(DIALOG_TAG_CLICK_LISTENER);
 

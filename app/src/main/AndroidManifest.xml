@@ -57,14 +57,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
 
-        <activity
-            android:name=".TagSearchActivity"
-            android:label="@string/title_activity_tag_search"
-            android:parentActivityName=".FeedsActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="sachan.dheeraj.mebeerhu.FeedsActivity" />
-        </activity>
     </application>
 
 </manifest>

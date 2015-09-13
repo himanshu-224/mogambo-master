@@ -21,44 +21,11 @@ import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
 /**
  * Created by agarwalh on 9/3/2015.
  */
-public class FeedsActivity extends ActionBarActivity implements TagDialogFragment.onTagSearchedListener,
-        LocationDialogFragment.onLocationSearchedListener
+public class FeedsActivity extends ActionBarActivity
 {
     public static final int PLACE_PICKER_REQUEST = 100;
 
     private static final String LOG_TAG = FeedsActivity.class.getSimpleName();
-
-    @Override
-    public void onTagSearch(String tagName)
-    {
-        Log.v(LOG_TAG, "onTagSearch called for FeedsActivity");
-
-        TagSearchFragment tagFrag = new TagSearchFragment();
-        Bundle args = new Bundle();
-        args.putString("tagName", tagName);
-        tagFrag.setArguments(args);
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.feeds_frame_layout, tagFrag, getString(R.string.fragment_tag_search))
-                .addToBackStack(getString(R.string.fragment_tag_search))
-                .commit();
-    }
-
-    @Override
-    public void onLocationSearch(String locationName)
-    {
-        Log.v(LOG_TAG, "onLocationSearch called for FeedsActivity");
-
-        /* LocationSearchFragment locFrag = new LocationSearchFragment();
-        Bundle args = new Bundle();
-        args.putString("locationName", locationName);
-        locFrag.setArguments(args);
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.feeds_frame_layout, locFrag, getString(R.string.fragment_tag_search))
-                .addToBackStack(getString(R.string.fragment_tag_search))
-                .commit(); */
-    }
 
     void deleteTheDatabase()
     {
