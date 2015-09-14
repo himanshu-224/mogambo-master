@@ -47,6 +47,7 @@
             android:label="@string/title_activity_test" />
         <activity
             android:name=".FeedsActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_feeds_activity" />
         <activity
             android:name=".CreatePostActivity"

@@ -191,7 +191,9 @@ public class TagFillerFragment extends Fragment {
             }
             Log.v(LOG_TAG, "Done, getting user data for Post");
             /* Launch a service here to save the data to server */
-            getActivity().finish();
+            Intent intent = new Intent(getActivity(), FeedsActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
