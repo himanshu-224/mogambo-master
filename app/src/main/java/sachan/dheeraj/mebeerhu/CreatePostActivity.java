@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -20,6 +23,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
@@ -43,10 +47,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import sachan.dheeraj.mebeerhu.globalData.CommonData;
+import sachan.dheeraj.mebeerhu.localData.AppContract;
+import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
 import sachan.dheeraj.mebeerhu.model.Tag;
 import java.util.HashSet;
 
-public class CreatePostActivity extends ActionBarActivity{
+public class CreatePostActivity extends AppCompatActivity{
 
     private static final int REQUEST_TAKE_PICTURE = 100;
     private static final int REQUEST_PICK_FROM_GALLERY = 101;
@@ -55,20 +61,43 @@ public class CreatePostActivity extends ActionBarActivity{
 
     private Bitmap imageBitmap = null;
     private boolean picTaken = false;
+    private AppDbHelper mDbHelper;
 
     private final String LOG_TAG = CreatePostActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v(LOG_TAG, "onCreate for CreatePost Activity");
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Log.v(LOG_TAG, "onCreate for CreatePost Activity");
         setContentView(R.layout.activity_create_post);
         picMethod = getIntent().getIntExtra("action", CommonData.TAKE_PICTURE);
         Log.v(LOG_TAG, "For generating picture, got action = " + picMethod );
         mainImageView = (ImageView)findViewById(R.id.main_image);
+
+        /* Clear the location data which might be stored in shared
+         * prefs for some previous post */
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.preference_file), Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEdit = sharedPref.edit();
+        prefEdit.remove(getString(R.string.post_location_id));
+        prefEdit.remove(getString(R.string.post_location_description));
+        prefEdit.apply();
+
+        /* Delete the table having any stored tags for previous post */
+        mDbHelper =  new AppDbHelper(this);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try
+        {
+            db.delete(AppContract.SinglePostTagEntry.TABLE_NAME, null, null);
+            db.setTransactionSuccessful();
+        }
+        finally {
+            db.endTransaction();
+        }
     }
 
     @Override
@@ -166,11 +195,11 @@ public class CreatePostActivity extends ActionBarActivity{
     {
         Log.v(LOG_TAG, "Applying image bitmap");
         mainImageView.setImageBitmap(imageBitmap);
-        ViewGroup.LayoutParams layoutParams = mainImageView.getLayoutParams();
+       /* ViewGroup.LayoutParams layoutParams = mainImageView.getLayoutParams();
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dimension = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(dimension);
         layoutParams.height = dimension.widthPixels * imageBitmap.getHeight() / imageBitmap.getWidth();
-        //mainImageView.setLayoutParams(layoutParams);
+        mainImageView.setLayoutParams(layoutParams); */
     }
 }

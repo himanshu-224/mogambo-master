@@ -37,6 +37,9 @@
     <string name="google_login">Google</string>
     <string name="app_login">AppLogin</string>
 
+    <string name="post_location_id">postLocId</string>
+    <string name="post_location_description">postLocDesc</string>
+
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
 

@@ -1,14 +1,17 @@
 package sachan.dheeraj.mebeerhu;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -56,6 +59,25 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
     private static final double distance = 5.0;
     private static LatLngBounds boundsMyLocation;
 
+    //private static final String KEY_PLACE_ID = "bitmap";
+    //private static final String KEY_PLACE_DETAILS = "imageTaken";
+
+    private String placeId;
+    private String placeDetails;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        /* if (savedInstanceState != null) {
+            Log.v(LOG_TAG, "Restoring saved instance for Location Fragment Activity");
+            placeId  = savedInstanceState.getString(KEY_PLACE_ID);
+            placeDetails = savedInstanceState.getString(KEY_PLACE_DETAILS);
+            Log.v(LOG_TAG, "placeId = " + placeId + ", placeDetails = " + placeDetails);
+        } */
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
@@ -99,7 +121,32 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
                 mAutocompleteView.setText("");
             }
         });
+
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                getString(R.string.preference_file), Context.MODE_PRIVATE);
+        placeId = sharedPref.getString(getString(R.string.post_location_id), null);
+        placeDetails = sharedPref.getString(getString(R.string.post_location_description), null);
+        if (placeDetails != null)
+            mAutocompleteView.setText(placeDetails);
+
         return rootView;
+    }
+
+    /* @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.v(LOG_TAG, "Saving the state for LocationFragment");
+        if (placeDetails != null && placeId != null)
+        {
+            outState.putString(KEY_PLACE_ID, placeId);
+            outState.putString(KEY_PLACE_DETAILS, placeDetails);
+            super.onSaveInstanceState(outState);
+        }
+    } */
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(LOG_TAG, "OnResume for Location fragment");
     }
 
     @Override
@@ -115,6 +162,51 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
         mGoogleApiClient.disconnect();
         Log.i(LOG_TAG, "OnStop called, Disconnected from Google API");
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(LOG_TAG, "onDestroy called, Disconnected from Google API");
+
+        if (placeId != null && placeDetails != null) {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                    getString(R.string.preference_file), Context.MODE_PRIVATE);
+            SharedPreferences.Editor prefEdit = sharedPref.edit();
+            prefEdit.putString(getString(R.string.post_location_id), placeId);
+            prefEdit.putString(getString(R.string.post_location_description), placeDetails);
+            prefEdit.apply();
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_location_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.next_button)
+        {
+            if (placeId == null || placeDetails == null)
+            {
+                Toast.makeText(getActivity(),"Please select location to continue", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            Log.v(LOG_TAG, String.format("Going to tags activity, placeId = %s, details = %s",
+                    placeId, placeDetails));
+            Intent thisIntent = new Intent(getActivity(), TagsAddActivity.class);
+            thisIntent.putExtra("locationId", placeId);
+            thisIntent.putExtra("locationDetails", placeDetails);
+            startActivity(thisIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * Listener that handles selections from suggestions from the AutoCompleteTextView that
      * displays Place suggestions.
@@ -134,10 +226,11 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
              read the place ID.
               */
             final PlaceAutocompleteAdapter.PlaceAutocomplete item = mAdapter.getItem(position);
-            final String placeId = String.valueOf(item.placeId);
-            Log.i(LOG_TAG, "Autocomplete item selected: " + item.description);
+            placeId = String.valueOf(item.placeId);
+            placeDetails = String.valueOf(item.description);
+            Log.i(LOG_TAG, "Autocomplete item selected: " + placeDetails);
 
-            Toast.makeText(getActivity(), "Clicked: " + item.description,
+            Toast.makeText(getActivity(), "Clicked: " + placeDetails,
                     Toast.LENGTH_SHORT).show();
             Log.i(LOG_TAG, "Called getPlaceById to get Place details for " + item.placeId);
             //getFragmentManager().popBackStack(getString(R.string.fragment_location), FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -151,7 +244,7 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
 
     @Override
     public void onConnectionSuspended(int i)  {
-        Log.e(LOG_TAG,"Google Connection suspended, attempting to re-connect");
+        Log.e(LOG_TAG, "Google Connection suspended, attempting to re-connect");
         mGoogleApiClient.connect();
     }
 

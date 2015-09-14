@@ -8,6 +8,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +23,7 @@ import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
 /**
  * Created by agarwalh on 9/3/2015.
  */
-public class FeedsActivity extends ActionBarActivity implements CreatePostDialogFragment.onCreatePostDialogListener
+public class FeedsActivity extends AppCompatActivity implements CreatePostDialogFragment.onCreatePostDialogListener
 {
     private static final String LOG_TAG = FeedsActivity.class.getSimpleName();
 

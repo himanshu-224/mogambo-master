@@ -51,6 +51,7 @@
         <activity
             android:name=".CreatePostActivity"
             android:label="@string/title_create_post_activity"
+            android:launchMode="singleTop"
             android:parentActivityName=".FeedsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -64,6 +65,7 @@
         <activity
             android:name=".LocationActivity"
             android:label="@string/title_activity_location"
+            android:launchMode="singleTop"
             android:parentActivityName=".CreatePostActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -72,6 +74,7 @@
         <activity
             android:name=".TagsAddActivity"
             android:label="@string/title_activity_tags_add"
+            android:launchMode="singleTop"
             android:parentActivityName=".LocationActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

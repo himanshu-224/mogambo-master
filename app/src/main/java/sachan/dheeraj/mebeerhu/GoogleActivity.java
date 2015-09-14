@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.provider.Contacts;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +30,7 @@ import com.google.android.gms.plus.model.people.PersonBuffer;
 
 import java.io.IOException;
 
-public class GoogleActivity extends ActionBarActivity  implements
+public class GoogleActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
         /*,ResultCallback<People.LoadPeopleResult>*/ {

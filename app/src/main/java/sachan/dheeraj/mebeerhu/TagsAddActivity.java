@@ -1,18 +1,26 @@
 package sachan.dheeraj.mebeerhu;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class TagsAddActivity extends ActionBarActivity {
+public class TagsAddActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = TagsAddActivity.class.getSimpleName();
+    private String locationId;
+    private String locationDetails;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_tags);
+
+        Intent thisIntent = getIntent();
+        locationId = thisIntent.getStringExtra("locationId");
+        locationDetails = thisIntent.getStringExtra("locationDetails");
 
         Log.v(LOG_TAG, "onCreate for Tags Add Activity");
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -42,12 +50,6 @@ public class TagsAddActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
-        }
-        else if(id == R.id.done_button){
-            //To do : save this post to server and direct user back to the feeds.
-            Log.v(LOG_TAG, "User clicked done for the post");
-            //To do .. keep on popping activities till FeedsActivity is found */
             return true;
         }
 

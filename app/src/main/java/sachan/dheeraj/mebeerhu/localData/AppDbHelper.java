@@ -28,6 +28,7 @@ import sachan.dheeraj.mebeerhu.localData.AppContract.UserTagEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.PostAccompanyingUserEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.UserFollowingEntry;
 import sachan.dheeraj.mebeerhu.localData.AppContract.UserFollowerEntry;
+import sachan.dheeraj.mebeerhu.localData.AppContract.SinglePostTagEntry;
 
 import sachan.dheeraj.mebeerhu.model.Post;
 import sachan.dheeraj.mebeerhu.model.Tag;
@@ -55,7 +56,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
 
         /* Create a table to store a user's details */
         final String SQL_CREATE_USER_TABLE = "CREATE TABLE " + UserEntry.TABLE_NAME + " (" +
-                PostEntry._ID + " INTEGER PRIMARY KEY," +
+                UserEntry._ID + " INTEGER PRIMARY KEY," +
                 UserEntry.COLUMN_USERNAME + " TEXT UNIQUE NOT NULL, " +
                 UserEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 UserEntry.COLUMN_EMAIL_ID + " TEXT, " +
@@ -74,7 +75,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
 
         /* Create a table to store a tag */
         final String SQL_CREATE_TAG_TABLE = "CREATE TABLE " + TagEntry.TABLE_NAME + " (" +
-                PostEntry._ID + " INTEGER PRIMARY KEY," +
+                TagEntry._ID + " INTEGER PRIMARY KEY," +
                 TagEntry.COLUMN_TAG_NAME + " TEXT UNIQUE NOT NULL, " +
                 TagEntry.COLUMN_TAG_MEANING + " TEXT NOT NULL, " +
                 TagEntry.COLUMN_TYPE_ID + " INTEGER NOT NULL, " +
@@ -196,6 +197,15 @@ public class AppDbHelper extends SQLiteOpenHelper {
                 UserFollowerEntry.COLUMN_USERNAME_FOLLOWER + ") " +
                 " )" ;
 
+                /* Create a table to store a tag */
+        final String SQL_CREATE_SINGLE_POST_TAG_TABLE = "CREATE TABLE " + SinglePostTagEntry.TABLE_NAME + " (" +
+                SinglePostTagEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                SinglePostTagEntry.COLUMN_TAG_NAME + " TEXT UNIQUE NOT NULL, " +
+                SinglePostTagEntry.COLUMN_TAG_MEANING + " TEXT NOT NULL, " +
+                SinglePostTagEntry.COLUMN_TYPE_ID + " INTEGER NOT NULL, " +
+                SinglePostTagEntry.COLUMN_APPROVED + " INTEGER NOT NULL " +
+                " );";
+
         Log.v(LOG_TAG, "Listing SQL create table statements:");
 
         Log.v(LOG_TAG, SQL_CREATE_USER_TABLE);
@@ -222,6 +232,9 @@ public class AppDbHelper extends SQLiteOpenHelper {
         Log.v(LOG_TAG, SQL_CREATE_USER_FOLLOWER_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_USER_FOLLOWER_TABLE);
 
+        Log.v(LOG_TAG, SQL_CREATE_SINGLE_POST_TAG_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_SINGLE_POST_TAG_TABLE);
+
         Log.v(LOG_TAG, "Done creating SQL tables");
 
     }
@@ -243,6 +256,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PostAccompanyingUserEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + UserFollowingEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + UserFollowerEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SinglePostTagEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

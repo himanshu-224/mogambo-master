@@ -3,11 +3,12 @@ package sachan.dheeraj.mebeerhu;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class LocationActivity extends ActionBarActivity {
+public class LocationActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = LocationActivity.class.getSimpleName();
 
@@ -44,11 +45,6 @@ public class LocationActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-        else if(id == R.id.next_button) {
-            startActivity(new Intent(this, TagsAddActivity.class));
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 }

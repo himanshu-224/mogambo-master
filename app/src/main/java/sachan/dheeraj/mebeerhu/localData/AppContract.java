@@ -140,4 +140,16 @@ public class AppContract {
 
     }
 
+    /* Inner class that defines the table contents of the Tag table */
+    public static final class SinglePostTagEntry implements BaseColumns {
+
+        // Table name
+        public static final String TABLE_NAME = "new_post_tag";
+
+        public static final String COLUMN_TAG_NAME = "tag_name";
+        public static final String COLUMN_TAG_MEANING = "tag_meaning";
+        public static final String COLUMN_TYPE_ID ="type_id";
+        public static final String COLUMN_APPROVED = "approved";
+    }
+
 }
