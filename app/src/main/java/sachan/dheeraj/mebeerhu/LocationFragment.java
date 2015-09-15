@@ -94,7 +94,14 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
 
         LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        myLocation = new LatLng(location.getLatitude(),location.getLongitude());
+        if (location != null) {
+            myLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        }
+        else {
+            /* Location of mindspace hyderabad */
+            myLocation = new LatLng(17.439200, 78.377240);
+            Log.e(LOG_TAG, "Could not obtain current location, using default values");
+        }
 
         boundsMyLocation = findLocationBounds(myLocation, distance);
 
@@ -191,11 +198,11 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
         int id = item.getItemId();
         if (id == R.id.next_button)
         {
-            if (placeId == null || placeDetails == null)
+            /*if (placeId == null || placeDetails == null)
             {
                 Toast.makeText(getActivity(),"Please select location to continue", Toast.LENGTH_SHORT).show();
                 return true;
-            }
+            }*/
             Log.v(LOG_TAG, String.format("Going to tags activity, placeId = %s, details = %s",
                     placeId, placeDetails));
             Intent thisIntent = new Intent(getActivity(), TagsAddActivity.class);

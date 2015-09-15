@@ -24,10 +24,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -71,6 +73,8 @@ public class TagFillerFragment extends Fragment {
     private CustomAutoCompleteTextView autoCompleteTextView;
     private LinearLayout linearLayout;
     private HorizontalScrollView horizontalScrollView;
+    private ActionMode mActionMode;
+    View removedView;
 
     public TagFillerFragment() {
     }
@@ -285,6 +289,8 @@ public class TagFillerFragment extends Fragment {
                     horizontalScrollView.setVisibility(View.VISIBLE);
                 }
                 horizontalScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+                view1.setTag("test");
+                view1.setOnLongClickListener(LongClickListener);
                 linearLayout.addView(view1);
                 autoCompleteTextView.setText("");
             }
@@ -326,11 +332,9 @@ public class TagFillerFragment extends Fragment {
                         horizontalScrollView.setVisibility(View.VISIBLE);
                     }
                     horizontalScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
-                    linearLayout.addView(view1);
-
                     view1.setTag("test");
-                    view1.setOnLongClickListener(onLongClickListener);
-
+                    view1.setOnLongClickListener(LongClickListener);
+                    linearLayout.addView(view1);
                     autoCompleteTextView.setText("");
                 }
             }
@@ -356,88 +360,68 @@ public class TagFillerFragment extends Fragment {
                 horizontalScrollView.setVisibility(View.VISIBLE);
             }
             horizontalScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+            view1.setTag("test");
+            view1.setOnLongClickListener(LongClickListener);
             linearLayout.addView(view1);
         }
         return rootView;
     }
 
-    private static View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            ClipData.Item item = new ClipData.Item((String) v.getTag());
-
-            // Create a new ClipData using the tag as a label, the plain text MIME type, and
-            // the already-created item. This will create a new ClipDescription object within the
-            // ClipData, and set its MIME type entry to "text/plain"
-
-            String[] MIMETYPES_TEXT_PLAIN = new String[]{
-                    ClipDescription.MIMETYPE_TEXT_PLAIN};
-
-            ClipData dragData = new ClipData((String) v.getTag(), MIMETYPES_TEXT_PLAIN, item);
-
-            // Instantiates the drag shadow builder.
-            View.DragShadowBuilder myShadow = new MyDragShadowBuilder(v);
-
-            // Starts the drag
-
-            v.startDrag(dragData,  // the data to be dragged
-                    myShadow,  // the drag shadow builder
-                    null,      // no need to use local data
-                    0          // flags (not currently used, set to 0)
-            );
+    View.OnLongClickListener LongClickListener = new View.OnLongClickListener() {
+        // Called when the user long-clicks on someView
+        public boolean onLongClick(View view) {
+            Log.v(LOG_TAG,"LongClick selected by user");
+            if (mActionMode != null) {
+                return false;
+            }
+            removedView = view;
+            // Start the CAB using the ActionMode.Callback defined above
+            mActionMode = getActivity().startActionMode(mActionModeCallback);
+            mActionMode.setTitle("Delete Tag");
+            view.setSelected(true);
             return true;
         }
     };
 
-    private static class MyDragShadowBuilder extends View.DragShadowBuilder {
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
-        // The drag shadow image, defined as a drawable thing
-        private static Drawable shadow;
-
-        // Defines the constructor for myDragShadowBuilder
-        public MyDragShadowBuilder(View v) {
-
-            // Stores the View parameter passed to myDragShadowBuilder.
-            super(v);
-
-            // Creates a draggable image that will fill the Canvas provided by the system.
-            shadow = new ColorDrawable(Color.LTGRAY);
-        }
-
-        // Defines a callback that sends the drag shadow dimensions and touch point back to the
-        // system.
         @Override
-        public void onProvideShadowMetrics(Point size, Point touch) {
-            // Defines local variables
-            int width, height;
-
-            // Sets the width of the shadow to half the width of the original View
-            width = getView().getWidth() / 2;
-
-            // Sets the height of the shadow to half the height of the original View
-            height = getView().getHeight() / 2;
-
-            // The drag shadow is a ColorDrawable. This sets its dimensions to be the same as the
-            // Canvas that the system will provide. As a result, the drag shadow will fill the
-            // Canvas.
-            shadow.setBounds(0, 0, width, height);
-
-            // Sets the size parameter's width and height values. These get back to the system
-            // through the size parameter.
-            size.set(width, height);
-
-            // Sets the touch point's position to be in the middle of the drag shadow
-            touch.set(width / 2, height / 2);
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // inflate contextual menu
+            mode.getMenuInflater().inflate(R.menu.tag_context_menu, menu);
+            return true;
         }
 
-        // Defines a callback that draws the drag shadow in a Canvas that the system constructs
-        // from the dimensions passed in onProvideShadowMetrics().
         @Override
-        public void onDrawShadow(Canvas canvas) {
-
-            // Draws the ColorDrawable in the Canvas passed in from the system.
-            shadow.draw(canvas);
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
         }
-    }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+            switch (item.getItemId()) {
+                case R.id.menu_delete:
+                    linearLayout.removeView(removedView);
+                    TextView tv = (TextView)removedView.findViewById(R.id.tv);
+                    int index = tags.indexOf(new Tag(String.valueOf(tv.getText()), "dummy", Tag.TYPE_ADJECTIVE, true));
+                    if (index != -1)
+                        tags.remove(index);
+                    else
+                        Log.e(LOG_TAG, "Error in deleting, could not find tag: " + String.valueOf(tv.getText()) );
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+    };
+
 }
 

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,9 +71,8 @@ public class TagAutocompleteAdapter
         Tag tag = getItem(position);
         Log.v(LOG_TAG, String.format("Binding Tag to adapter, Name: %s, meaning: %s",
                 tag.getTagName(),tag.getTagMeaning()));
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_tag_suggestion, parent, false);
-        }
+
+        convertView = LayoutInflater.from(context).inflate(R.layout.list_item_tag_suggestion, parent, false);
         TextView tag_title = (TextView) convertView.findViewById(R.id.tag_title);
         TextView tag_meaning = (TextView) convertView.findViewById(R.id.tag_meaning);
 
