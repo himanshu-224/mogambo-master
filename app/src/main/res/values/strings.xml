@@ -124,7 +124,7 @@
         <item>Anguilla</item>
         <item>Antarctica</item>
     </string-array>
-    <string name="title_activity_tags_add">Tags</string>
+    <string name="title_activity_tags_add">Create your Tag Cloud</string>
 
 
 </resources>

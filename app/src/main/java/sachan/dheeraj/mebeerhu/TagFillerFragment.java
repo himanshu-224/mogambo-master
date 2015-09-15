@@ -68,7 +68,7 @@ public class TagFillerFragment extends Fragment {
 
     private AppDbHelper mDbHelper;
 
-    private AutoCompleteTextView autoCompleteTextView;
+    private CustomAutoCompleteTextView autoCompleteTextView;
     private LinearLayout linearLayout;
     private HorizontalScrollView horizontalScrollView;
 
@@ -251,19 +251,19 @@ public class TagFillerFragment extends Fragment {
 
         Log.v(LOG_TAG, "On onCreateView for TagFillerFragment");
         View rootView = inflater.inflate(R.layout.fragment_tag_filler, container, false);
-        autoCompleteTextView = (AutoCompleteTextView) rootView.findViewById(R.id.auto_complete);
+        autoCompleteTextView = (CustomAutoCompleteTextView) rootView.findViewById(R.id.auto_complete);
         linearLayout = (LinearLayout) rootView.findViewById(R.id.linear_layout);
         horizontalScrollView = (HorizontalScrollView) rootView.findViewById(R.id.hsv);
         horizontalScrollView.setVisibility(View.GONE);
-        String[] countries = getResources().getStringArray(R.array.countries_array);
-        final ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, countries);
+        final TagAutocompleteAdapter adapter =
+                new TagAutocompleteAdapter(getActivity(), R.layout.list_item_tag_suggestion);
         autoCompleteTextView.setAdapter(adapter);
 
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String s = adapter.getItem(position);
+                Tag thisTag = adapter.getItem(position);
+                String s = thisTag.getTagName();
 
                 /* Store the Tags locally, and also check if it has not already been entered
                  * by the user. If already entered, inform the user and return from here */
@@ -338,20 +338,8 @@ public class TagFillerFragment extends Fragment {
 
         rootView.setFocusableInTouchMode(true);
         rootView.requestFocus();
-        rootView.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.v(LOG_TAG, "keyCode: " + keyCode);
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    Log.v(LOG_TAG, "onKey Back listener pressed");
-                    getFragmentManager().popBackStack(getString(R.string.fragment_tag_filler), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
 
+        /* Restore the tags on returning back to this activity */
         for (Tag tag:tags)
         {
             String s = tag.getTagName();
