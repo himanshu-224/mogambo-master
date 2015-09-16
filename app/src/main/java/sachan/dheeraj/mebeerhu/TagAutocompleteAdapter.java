@@ -74,10 +74,10 @@ public class TagAutocompleteAdapter
 
         convertView = LayoutInflater.from(context).inflate(R.layout.list_item_tag_suggestion, parent, false);
         TextView tag_title = (TextView) convertView.findViewById(R.id.tag_title);
-        //TextView tag_meaning = (TextView) convertView.findViewById(R.id.tag_meaning);
+        TextView tag_meaning = (TextView) convertView.findViewById(R.id.tag_meaning);
 
         tag_title.setText(tag.getTagName());
-        //tag_meaning.setText(tag.getTagMeaning());
+        tag_meaning.setText(tag.getTagMeaning());
 
         return convertView;
     }
