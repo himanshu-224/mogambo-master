@@ -79,6 +79,10 @@ public class TagFillerFragment extends Fragment {
     public TagFillerFragment() {
     }
 
+    public ArrayList<Tag> getTags()
+    {
+        return tags;
+    }
     public boolean addTags(String tag)
     {
         /* Here we need to determine if that tag exists in our database or not.
@@ -103,7 +107,7 @@ public class TagFillerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
 
         mDbHelper =  new AppDbHelper(getActivity());
         Log.v(LOG_TAG, "On Create for TagFillerFragment, fetch any saved tags from database");
@@ -177,31 +181,6 @@ public class TagFillerFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_tagfiller_fragment, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.done_button)
-        {
-            if (tags.size() == 0 )
-            {
-                Toast.makeText(getActivity(),"Please add tags to finish Post", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            Log.v(LOG_TAG, "Done, getting user data for Post");
-            /* Launch a service here to save the data to server */
-            Intent intent = new Intent(getActivity(), FeedsActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onDestroy()

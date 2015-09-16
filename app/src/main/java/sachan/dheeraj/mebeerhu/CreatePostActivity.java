@@ -54,14 +54,10 @@ import java.util.HashSet;
 
 public class CreatePostActivity extends AppCompatActivity{
 
-    private static final int REQUEST_TAKE_PICTURE = 100;
-    private static final int REQUEST_PICK_FROM_GALLERY = 101;
     private int picMethod = 0;
-    private ImageView mainImageView;
 
-    private Bitmap imageBitmap = null;
-    private boolean picTaken = false;
     private AppDbHelper mDbHelper;
+    private boolean origin_feeds = false;
 
     private final String LOG_TAG = CreatePostActivity.class.getSimpleName();
 
@@ -71,11 +67,14 @@ public class CreatePostActivity extends AppCompatActivity{
         Log.v(LOG_TAG, "onCreate for CreatePost Activity");
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         setContentView(R.layout.activity_create_post);
+
         picMethod = getIntent().getIntExtra("action", CommonData.TAKE_PICTURE);
-        Log.v(LOG_TAG, "For generating picture, got action = " + picMethod );
-        mainImageView = (ImageView)findViewById(R.id.main_image);
+        origin_feeds =  getIntent().getBooleanExtra("originFeeds", false);
+        if(origin_feeds)
+            Log.v(LOG_TAG, "Initiated from feeds, destroy on failure");
+
+        Log.v(LOG_TAG, "For generating picture, got action = " + picMethod);
 
         /* Clear the location data which might be stored in shared
          * prefs for some previous post */
@@ -98,70 +97,27 @@ public class CreatePostActivity extends AppCompatActivity{
         finally {
             db.endTransaction();
         }
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.create_post_activity_layout, new CreatePostFragment(), getString(R.string.fragment_create_post))
+                    .addToBackStack(getString(R.string.fragment_create_post))
+                    .commit();
+        }
     }
 
-    @Override
-    protected void onResume()
+    public boolean get_origin_feeds()
     {
-        super.onResume();
-        Log.v(LOG_TAG, "On resume for CreatePostActivity Fragment");
-        if (!picTaken) {
-            switch(picMethod) {
-                case CommonData.TAKE_PICTURE:
-                {
-                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PICTURE);
-                    }
-                    break;
-                }
-                case CommonData.PICK_FROM_GALLERY:
-                {
-                    Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(galleryIntent, REQUEST_PICK_FROM_GALLERY);
-                    break;
-                }
-                default:
-                    Log.v(LOG_TAG, "Something messed up, picture action code = " + picMethod);
-            }
-        }
-        if (picTaken && imageBitmap != null)
-        {
-            Log.v(LOG_TAG, "OnResume called and setting image again");
-            setImage();
-        }
+        return origin_feeds;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.v(LOG_TAG, String.format("onActivityResult, requestCode = %d, result = %d",
-                requestCode, resultCode));
-        if (requestCode == REQUEST_TAKE_PICTURE && resultCode == Activity.RESULT_OK)
-        {
-            Log.v(LOG_TAG, "IMAGE Captured successfully");
-            picTaken = true;
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
-        }
-        else if (requestCode == REQUEST_PICK_FROM_GALLERY && resultCode == Activity.RESULT_OK)
-        {
-            Log.v(LOG_TAG, "IMAGE Selected from Gallery successfully");
-            picTaken = true;
-            Uri galleryImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+    public void set_origin_feeds(boolean value)
+    {
+        origin_feeds =  value;
+    }
 
-            Cursor cursor = getContentResolver().query(galleryImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-
-            imageBitmap = BitmapFactory.decodeFile(cursor.getString(columnIndex));
-            cursor.close();
-        }
-        else {
-            finish();
-        }
+    public int get_picMethod()
+    {
+        return picMethod;
     }
 
     @Override
@@ -189,17 +145,5 @@ public class CreatePostActivity extends AppCompatActivity{
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void setImage()
-    {
-        Log.v(LOG_TAG, "Applying image bitmap");
-        mainImageView.setImageBitmap(imageBitmap);
-       /* ViewGroup.LayoutParams layoutParams = mainImageView.getLayoutParams();
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics dimension = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(dimension);
-        layoutParams.height = dimension.widthPixels * imageBitmap.getHeight() / imageBitmap.getWidth();
-        mainImageView.setLayoutParams(layoutParams); */
     }
 }

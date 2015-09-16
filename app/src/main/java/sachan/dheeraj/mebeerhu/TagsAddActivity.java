@@ -1,12 +1,12 @@
 package sachan.dheeraj.mebeerhu;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class TagsAddActivity extends AppCompatActivity {
 
@@ -50,6 +50,21 @@ public class TagsAddActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.done_button)
+        {
+            TagFillerFragment thisFragment = (TagFillerFragment)getSupportFragmentManager().findFragmentByTag(getString(R.string.fragment_tag_filler));
+            if (thisFragment.getTags().size() == 0 )
+            {
+                Toast.makeText(this, "Please add tags to finish Post", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            Log.v(LOG_TAG, "Done, getting user data for Post");
+            /* Launch a service here to save the data to server */
+            Intent intent = new Intent(this, FeedsActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
         }
 

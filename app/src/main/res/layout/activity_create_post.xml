@@ -1,22 +1,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/container"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    tools:context="sachan.dheeraj.mebeerhu.CreatePostActivity" tools:ignore="MergeRootFrame">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/create_post_activity_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="sachan.dheeraj.mebeerhu.CreatePostActivity"
+    tools:ignore="MergeRootFrame">
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_gravity="center_vertical">
-        <ImageView
-            android:id="@+id/main_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            android:src="@color/tatti"
-            android:contentDescription="Post Image"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/purple" />
-    </FrameLayout>
 </FrameLayout>

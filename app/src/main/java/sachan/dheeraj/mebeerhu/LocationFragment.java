@@ -62,20 +62,13 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
     //private static final String KEY_PLACE_ID = "bitmap";
     //private static final String KEY_PLACE_DETAILS = "imageTaken";
 
-    private String placeId;
-    private String placeDetails;
+    public String placeId;
+    public String placeDetails;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /* if (savedInstanceState != null) {
-            Log.v(LOG_TAG, "Restoring saved instance for Location Fragment Activity");
-            placeId  = savedInstanceState.getString(KEY_PLACE_ID);
-            placeDetails = savedInstanceState.getString(KEY_PLACE_DETAILS);
-            Log.v(LOG_TAG, "placeId = " + placeId + ", placeDetails = " + placeDetails);
-        } */
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -183,35 +176,6 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
             prefEdit.putString(getString(R.string.post_location_description), placeDetails);
             prefEdit.apply();
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_location_fragment, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.next_button)
-        {
-            /*if (placeId == null || placeDetails == null)
-            {
-                Toast.makeText(getActivity(),"Please select location to continue", Toast.LENGTH_SHORT).show();
-                return true;
-            }*/
-            Log.v(LOG_TAG, String.format("Going to tags activity, placeId = %s, details = %s",
-                    placeId, placeDetails));
-            Intent thisIntent = new Intent(getActivity(), TagsAddActivity.class);
-            thisIntent.putExtra("locationId", placeId);
-            thisIntent.putExtra("locationDetails", placeDetails);
-            startActivity(thisIntent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**

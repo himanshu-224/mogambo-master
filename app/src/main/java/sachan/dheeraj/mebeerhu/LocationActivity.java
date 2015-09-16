@@ -1,12 +1,15 @@
 package sachan.dheeraj.mebeerhu;
 
+import android.app.FragmentManager;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class LocationActivity extends AppCompatActivity {
 
@@ -43,6 +46,24 @@ public class LocationActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        else if (id == R.id.next_button)
+        {
+            LocationFragment thisFragment = (LocationFragment)getSupportFragmentManager().findFragmentByTag(getString(R.string.fragment_location));
+
+            /*if (thisFragment.placeId == null || thisFragment.placeDetails == null)
+            {
+                Toast.makeText(this, "Please select location to continue", Toast.LENGTH_SHORT).show();
+                return true;
+            }*/
+
+            Log.v(LOG_TAG, String.format("Going to tags activity, placeId = %s, details = %s",
+                    thisFragment.placeId, thisFragment.placeDetails));
+            Intent thisIntent = new Intent(this, TagsAddActivity.class);
+            thisIntent.putExtra("locationId", thisFragment.placeId);
+            thisIntent.putExtra("locationDetails", thisFragment.placeDetails);
+            startActivity(thisIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);

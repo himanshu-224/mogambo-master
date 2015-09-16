@@ -39,6 +39,7 @@ public class FeedsActivity extends AppCompatActivity implements CreatePostDialog
         Log.v(LOG_TAG, "onTakePicture callback called");
         Intent picIntent = new Intent(this, CreatePostActivity.class);
         picIntent.putExtra("action", CommonData.TAKE_PICTURE);
+        picIntent.putExtra("originFeeds", true);
         startActivity(picIntent);
     }
 
@@ -47,6 +48,7 @@ public class FeedsActivity extends AppCompatActivity implements CreatePostDialog
         Log.v(LOG_TAG, "onPickFromGallery callback called");
         Intent picIntent = new Intent(this, CreatePostActivity.class);
         picIntent.putExtra("action", CommonData.PICK_FROM_GALLERY);
+        picIntent.putExtra("originFeeds", true);
         startActivity(picIntent);
 
     }

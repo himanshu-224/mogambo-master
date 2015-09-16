@@ -14,6 +14,7 @@
 
     <!-- Title of all app Fragments -->
     <string name="fragment_post_holder">PostHolder</string>
+    <string name="fragment_create_post">createPostFragment</string>
     <string name="fragment_location">Location</string>
     <string name="fragment_tag_filler">tagFiller</string>
     <string name="fragment_tag_search">tagSearch</string>
