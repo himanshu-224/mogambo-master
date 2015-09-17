@@ -1,9 +1,11 @@
 package sachan.dheeraj.mebeerhu;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,6 +38,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import sachan.dheeraj.mebeerhu.globalData.CommonData;
 import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
@@ -56,6 +59,7 @@ public class CreatePostFragment extends Fragment {
 
     private static final int REQUEST_TAKE_PICTURE = 100;
     private static final int REQUEST_PICK_FROM_GALLERY = 101;
+    private static  final int REQUEST_CROP_IMAGE = 200;
     private int picMethod = 0;
     private ImageView mainImageView;
 
@@ -130,11 +134,6 @@ public class CreatePostFragment extends Fragment {
         if (picTaken && imageBitmap != null) {
             Log.v(LOG_TAG, "OnResume called and setting image again");
             setImage();
-            SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                    getString(R.string.preference_file), Context.MODE_PRIVATE);
-            SharedPreferences.Editor prefEdit = sharedPref.edit();
-            prefEdit.putString(getString(R.string.post_image_path), curImagePath);
-            prefEdit.apply();
         }
     }
 
@@ -159,7 +158,11 @@ public class CreatePostFragment extends Fragment {
         if (requestCode == REQUEST_TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
             Log.v(LOG_TAG, "IMAGE Captured successfully");
             picTaken = true;
-            getCameraImage();
+            if (!cropImage(mCurrentPhotoPath, mCurrentPhotoPath))
+            {
+                getCameraImage();
+            }
+
         } else if (requestCode == REQUEST_PICK_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
             Log.v(LOG_TAG, "IMAGE Selected from Gallery successfully");
             picTaken = true;
@@ -174,8 +177,27 @@ public class CreatePostFragment extends Fragment {
             curImagePath = cursor.getString(columnIndex);
             cursor.close();
             Log.v(LOG_TAG, "Gallery image path: " + curImagePath);
-            setPic(curImagePath);
+
+            try {
+                mCurrentPhotoPath = createImageFile().getAbsolutePath();
+                Log.v(LOG_TAG, "Cropped image to be saved at: " + mCurrentPhotoPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                setPic(curImagePath);
+                return;
+            }
+
+            if (!cropImage(curImagePath, mCurrentPhotoPath ))
+            {
+                setPic(curImagePath);
+            }
+
             //imageBitmap = BitmapFactory.decodeFile(curImagePath);
+        }
+        else if (requestCode == REQUEST_CROP_IMAGE && resultCode == Activity.RESULT_OK)
+        {
+            getCameraImage();
+            Log.v(LOG_TAG, "Image cropped successfully");
         }
         else {
             if (activity.get_origin_feeds()) {
@@ -187,6 +209,45 @@ public class CreatePostFragment extends Fragment {
             }
         }
         activity.set_origin_feeds(false);
+    }
+
+    private boolean cropImage(String src_path, String dest_path)
+    {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setType("image/*");
+
+        Log.v(LOG_TAG, "Created intent for crop app");
+        List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities( intent, 0 );
+        int size = list.size();
+        if (size == 0) {
+            Log.e(LOG_TAG, "Could not find any image crop app, skipping crop");
+            return false;
+        }
+
+        // this will open all images in the Gallery
+        File f = new File(src_path);
+        Uri srcUri = Uri.fromFile(f);
+        intent.setData(srcUri);
+
+        intent.putExtra("crop", "true");
+        // this defines the aspect ratio
+        intent.putExtra("aspectX", 5);
+        intent.putExtra("aspectY", 3);
+        intent.putExtra("scale", true);
+        // true to return a Bitmap, false to directly save the cropped iamge
+        intent.putExtra("return-data", false);
+
+        //save output image in uri
+        f = new File(dest_path);
+        Uri destUri = Uri.fromFile(f);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, destUri);
+
+        Intent i        = new Intent(intent);
+        ResolveInfo res = list.get(0);
+        i.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+        startActivityForResult(i, REQUEST_CROP_IMAGE);
+
+        return true;
     }
 
     /* Dispatch Intent to capture image from camera */
