@@ -2,6 +2,7 @@
     <string name="app_name">mebeerhu</string>
     <string name="hello_world">Hello world!</string>
     <string name="location_text_default">Enter your Location</string>
+    <string name="album_name">SplatterImages</string>
 
     <!-- Title of all the app activities -->
     <string name="title_activity_test">Test</string>
@@ -11,10 +12,13 @@
     <string name="title_activity_place_suggestion">PlaceSuggestionActivity</string>
     <string name="title_activity_tag_search">TagSearchActivity</string>
     <string name="title_activity_location">Location</string>
+    <string name="title_activity_tags_add">Create your Tag Cloud</string>
+    <string name="title_activity_show_preview">Preview</string>
 
     <!-- Title of all app Fragments -->
     <string name="fragment_post_holder">PostHolder</string>
     <string name="fragment_create_post">createPostFragment</string>
+    <string name="fragment_show_preview">showPreviewFragment</string>
     <string name="fragment_location">Location</string>
     <string name="fragment_tag_filler">tagFiller</string>
     <string name="fragment_tag_search">tagSearch</string>
@@ -37,6 +41,7 @@
     <string name="facebook_login">Facebook</string>
     <string name="google_login">Google</string>
     <string name="app_login">AppLogin</string>
+    <string name="post_image_path">post_image_path</string>
 
     <string name="post_location_id">postLocId</string>
     <string name="post_location_description">postLocDesc</string>
@@ -125,7 +130,7 @@
         <item>Anguilla</item>
         <item>Antarctica</item>
     </string-array>
-    <string name="title_activity_tags_add">Create your Tag Cloud</string>
+
 
 
 </resources>

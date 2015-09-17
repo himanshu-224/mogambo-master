@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -33,6 +34,9 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.io.File;
+import java.io.IOException;
+
 import sachan.dheeraj.mebeerhu.globalData.CommonData;
 import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
 
@@ -54,6 +58,13 @@ public class CreatePostFragment extends Fragment {
     private static final int REQUEST_PICK_FROM_GALLERY = 101;
     private int picMethod = 0;
     private ImageView mainImageView;
+
+    private String mCurrentPhotoPath;
+
+    private String curImagePath;
+
+    private static final String JPEG_FILE_PREFIX = "IMG_";
+    private static final String JPEG_FILE_SUFFIX = ".jpg";
 
     private Bitmap imageBitmap = null;
     private boolean picTaken = false;
@@ -80,10 +91,7 @@ public class CreatePostFragment extends Fragment {
         button_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PICTURE);
-                }
+                dispatchTakePictureIntent(REQUEST_TAKE_PICTURE);
             }
         });
 
@@ -106,10 +114,7 @@ public class CreatePostFragment extends Fragment {
         if (!picTaken) {
             switch (picMethod) {
                 case CommonData.TAKE_PICTURE: {
-                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PICTURE);
-                    }
+                    dispatchTakePictureIntent(REQUEST_TAKE_PICTURE);
                     break;
                 }
                 case CommonData.PICK_FROM_GALLERY: {
@@ -125,6 +130,24 @@ public class CreatePostFragment extends Fragment {
         if (picTaken && imageBitmap != null) {
             Log.v(LOG_TAG, "OnResume called and setting image again");
             setImage();
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                    getString(R.string.preference_file), Context.MODE_PRIVATE);
+            SharedPreferences.Editor prefEdit = sharedPref.edit();
+            prefEdit.putString(getString(R.string.post_image_path), curImagePath);
+            prefEdit.apply();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (curImagePath != null) {
+            Log.v(LOG_TAG, "OnPause called for CreatePost Fragment");
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                    getString(R.string.preference_file), Context.MODE_PRIVATE);
+            SharedPreferences.Editor prefEdit = sharedPref.edit();
+            prefEdit.putString(getString(R.string.post_image_path), curImagePath);
+            prefEdit.commit();
         }
     }
 
@@ -136,8 +159,7 @@ public class CreatePostFragment extends Fragment {
         if (requestCode == REQUEST_TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
             Log.v(LOG_TAG, "IMAGE Captured successfully");
             picTaken = true;
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
+            getCameraImage();
         } else if (requestCode == REQUEST_PICK_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
             Log.v(LOG_TAG, "IMAGE Selected from Gallery successfully");
             picTaken = true;
@@ -149,8 +171,11 @@ public class CreatePostFragment extends Fragment {
             cursor.moveToFirst();
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
 
-            imageBitmap = BitmapFactory.decodeFile(cursor.getString(columnIndex));
+            curImagePath = cursor.getString(columnIndex);
             cursor.close();
+            Log.v(LOG_TAG, "Gallery image path: " + curImagePath);
+            setPic(curImagePath);
+            //imageBitmap = BitmapFactory.decodeFile(curImagePath);
         }
         else {
             if (activity.get_origin_feeds()) {
@@ -162,6 +187,124 @@ public class CreatePostFragment extends Fragment {
             }
         }
         activity.set_origin_feeds(false);
+    }
+
+    /* Dispatch Intent to capture image from camera */
+    private void dispatchTakePictureIntent(int actionCode) {
+
+        File f = null;
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            f = createImageFile();
+            mCurrentPhotoPath = f.getAbsolutePath();
+            Log.v(LOG_TAG,"Image to be saved at: " + mCurrentPhotoPath);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+        } catch (IOException e) {
+            e.printStackTrace();
+            mCurrentPhotoPath = null;
+        }
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, actionCode);
+        }
+        else
+        {
+            Log.e(LOG_TAG, "Could not find camera app, unable to take picture");
+        }
+    }
+
+    /* Take a picture from Camera and save it to SD card */
+    private void getCameraImage()
+    {
+        if (mCurrentPhotoPath != null) {
+            setPic(mCurrentPhotoPath);
+            galleryAddPic(mCurrentPhotoPath);
+            curImagePath = mCurrentPhotoPath;
+            mCurrentPhotoPath = null;
+        }
+    }
+
+    /*Helper functions to get and set images */
+    private void setPic(String imagePath)
+    {
+		/* There isn't enough memory to open up more than a couple camera photos
+		 * So pre-scale the target bitmap into which the file is decoded */
+
+		/* Get the size of the ImageView */
+        int targetW = mainImageView.getWidth();
+        int targetH = mainImageView.getHeight();
+
+		/* Get the size of the image */
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+		/* Figure out which way needs to be reduced less */
+        int scaleFactor = 1;
+        if ((targetW > 0) || (targetH > 0)) {
+            scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        }
+
+		/* Set bitmap options to scale the image decode target */
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+		/* Decode the JPEG file into a Bitmap */
+        imageBitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+    }
+
+    private void galleryAddPic(String Imagepath) {
+        Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+        File f = new File(Imagepath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        getActivity().sendBroadcast(mediaScanIntent);
+    }
+
+    private File getAlbumDir() {
+        File storageDir = null;
+
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+
+            storageDir = new File(
+                    Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_PICTURES
+                    ),
+                    getString(R.string.album_name)
+            );
+
+            if (storageDir != null) {
+                if (! storageDir.mkdirs()) {
+                    if (! storageDir.exists()){
+                        Log.d("CameraSample", "failed to create directory");
+                        return null;
+                    }
+                }
+            }
+
+        } else {
+            Log.v(LOG_TAG, "External storage is not mounted READ/WRITE.");
+        }
+
+        return storageDir;
+    }
+
+    private File createImageFile() throws IOException {
+        /* String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = JPEG_FILE_PREFIX + timeStamp + "_";
+        File filePath = getAlbumDir()+
+        return File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, getAlbumDir()); */
+
+        String timeStamp = "new_post_image"; /* TEMP to replace image files while testing */
+        String imageFileName = JPEG_FILE_PREFIX + timeStamp + JPEG_FILE_SUFFIX;
+        File f = new File(getAlbumDir().getPath()+File.separator + imageFileName);
+        Log.v(LOG_TAG, "Image File Path: " + f);
+
+        boolean b = f.createNewFile();
+        Log.v(LOG_TAG, "Is file created successfully: " + b);
+        return f;
     }
 
     public void setImage()

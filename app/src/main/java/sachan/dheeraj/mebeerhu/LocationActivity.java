@@ -25,7 +25,6 @@ public class LocationActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.location_activity_layout, new LocationFragment(), getString(R.string.fragment_location))
-                    .addToBackStack(getString(R.string.fragment_location))
                     .commit();
         }
     }

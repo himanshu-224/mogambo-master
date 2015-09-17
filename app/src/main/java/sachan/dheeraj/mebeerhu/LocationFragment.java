@@ -150,6 +150,20 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        Log.v(LOG_TAG, "OnPause for Location fragment");
+        if (placeId != null && placeDetails != null) {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                    getString(R.string.preference_file), Context.MODE_PRIVATE);
+            SharedPreferences.Editor prefEdit = sharedPref.edit();
+            prefEdit.putString(getString(R.string.post_location_id), placeId);
+            prefEdit.putString(getString(R.string.post_location_description), placeDetails);
+            prefEdit.commit();
+        }
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         Log.i(LOG_TAG, "OnStart called, connecting with Google API");
@@ -167,15 +181,6 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
     public void onDestroy() {
         super.onDestroy();
         Log.i(LOG_TAG, "onDestroy called, Disconnected from Google API");
-
-        if (placeId != null && placeDetails != null) {
-            SharedPreferences sharedPref = getActivity().getSharedPreferences(
-                    getString(R.string.preference_file), Context.MODE_PRIVATE);
-            SharedPreferences.Editor prefEdit = sharedPref.edit();
-            prefEdit.putString(getString(R.string.post_location_id), placeId);
-            prefEdit.putString(getString(R.string.post_location_description), placeDetails);
-            prefEdit.apply();
-        }
     }
 
     /**

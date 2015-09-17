@@ -62,7 +62,6 @@ public class FeedsActivity extends AppCompatActivity implements CreatePostDialog
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.feeds_frame_layout, new FeedsFragment(), getString(R.string.fragment_feeds))
-                    .addToBackStack(getString(R.string.fragment_feeds))
                     .commit();
         }
     }

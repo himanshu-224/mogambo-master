@@ -29,7 +29,6 @@ public class TagsAddActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.tags_add_activity_layout, new TagFillerFragment(), getString(R.string.fragment_tag_filler))
-                    .addToBackStack(getString(R.string.fragment_tag_filler))
                     .commit();
         }
     }
@@ -60,11 +59,11 @@ public class TagsAddActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please add tags to finish Post", Toast.LENGTH_SHORT).show();
                 return true;
             }
-            Log.v(LOG_TAG, "Done, getting user data for Post");
+            Log.v(LOG_TAG, "Done, getting user data for Post, saving tags to db");
+            thisFragment.saveTagsInDB();
             /* Launch a service here to save the data to server */
-            Intent intent = new Intent(this, FeedsActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            Intent thisIntent = new Intent(this, ShowPreviewActivity.class);
+            startActivity(thisIntent);
             return true;
         }
 

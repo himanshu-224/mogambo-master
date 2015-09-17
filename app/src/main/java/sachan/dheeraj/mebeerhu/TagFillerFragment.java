@@ -181,12 +181,8 @@ public class TagFillerFragment extends Fragment {
         }
     }
 
-
-    @Override
-    public void onDestroy()
+    public void saveTagsInDB()
     {
-        super.onDestroy();
-        Log.v(LOG_TAG, "On Destroy for TagFillerFragment, save tags to database");
         Vector<ContentValues> cValuesTag = new Vector<ContentValues>();
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         /* Save the tags to database to be retrieved if user switches back to Tag filler activity */
@@ -226,6 +222,14 @@ public class TagFillerFragment extends Fragment {
         finally {
             db.endTransaction();
         }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Log.v(LOG_TAG, "On Destroy for TagFillerFragment, save tags to database");
+        saveTagsInDB();
     }
 
     @Override

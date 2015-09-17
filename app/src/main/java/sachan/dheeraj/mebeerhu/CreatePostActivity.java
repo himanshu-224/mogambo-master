@@ -83,6 +83,7 @@ public class CreatePostActivity extends AppCompatActivity{
         SharedPreferences.Editor prefEdit = sharedPref.edit();
         prefEdit.remove(getString(R.string.post_location_id));
         prefEdit.remove(getString(R.string.post_location_description));
+        prefEdit.remove(getString(R.string.post_image_path));
         prefEdit.apply();
 
         /* Delete the table having any stored tags for previous post */
@@ -100,7 +101,6 @@ public class CreatePostActivity extends AppCompatActivity{
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.create_post_activity_layout, new CreatePostFragment(), getString(R.string.fragment_create_post))
-                    .addToBackStack(getString(R.string.fragment_create_post))
                     .commit();
         }
     }
