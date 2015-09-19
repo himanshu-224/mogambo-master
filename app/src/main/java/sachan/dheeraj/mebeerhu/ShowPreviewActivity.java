@@ -37,12 +37,6 @@ public class ShowPreviewActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-        else if(id == R.id.done_button)
-        {
-            Intent intent = new Intent(this, FeedsActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        }
 
         return super.onOptionsItemSelected(item);
     }

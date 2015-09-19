@@ -43,11 +43,11 @@
             android:id="@+id/follow_tag_icon"
             android:layout_width="60dp"
             android:layout_height="50dp"
-            android:paddingLeft="20dp"
+            android:paddingLeft="15dp"
             android:paddingRight="10dp"
 
             android:baselineAlignBottom="true"
-            android:src= "@drawable/black"
+            android:src= "@drawable/follow_red_thin"
             android:contentDescription="Follow" />
 
         <TextView
@@ -60,6 +60,7 @@
             android:paddingBottom="10dp"
             android:layout_gravity="center_vertical"
             android:textSize="20dp"
+            android:textColor="@color/red"
             android:text = "Follow"
             />
     </LinearLayout>

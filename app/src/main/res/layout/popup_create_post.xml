@@ -43,8 +43,8 @@
             android:id="@+id/picture_icon"
             android:layout_width="60dp"
             android:layout_height="50dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="15dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="10dp"
             android:baselineAlignBottom="true"
             android:src= "@drawable/camera_icon"
             android:contentDescription="Take a picture" />
@@ -57,6 +57,7 @@
             android:paddingLeft="15dp"
             android:paddingBottom="10dp"
             android:layout_gravity="center_vertical"
+            android:textColor="@color/red"
             android:textSize="20dp"
             android:text = "Take a picture"
             />
@@ -76,8 +77,8 @@
             android:id="@+id/gallery_icon"
             android:layout_width="60dp"
             android:layout_height="50dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="17dp"
+            android:paddingRight="11dp"
 
             android:baselineAlignBottom="true"
             android:src= "@drawable/gallery_icon"
@@ -92,6 +93,7 @@
             android:paddingRight="10dp"
             android:paddingBottom="10dp"
             android:layout_gravity="center_vertical"
+            android:textColor="@color/red"
             android:textSize="20dp"
             android:text = "Gallery"
             />

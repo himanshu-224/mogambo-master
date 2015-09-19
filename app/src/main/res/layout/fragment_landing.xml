@@ -5,15 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".LoginActivityFragment"
-    android:background="@drawable/strawberry"
+    android:background="@drawable/landing_background"
     android:backgroundTintMode="screen">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scaleType="fitXY"
-        android:src="@drawable/splatter1" />
+        android:src="@drawable/splatter_text_image" />
 
 
     <com.facebook.login.widget.LoginButton

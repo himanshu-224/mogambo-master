@@ -33,7 +33,7 @@
             android:id="@+id/auto_complete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="type your tag" />
+            android:hint="Type your tag" />
     </LinearLayout>
 
 </LinearLayout>

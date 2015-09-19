@@ -23,6 +23,8 @@ import com.facebook.FacebookSdk;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import sachan.dheeraj.mebeerhu.cache.MemDiskCache;
+
 
 public class LoginActivity extends AppCompatActivity {
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
@@ -33,6 +35,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.v(LOG_TAG, "Initializing app, OnCreate for LoginActivity called");
 
+        try {
+            getSupportActionBar().hide();
+        }
+        catch (NullPointerException e)
+        {
+            Log.e(LOG_TAG, "Trying to hide action bar which doesn't exit!!");
+            e.printStackTrace();
+        }
         PACKAGE_NAME = getApplicationContext().getPackageName();
         Log.v(LOG_TAG, "Package name = "+PACKAGE_NAME);
 
@@ -52,6 +62,9 @@ public class LoginActivity extends AppCompatActivity {
             Log.e(LOG_TAG,"Caught Algorithm exception: ",e);
         }
         setContentView(R.layout.activity_login);
+
+        /* Create and initialize Memory and Disk cache */
+        MemDiskCache.createInstance(this);
 
         /* Check if auto login can be performed */
         boolean login_req = true;

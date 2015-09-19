@@ -38,10 +38,16 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import sachan.dheeraj.mebeerhu.cache.MemDiskCache;
 import sachan.dheeraj.mebeerhu.globalData.CommonData;
 import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
+import sachan.dheeraj.mebeerhu.utils.Utils;
 
 import static java.lang.Math.asin;
 import static java.lang.Math.atan2;
@@ -73,6 +79,7 @@ public class CreatePostFragment extends Fragment {
     private Bitmap imageBitmap = null;
     private boolean picTaken = false;
 
+    private static final MemDiskCache mCache = MemDiskCache.getInstance();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -150,6 +157,20 @@ public class CreatePostFragment extends Fragment {
         }
     }
 
+    private void addImagetoCache(String imagePath)
+    {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            if (mCache!= null){
+                String key = Utils.toHex(md.digest(imagePath.getBytes()));
+                mCache.addBitmapToCache(key, imageBitmap);
+            }
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            Log.e(LOG_TAG, "MD5 algorithm not recognized : " + e.getMessage());
+        }
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.v(LOG_TAG, String.format("onActivityResult, requestCode = %d, result = %d",
@@ -161,6 +182,7 @@ public class CreatePostFragment extends Fragment {
             if (!cropImage(mCurrentPhotoPath, mCurrentPhotoPath))
             {
                 getCameraImage();
+                addImagetoCache(curImagePath);
             }
 
         } else if (requestCode == REQUEST_PICK_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
@@ -184,12 +206,14 @@ public class CreatePostFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
                 setPic(curImagePath);
+                addImagetoCache(curImagePath);
                 return;
             }
 
             if (!cropImage(curImagePath, mCurrentPhotoPath ))
             {
                 setPic(curImagePath);
+                addImagetoCache(curImagePath);
             }
 
             //imageBitmap = BitmapFactory.decodeFile(curImagePath);
@@ -197,6 +221,7 @@ public class CreatePostFragment extends Fragment {
         else if (requestCode == REQUEST_CROP_IMAGE && resultCode == Activity.RESULT_OK)
         {
             getCameraImage();
+            addImagetoCache(curImagePath);
             Log.v(LOG_TAG, "Image cropped successfully");
         }
         else {
@@ -294,6 +319,8 @@ public class CreatePostFragment extends Fragment {
         int targetW = mainImageView.getWidth();
         int targetH = mainImageView.getHeight();
 
+        Log.v(LOG_TAG, String.format("Width %d, Height %d", targetW, targetH));
+
 		/* Get the size of the image */
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
@@ -353,19 +380,20 @@ public class CreatePostFragment extends Fragment {
     }
 
     private File createImageFile() throws IOException {
-        /* String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = JPEG_FILE_PREFIX + timeStamp + "_";
-        File filePath = getAlbumDir()+
-        return File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, getAlbumDir()); */
+        File f = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, getAlbumDir());
+        Log.v(LOG_TAG, "Image File Path: " + f);
+        return f;
 
-        String timeStamp = "new_post_image"; /* TEMP to replace image files while testing */
+        /* String timeStamp = "new_post_image";
         String imageFileName = JPEG_FILE_PREFIX + timeStamp + JPEG_FILE_SUFFIX;
         File f = new File(getAlbumDir().getPath()+File.separator + imageFileName);
         Log.v(LOG_TAG, "Image File Path: " + f);
 
         boolean b = f.createNewFile();
         Log.v(LOG_TAG, "Is file created successfully: " + b);
-        return f;
+        return f; */
     }
 
     public void setImage()

@@ -2,6 +2,7 @@ package sachan.dheeraj.mebeerhu;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,17 +19,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import sachan.dheeraj.mebeerhu.cache.MemDiskCache;
 import sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout;
 import sachan.dheeraj.mebeerhu.localData.AppContract;
 import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
 import sachan.dheeraj.mebeerhu.model.Tag;
+import sachan.dheeraj.mebeerhu.utils.Utils;
 
 public class ShowPreviewFragment extends Fragment {
 
@@ -41,8 +47,10 @@ public class ShowPreviewFragment extends Fragment {
     ImageView mainImageView;
     FlowLayout flowLayout;
     private TextView moreTextView;
+    private Button doneButton;
 
     private Bitmap imageBitmap = null;
+    private static final MemDiskCache mCache = MemDiskCache.getInstance();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -140,9 +148,42 @@ public class ShowPreviewFragment extends Fragment {
         flowLayout = (FlowLayout) rootView.findViewById(R.id.flow_layout);
         mainImageView = (ImageView) rootView.findViewById(R.id.main_image);
         moreTextView = (TextView) rootView.findViewById(R.id.more);
+        doneButton = (Button) rootView.findViewById(R.id.done_button);
+
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FeedsActivity.class);
+                intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+        imageBitmap = null;
+        MessageDigest md;
+        String key="post_image";
 
         if(curImagePath != null) {
-            setPic(curImagePath);
+
+            if (mCache != null) {
+                try {
+                    md = MessageDigest.getInstance("MD5");
+                    key = Utils.toHex(md.digest(curImagePath.getBytes()));
+                    imageBitmap =  mCache.getBitmapFromCache(key);
+                }
+                catch (NoSuchAlgorithmException e)
+                {
+                    Log.e(LOG_TAG, "MD5 algorithm not recognized : " + e.getMessage());
+                }
+            }
+
+            if(imageBitmap == null ) {
+                setPic(curImagePath);
+                if (mCache!= null)
+                {
+                    mCache.addBitmapToCache(key, imageBitmap);
+                }
+            }
             if (imageBitmap != null)
                 mainImageView.setImageBitmap(imageBitmap);
         }

@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -30,11 +31,17 @@ import android.widget.TextView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import sachan.dheeraj.mebeerhu.FeedsActivity;
 import sachan.dheeraj.mebeerhu.R;
+import sachan.dheeraj.mebeerhu.cache.MemDiskCache;
 import sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout;
 import sachan.dheeraj.mebeerhu.model.Post;
 import sachan.dheeraj.mebeerhu.model.Tag;
 import sachan.dheeraj.mebeerhu.utils.ImageUtils;
+import sachan.dheeraj.mebeerhu.utils.Utils;
+
 import android.view.ViewGroup.LayoutParams;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by naveen.goel on 01/08/15.
@@ -42,6 +49,11 @@ import android.view.ViewGroup.LayoutParams;
 public class PostViewHolder {
     static final String LOG_TAG = PostViewHolder.class.getSimpleName();
 
+    private final static float PROFILE_IMAGE_WIDTH = 40.0f;
+    private final static float PROFILE_IMAGE_HEIGHT = 40.0f;
+
+    private final static int LOAD_PROFILE_PIC = 0b1;
+    private final static int LOAD_MAIN_IMAGE = 0b10;
     private CircleImageView profileCircleImageView;
     private TextView posterNameTextView;
     private TextView withTextView;
@@ -55,6 +67,11 @@ public class PostViewHolder {
     private Post post;
     private ImageLoaderAsyncTask imageLoaderAsyncTask;
     private TextView moreTextView;
+
+    /* dimensions of imageViewHolders */
+    private int mainImageH, mainImageW, profileImageH, profileImageW;
+    private int windowWidth;
+    private int loadImageMask = 0;
 
     private static View.OnLongClickListener LONG_CLICK_LISTENER;
 
@@ -104,29 +121,30 @@ public class PostViewHolder {
 
     public static PostViewHolder getInstance(View view, Activity activity) {
         final PostViewHolder postViewHolder = new PostViewHolder();
+        Log.v(LOG_TAG, "GetInstance called for PostViewHolder");
         postViewHolder.profileCircleImageView = (CircleImageView) view.findViewById(R.id.circular_image);
+
         postViewHolder.posterNameTextView = (TextView) view.findViewById(R.id.poster_name);
         postViewHolder.withTextView = (TextView) view.findViewById(R.id.with);
         postViewHolder.xOthersTextView = (TextView) view.findViewById(R.id.x_others);
         postViewHolder.postFollowersTextView = (TextView) view.findViewById(R.id.post_followers);
         postViewHolder.timeTextView = (TextView) view.findViewById(R.id.time);
         postViewHolder.mainImageView = (ImageView) view.findViewById(R.id.main_image);
+
         postViewHolder.locationTextView = (TextView) view.findViewById(R.id.location);
         postViewHolder.likesTextView = (TextView) view.findViewById(R.id.likes);
         postViewHolder.flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
-      /*  postViewHolder.flowLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                TextView textView = (TextView) view.findViewById(R.id.tv);
-                Log.v(LOG_TAG, "Long Pressed Tag with value = " + textView.getText());
-                return true;
-            }
-        }); */
+
         postViewHolder.moreTextView = (TextView) view.findViewById(R.id.more);
         postViewHolder.setMoreOnClickListener(activity);
         postViewHolder.moreTextView.setVisibility(View.GONE);
 
-        final FeedsActivity feedsActivity = (FeedsActivity)activity;
+        /* Get the width of the window which will be useful in determining the size of images to be displayed */
+        WindowManager windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics dimension = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(dimension);
+        postViewHolder.windowWidth = dimension.widthPixels;
+        Log.v(LOG_TAG, String.format("Window dimensions : height: %d, width: %d",dimension.heightPixels, dimension.widthPixels));
 
         return postViewHolder;
     }
@@ -162,9 +180,57 @@ public class PostViewHolder {
                 imageLoaderAsyncTask.cancel(true);
             }
         }
-        imageLoaderAsyncTask = new ImageLoaderAsyncTask(post, context);
-        imageLoaderAsyncTask.execute();
 
+        profileImageH = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PROFILE_IMAGE_HEIGHT, context.getResources().getDisplayMetrics());
+        profileImageW = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PROFILE_IMAGE_WIDTH, context.getResources().getDisplayMetrics());
+
+
+        //Log.v(LOG_TAG, String.format("Profile image Width %d, Height %d", profileImageW, profileImageH));
+
+        mainImageW = windowWidth;
+        mainImageH = 20; /* giving a dummy value */
+
+        //Log.v(LOG_TAG, String.format("Main image Width %d, Height %d", mainImageW, mainImageH));
+
+        Bitmap profileBitmap = null;
+        Bitmap mainBitmap = null;
+
+        MemDiskCache mCache = MemDiskCache.getInstance();
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            if (mCache!= null){
+                profileBitmap =  mCache.getBitmapFromMemCache(Utils.toHex(md.digest(post.getUserImageURL().getBytes())));
+                md.reset();
+                mainBitmap = mCache.getBitmapFromMemCache(Utils.toHex(md.digest(post.getPostImageURL().getBytes())));
+            }
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            Log.e(LOG_TAG, "MD5 algorithm not recognized : " + e.getMessage());
+        }
+
+        loadImageMask = 0;
+        try {
+            if (profileBitmap != null) {
+                profileCircleImageView.setImageBitmap(profileBitmap);
+            }
+            else{
+                loadImageMask = loadImageMask|LOAD_PROFILE_PIC;
+            }
+            if (mainBitmap != null) {
+                mainImageView.setImageBitmap(mainBitmap);
+            }
+            else{
+                loadImageMask = loadImageMask|LOAD_MAIN_IMAGE;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(loadImageMask != 0) {
+            imageLoaderAsyncTask = new ImageLoaderAsyncTask(post, context);
+            imageLoaderAsyncTask.execute();
+        }
     }
 
     public void loadTagsInThreeLines(final Activity activity, View.OnLongClickListener LONG_CLICK_LISTENER) {
@@ -220,11 +286,16 @@ public class PostViewHolder {
 
         @Override
         protected void onPreExecute() {
-            ColorDrawable tattiColorDrawable = new ColorDrawable(context.getResources().getColor(R.color.tatti));
-            ColorDrawable redColorDrawable = new ColorDrawable(context.getResources().getColor(R.color.red));
-
-            profileCircleImageView.setImageDrawable(tattiColorDrawable);
-            mainImageView.setImageDrawable(redColorDrawable);
+            if ( (loadImageMask & LOAD_PROFILE_PIC) != 0 )
+            {
+                ColorDrawable tattiColorDrawable = new ColorDrawable(context.getResources().getColor(R.color.tatti));
+                profileCircleImageView.setImageDrawable(tattiColorDrawable);
+            }
+            if((loadImageMask & LOAD_MAIN_IMAGE) != 0)
+            {
+                ColorDrawable redColorDrawable = new ColorDrawable(context.getResources().getColor(R.color.red));
+                mainImageView.setImageDrawable(redColorDrawable);
+            }
         }
 
         @Override
@@ -232,8 +303,12 @@ public class PostViewHolder {
             if (!isCancelled()) {
                 //Log.v(LOG_TAG, "UserImage Url: " + post.getUserImageURL() );
                 //Log.v(LOG_TAG, "PostImage Url: " + post.getPostImageURL() );
-                profileBitmap = ImageUtils.getBitmapFromUrl(post.getUserImageURL());
-                mainBitmap = ImageUtils.getBitmapFromUrl(post.getPostImageURL());
+                if ( (loadImageMask & LOAD_PROFILE_PIC) != 0 ) {
+                    profileBitmap = ImageUtils.getBitmapFromUrl(post.getUserImageURL(), profileImageH, profileImageW);
+                }
+                if ( (loadImageMask & LOAD_MAIN_IMAGE) != 0 ){
+                    mainBitmap = ImageUtils.getBitmapFromUrl(post.getPostImageURL(), mainImageH, mainImageW);
+                }
             }
             return null;
         }
@@ -242,17 +317,11 @@ public class PostViewHolder {
         protected void onPostExecute(Void aVoid) {
             if (!isCancelled()) {
                 try {
-                    if (profileBitmap != null) {
+                    if ((loadImageMask & LOAD_PROFILE_PIC) != 0 && profileBitmap != null) {
                         profileCircleImageView.setImageBitmap(profileBitmap);
                     }
-                    if (mainBitmap != null) {
+                    if ((loadImageMask & LOAD_MAIN_IMAGE) != 0 && mainBitmap != null) {
                         mainImageView.setImageBitmap(mainBitmap);
-                        ViewGroup.LayoutParams layoutParams = mainImageView.getLayoutParams();
-                        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-                        DisplayMetrics dimension = new DisplayMetrics();
-                        windowManager.getDefaultDisplay().getMetrics(dimension);
-                        layoutParams.height = dimension.widthPixels * mainBitmap.getHeight() / mainBitmap.getWidth();
-                        mainImageView.setLayoutParams(layoutParams);
                     }
                 } catch (Exception e) {
                     Log.e("", "", e);

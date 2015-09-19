@@ -83,13 +83,20 @@
 
     </LinearLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp">
+
     <ImageView
         android:id="@+id/main_image"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:scaleType="fitXY"
-        android:src="@color/tatti" />
+        android:layout_gravity="center_vertical"
+        android:adjustViewBounds="true"
+        />
 
+    </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -109,7 +116,7 @@
             android:layout_gravity="bottom|right"
             android:padding="5dp"
             android:text="...more"
-            android:textColor="@color/tatti" />
+            android:textColor="@color/purple" />
 
     </FrameLayout>
 
@@ -124,13 +131,14 @@
         android:orientation="horizontal"
         android:padding="5dp">
 
+
         <ImageView
             android:id="@+id/location_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:src="@drawable/location" />
+            android:src="@drawable/location_filled_pink" />
 
         <TextView
             android:id="@+id/location"
@@ -141,23 +149,25 @@
             android:gravity="left|center"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:text="toit indiranagar bangalore"
-            android:textSize="20sp" />
+            android:textColor="@color/purple"
+            android:text="toit indiranagar bangalore" />
 
         <TextView
             android:id="@+id/likes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="bottom"
+            android:paddingRight="5dp"
             android:gravity="center"
+            android:textColor="@color/purple"
             android:text="200 likes" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:src="@drawable/location" />
+            android:src="@drawable/thumb_up_red" />
 
     </LinearLayout>
 

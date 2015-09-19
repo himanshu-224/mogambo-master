@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -20,6 +21,8 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginFragment;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import org.w3c.dom.Text;
 /*
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -55,6 +58,7 @@ public class LoginActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_landing, container, false);
         loginButtonFaceBook = (LoginButton) view.findViewById(R.id.login_button);
         signButton = (Button) view.findViewById(R.id.signup);
+
         loginButton = (Button) view.findViewById(R.id.login);
         loginButtonFaceBook.setReadPermissions("user_friends");
         googleButton = (com.google.android.gms.common.SignInButton) view.findViewById(R.id.google);
@@ -63,7 +67,7 @@ public class LoginActivityFragment extends Fragment {
         // Other app specific specialization
         callbackManager = CallbackManager.Factory.create();
         // Callback registration
-       signButton.setOnClickListener(new View.OnClickListener() {
+        signButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.v(LOG_TAG, "Signup button clicked, switching to SignUp fragment");
@@ -96,7 +100,7 @@ public class LoginActivityFragment extends Fragment {
                 HttpAgent.tokenValue = loginResult.getAccessToken().toString();
 
                 Log.v(LOG_TAG, String.format("Username %s, AccessToken %s",
-                         username, HttpAgent.tokenValue));
+                        username, HttpAgent.tokenValue));
                 SharedPreferences sharedPref = getActivity().getSharedPreferences(
                         getString(R.string.preference_file), Context.MODE_PRIVATE);
                 SharedPreferences.Editor prefEdit = sharedPref.edit();
@@ -106,7 +110,7 @@ public class LoginActivityFragment extends Fragment {
                 prefEdit.apply();
 
                 String k = JsonHandler.stringifyNormal(loginResult);
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new SelectTagsFragment()).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new SelectTagsFragment()).commit();
             }
 
             @Override
@@ -119,6 +123,7 @@ public class LoginActivityFragment extends Fragment {
                 Log.e(LOG_TAG, "In Facebook Sign-in, got exception: ", exception);
             }
         });
+
         return view;
     }
 

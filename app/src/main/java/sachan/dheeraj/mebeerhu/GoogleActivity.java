@@ -55,6 +55,14 @@ public class GoogleActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         Log.v(LOG_TAG, "onCreate for Google activity");
+        try {
+            getSupportActionBar().hide();
+        }
+        catch (NullPointerException e)
+        {
+            Log.e(LOG_TAG, "Trying to hide action bar which doesn't exit!!");
+            e.printStackTrace();
+        }
         SERVER_CLIENT_ID = getString(R.string.google_server_client_id);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)

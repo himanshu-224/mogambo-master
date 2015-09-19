@@ -421,6 +421,8 @@ public class FeedsFragment extends Fragment{
                     ArrayAdapter<Post> postArrayAdapter = new ArrayAdapter<Post>(getActivity(), 0, posts) {
                         @Override
                         public View getView(int position, View convertView, ViewGroup parent) {
+                            Log.v(LOG_TAG, String.format("Feeds: adapter index %d, convertview == null: %b",
+                                    position, (convertView==null)));
                             Post post = getItem(position);
                             PostViewHolder postViewHolder;
                             if (convertView == null) {

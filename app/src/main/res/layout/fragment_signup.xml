@@ -3,7 +3,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TODO wawati sc font-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,9 +12,9 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="20dp"
-        android:text="Applyfly"
+        android:text="Splatter"
         android:background="#A63F5A"
-        android:textSize="32sp"
+        android:textSize="32dp"
         android:textColor="#FFFFFF"/>
 
 
@@ -55,6 +54,7 @@
     </LinearLayout>
 
     <Button
+        android:minHeight="0dp"
         android:id="@+id/signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
         android:background="@drawable/button_smooth"
         android:text="Sign Up"
         android:padding="10dp"
-        android:textSize="16sp"
+        android:textSize="16dp"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="20dp"
         android:layout_marginRight="10dp"
@@ -70,17 +70,31 @@
         android:layout_gravity="center"
         android:gravity="center"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
-        android:text="Already Signed Up? Login"
+        android:text="Already Signed Up? "
         android:layout_gravity="center"
         android:gravity="center"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/login_button"
+        android:textColor="#000000"
+        android:layout_gravity="center"
+        android:text="@string/login_prompt"
+        android:gravity="center"/>
+    </LinearLayout>
 
     <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
+        android:id="@+id/fb_login_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

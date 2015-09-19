@@ -1,66 +1,39 @@
 package sachan.dheeraj.mebeerhu;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ActionMode;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.login.LoginManager;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.plus.Plus;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Vector;
 
-import sachan.dheeraj.mebeerhu.globalData.CommonData;
 import sachan.dheeraj.mebeerhu.localData.AppContract;
 import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
 import sachan.dheeraj.mebeerhu.model.Tag;
+
+import io.socket.emitter.Emitter;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class TagFillerFragment extends Fragment {
 
@@ -218,8 +191,7 @@ public class TagFillerFragment extends Fragment {
                 db.replace(AppContract.SinglePostTagEntry.TABLE_NAME, null, mValue);
             }
             db.setTransactionSuccessful();
-        }
-        finally {
+        } finally {
             db.endTransaction();
         }
     }

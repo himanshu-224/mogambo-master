@@ -3,17 +3,19 @@
     <string name="hello_world">Hello world!</string>
     <string name="location_text_default">Enter your Location</string>
     <string name="album_name">SplatterImages</string>
+    <string name="login_prompt"><u>Login</u></string>
+    <string name="forgot_password"><u>Forgot Password?</u></string>
 
     <!-- Title of all the app activities -->
     <string name="title_activity_test">Test</string>
     <string name="title_activity_google">GoogleActivity</string>
     <string name="title_create_post_activity">Post Image</string>
-    <string name="title_feeds_activity">Feeds</string>
+    <string name="title_feeds_activity">Splatter</string>
     <string name="title_activity_place_suggestion">PlaceSuggestionActivity</string>
     <string name="title_activity_tag_search">TagSearchActivity</string>
-    <string name="title_activity_location">Location</string>
+    <string name="title_activity_location">Add Location</string>
     <string name="title_activity_tags_add">Create your Tag Cloud</string>
-    <string name="title_activity_show_preview">Preview</string>
+    <string name="title_activity_show_preview">Post Preview</string>
 
     <!-- Title of all app Fragments -->
     <string name="fragment_post_holder">PostHolder</string>

@@ -44,4 +44,6 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.0.0'
     compile 'com.getbase:floatingactionbutton:1.10.0'
     compile 'com.google.maps:google-maps-services:0.1.7'
+    compile 'io.socket:socket.io-client:0.6.1'
+    compile 'com.jakewharton:disklrucache:2.0.2'
 }
