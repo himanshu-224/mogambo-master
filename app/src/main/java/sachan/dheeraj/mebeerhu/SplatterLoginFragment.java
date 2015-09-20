@@ -208,7 +208,8 @@ public class SplatterLoginFragment extends Fragment {
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Log.v(LOG_TAG, "Clicked forgot password, switching to it");
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new FragmentResetPassword()).commit();
             }
         });
         return view;

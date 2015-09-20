@@ -44,15 +44,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:hint="Password"/>
+            android:hint="Password"
+            android:password="true"/>
         <TextView android:id="@+id/error_message_pwd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
             android:textColor="@color/red"
             android:textSize="12dp"
-            android:visibility="gone"
-            android:password="true"/>
+            android:visibility="gone"/>
 
     </LinearLayout>
 
@@ -74,8 +74,6 @@
         android:textSize="16dp"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="20dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="20dp"
         android:layout_gravity="center"
         android:gravity="center"/>
 
@@ -85,6 +83,7 @@
         android:id="@+id/forgot_pwd"
         android:textColor="#000000"
         android:text="@string/forgot_password"
+        android:textStyle="bold"
         android:layout_gravity="center"/>
     </LinearLayout>
 

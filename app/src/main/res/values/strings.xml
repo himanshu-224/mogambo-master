@@ -5,6 +5,7 @@
     <string name="album_name">SplatterImages</string>
     <string name="login_prompt"><u>Login</u></string>
     <string name="forgot_password"><u>Forgot Password?</u></string>
+    <string name="reset_password_default_text">A mail will be sent to your registered email address with the instructions to reset your password</string>
 
     <!-- Title of all the app activities -->
     <string name="title_activity_test">Test</string>
@@ -132,6 +133,9 @@
         <item>Anguilla</item>
         <item>Antarctica</item>
     </string-array>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 

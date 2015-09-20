@@ -8,6 +8,7 @@ public class UrlConstants {
     private static final String BASE_URL = "http://52.3.131.55:39112/";
     public static final String SIGN_UP_URL = BASE_URL + "auth/signup";
     public static final String LOGIN_URL = BASE_URL + "auth/login";
+    public static final String RESET_PASSWORD_URL = BASE_URL + "auth/reset";
     public static final String AUTHENTICATE_URL = BASE_URL + "auth/verifyToken";
 
     public static final String GET_TRENDY_TAGS_URL = BASE_URL + "tag/getTrendyTags";
