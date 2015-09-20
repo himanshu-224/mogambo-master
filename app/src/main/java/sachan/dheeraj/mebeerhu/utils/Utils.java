@@ -11,4 +11,11 @@ public class Utils {
         BigInteger bi = new BigInteger(1, bytes);
         return String.format("%0" + (bytes.length << 1) + "x", bi);
     }
+
+    public static String getKeyFromDrawable(int resId)
+    {
+        String key = "app_icon_";
+        key += String.valueOf(resId);
+        return key;
+    }
 }

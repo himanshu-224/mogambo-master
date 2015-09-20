@@ -20,6 +20,8 @@ public class Post {
     private Long retweetCount;
     private ArrayList<Tag> tagList;
     private ArrayList<User> accompaniedWith;
+    private ArrayList<User> likedBy; /* NEW */
+    private boolean isLiked = false; /* NEW */
     private String city;
     private String state;
     private String country;
@@ -167,6 +169,22 @@ public class Post {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public void setIsLiked(boolean isLiked) {
+        this.isLiked = isLiked;
+    }
+
+    public boolean getIsLiked() {
+        return isLiked;
+    }
+
+    public void setLikedby(ArrayList<User> likedBy) {
+        this.likedBy = likedBy;
+    }
+
+    public ArrayList<User> getLikedby() {
+        return likedBy;
     }
 
     public Post(){

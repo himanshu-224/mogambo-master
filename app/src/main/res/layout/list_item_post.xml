@@ -83,7 +83,7 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="250dp">
 
@@ -95,8 +95,15 @@
         android:layout_gravity="center_vertical"
         android:adjustViewBounds="true"
         />
-
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/like_image"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignRight="@id/main_image"
+        android:layout_alignBottom="@id/main_image"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"/>
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

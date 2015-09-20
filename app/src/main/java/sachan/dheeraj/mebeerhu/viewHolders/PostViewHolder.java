@@ -1,8 +1,11 @@
 package sachan.dheeraj.mebeerhu.viewHolders;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -61,6 +64,7 @@ public class PostViewHolder {
     private TextView postFollowersTextView;
     private TextView timeTextView;
     private ImageView mainImageView;
+    private ImageView likeImageView;
     private FlowLayout flowLayout;
     private TextView locationTextView;
     private TextView likesTextView;
@@ -130,6 +134,7 @@ public class PostViewHolder {
         postViewHolder.postFollowersTextView = (TextView) view.findViewById(R.id.post_followers);
         postViewHolder.timeTextView = (TextView) view.findViewById(R.id.time);
         postViewHolder.mainImageView = (ImageView) view.findViewById(R.id.main_image);
+        postViewHolder.likeImageView = (ImageView) view.findViewById(R.id.like_image);
 
         postViewHolder.locationTextView = (TextView) view.findViewById(R.id.location);
         postViewHolder.likesTextView = (TextView) view.findViewById(R.id.likes);
@@ -138,6 +143,40 @@ public class PostViewHolder {
         postViewHolder.moreTextView = (TextView) view.findViewById(R.id.more);
         postViewHolder.setMoreOnClickListener(activity);
         postViewHolder.moreTextView.setVisibility(View.GONE);
+
+        final Activity fActivity = activity;
+
+        postViewHolder.likeImageView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                postViewHolder.getPost().setIsLiked(
+                        !postViewHolder.getPost().getIsLiked());
+
+                Bitmap bitmap = null;
+                String key;
+                int resId;
+                MemDiskCache mCache = MemDiskCache.getInstance();
+
+                if(postViewHolder.getPost().getIsLiked()) {
+                    resId = R.drawable.thumb_up_red;
+                }
+                else {
+                    resId = R.drawable.thumb_up_grey_unliked;
+                }
+                key = Utils.getKeyFromDrawable(resId);
+                if (mCache != null) {
+                    bitmap = mCache.getBitmapFromCache(key);
+                    if (bitmap == null) {
+                        bitmap = BitmapFactory.decodeResource(fActivity.getResources(), resId);
+                        mCache.addBitmapToCache(key, bitmap);
+                    }
+                }
+                if( bitmap == null){
+                    bitmap = BitmapFactory.decodeResource(fActivity.getResources(), resId);
+                }
+                postViewHolder.likeImageView.setImageBitmap(bitmap);
+            }
+        });
 
         /* Get the width of the window which will be useful in determining the size of images to be displayed */
         WindowManager windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
@@ -205,8 +244,7 @@ public class PostViewHolder {
                 mainBitmap = mCache.getBitmapFromMemCache(Utils.toHex(md.digest(post.getPostImageURL().getBytes())));
             }
         }
-        catch (NoSuchAlgorithmException e)
-        {
+        catch (NoSuchAlgorithmException e) {
             Log.e(LOG_TAG, "MD5 algorithm not recognized : " + e.getMessage());
         }
 
@@ -230,6 +268,32 @@ public class PostViewHolder {
         if(loadImageMask != 0) {
             imageLoaderAsyncTask = new ImageLoaderAsyncTask(post, context);
             imageLoaderAsyncTask.execute();
+        }
+        else {
+
+            Bitmap bitmap = null;
+            String key;
+            int resId;
+            mCache = MemDiskCache.getInstance();
+
+            if(getPost().getIsLiked()) {
+                resId = R.drawable.thumb_up_red;
+            }
+            else {
+                resId = R.drawable.thumb_up_grey_unliked;
+            }
+            key = Utils.getKeyFromDrawable(resId);
+            if (mCache != null) {
+                bitmap = mCache.getBitmapFromCache(key);
+                if (bitmap == null) {
+                    bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+                    mCache.addBitmapToCache(key, bitmap);
+                }
+            }
+            if( bitmap == null){
+                bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+            }
+            likeImageView.setImageBitmap(bitmap);
         }
     }
 
@@ -323,6 +387,29 @@ public class PostViewHolder {
                     if ((loadImageMask & LOAD_MAIN_IMAGE) != 0 && mainBitmap != null) {
                         mainImageView.setImageBitmap(mainBitmap);
                     }
+                    Bitmap bitmap = null;
+                    String key;
+                    int resId;
+                    MemDiskCache mCache = MemDiskCache.getInstance();
+
+                    if(getPost().getIsLiked()) {
+                        resId = R.drawable.thumb_up_red;
+                    }
+                    else {
+                        resId = R.drawable.thumb_up_grey_unliked;
+                    }
+                    key = Utils.getKeyFromDrawable(resId);
+                    if (mCache != null) {
+                        bitmap = mCache.getBitmapFromCache(key);
+                        if (bitmap == null) {
+                            bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+                            mCache.addBitmapToCache(key, bitmap);
+                        }
+                    }
+                    if( bitmap == null){
+                        bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
+                    }
+                    likeImageView.setImageBitmap(bitmap);
                 } catch (Exception e) {
                     Log.e("", "", e);
                 }
