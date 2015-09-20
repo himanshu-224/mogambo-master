@@ -7,12 +7,15 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,6 +30,7 @@ import com.facebook.login.widget.LoginButton;
 import org.w3c.dom.Text;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import sachan.dheeraj.mebeerhu.model.SignUpReply;
 
@@ -38,6 +42,23 @@ public class SignUpFragment extends Fragment {
 
     private final static String LOG_TAG = SignUpFragment.class.getSimpleName();
 
+    private static final String NAME_PATTERN = "^[\\p{L} .'-]+$";
+    private static final String USERNAME_PATTERN = "^[a-z0-9_-]{3,25}$";
+    private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$";
+    /*
+     ^                # start-of-string
+    (?=.*[0-9])       # a digit must occur at least once
+    (?=.*[a-z])       # a lower case letter must occur at least once
+    (?=.*[A-Z])       # an upper case letter must occur at least once
+    (?=.*[@#$%^&+=])  # a special character must occur at least once
+    (?=\S+$)          # no whitespace allowed in the entire string
+    .{8,}             # anything, at least eight places though
+    $                 # end-of-string */
+
+    private Pattern userNamePattern;
+    private Pattern namePattern;
+    private Pattern pwdPattern;
+
     private Button signUpButton;
 
     private EditText fullNameEditText,userNameEditText,emailEditText,passwordEditText;
@@ -48,8 +69,72 @@ public class SignUpFragment extends Fragment {
     private CallbackManager callbackManager;
     private TextView loginView;
 
+    private TextView err_name, err_username, err_email, err_pwd;
+
     public SignUpFragment() {
         // Required empty public constructor
+    }
+
+    public boolean validateName(String text)
+    {
+        if (text==null || text.length()==0) {
+            err_name.setText("Please enter your full name");
+            err_name.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else{
+            err_name.setText("Please enter a valid name");
+            err_name.setVisibility(View.VISIBLE);
+            return namePattern.matcher(text).matches();
+        }
+    }
+    public boolean validateUsername(String text)
+    {
+        if (text==null || text.length()==0) {
+            err_username.setText("Please enter your desired username");
+            err_username.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else {
+            err_username.setText("Username should be 3 to 25 characters with only a-z0-9_- characters");
+            err_username.setVisibility(View.VISIBLE);
+            return userNamePattern.matcher(text).matches();
+        }
+    }
+    public boolean validateEmail(String text)
+    {
+        if (text==null || text.length()==0){
+            err_email.setText("Please enter your email address");
+            err_email.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else {
+            err_email.setText("Please enter a valid email address");
+            err_email.setVisibility(View.VISIBLE);
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(text).matches();
+        }
+    }
+    public boolean validatePassword(String text)
+    {
+        if (text==null || text.length()==0) {
+            err_pwd.setText("Please enter your desired password");
+            err_pwd.setVisibility(View.VISIBLE);
+            return false;
+        }
+        else {
+            err_pwd.setText("Password should be min 8 characters with at least 1 small letter, capital letter and digit");
+            err_pwd.setVisibility(View.VISIBLE);
+            return pwdPattern.matcher(text).matches();
+        }
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        userNamePattern = Pattern.compile(USERNAME_PATTERN);
+        namePattern = Pattern.compile(NAME_PATTERN);
+        pwdPattern = Pattern.compile(PASSWORD_PATTERN);
     }
 
     @Override
@@ -74,6 +159,11 @@ public class SignUpFragment extends Fragment {
         emailEditText = (EditText) view.findViewById(R.id.email);
         passwordEditText = (EditText) view.findViewById(R.id.password);
 
+        err_name = (TextView) view.findViewById(R.id.error_message_name);
+        err_username = (TextView) view.findViewById(R.id.error_message_username);
+        err_email = (TextView) view.findViewById(R.id.error_message_email);
+        err_pwd = (TextView) view.findViewById(R.id.error_message_pwd);
+
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,25 +172,59 @@ public class SignUpFragment extends Fragment {
                 username = userNameEditText.getText().toString();
                 fullname = fullNameEditText.getText().toString();
                 emailId = emailEditText.getText().toString();
-                stringStringHashMap.put("username", fullname);
-                stringStringHashMap.put("name", username);
+
+                boolean all_fields_ok = true;
+
+                if(!validateName(fullname)) {
+                    all_fields_ok = false;
+                }
+                else {
+                    err_name.setText("");
+                    err_name.setVisibility(View.GONE);
+                }
+                if(!validateUsername(username)) {
+                    all_fields_ok = false;
+                }
+                else {
+                    err_username.setText("");
+                    err_username.setVisibility(View.GONE);
+                }
+
+                if (!validateEmail(emailId)) {
+                    all_fields_ok = false;
+                }
+                else {
+                    err_email.setText("");
+                    err_email.setVisibility(View.GONE);
+                }
+
+                if(!validatePassword(passwordEditText.getText().toString())){
+                    all_fields_ok = false;
+                }
+                else {
+                    err_pwd.setText("");
+                    err_pwd.setVisibility(View.GONE);
+                }
+
+                if(!all_fields_ok)
+                    return;
+
+                stringStringHashMap.put("username", username);
+                stringStringHashMap.put("name", fullname);
                 stringStringHashMap.put("emailId", emailId);
                 stringStringHashMap.put("password", passwordEditText.getText().toString());
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... params) {
                         Log.v(LOG_TAG, "Submitting Sign-Up info to server");
-
-                        //String reply = HttpAgent.postGenericData(UrlConstants.SIGN_UP_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
-                        String reply = null;
+                        String reply = HttpAgent.postGenericData(UrlConstants.SIGN_UP_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
                         SignUpReply signUpReply = JsonHandler.parseNormal(reply, SignUpReply.class);
                         if (signUpReply != null) {
-                            Log.v(LOG_TAG, "Sign-up reply received, getting authentication token");
                             HttpAgent.tokenValue = signUpReply.getToken();
+                            Log.v(LOG_TAG, "Sign-up auth token = " + HttpAgent.tokenValue);
                             return true;
                         }
                         /* Temp */
-                        HttpAgent.tokenValue = "abcdxyz";
                         Log.v(LOG_TAG, "SignUp reply received null, signup failure");
                         return false;
                     }
@@ -118,6 +242,12 @@ public class SignUpFragment extends Fragment {
                             prefEdit.putString(getString(R.string.key_email), emailId);
                             prefEdit.putString(getString(R.string.access_token), HttpAgent.tokenValue);
                             prefEdit.apply();
+
+                            View view = getActivity().getCurrentFocus();
+                            if (view != null) {
+                                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            }
 
                             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new SelectTagsFragment()).commit();
                         } else {

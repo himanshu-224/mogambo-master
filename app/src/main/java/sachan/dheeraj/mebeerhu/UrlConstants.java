@@ -4,8 +4,8 @@ package sachan.dheeraj.mebeerhu;
  * Created by naveen.goel on 12/07/15.
  */
 public class UrlConstants {
-    private static final String BASE_URL = "http://ec2-52-74-121-28.ap-southeast-1.compute.amazonaws.com:39112/";
-
+    //private static final String BASE_URL = "http://ec2-52-3-131-55.compute-1.amazonaws.com:39112";
+    private static final String BASE_URL = "http://52.3.131.55:39112/";
     public static final String SIGN_UP_URL = BASE_URL + "auth/signup";
     public static final String LOGIN_URL = BASE_URL + "auth/login";
     public static final String AUTHENTICATE_URL = BASE_URL + "auth/verifyToken";

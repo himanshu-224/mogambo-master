@@ -21,7 +21,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.75"
+        android:layout_weight="1"
         android:orientation="vertical"
         android:padding="10dp">
 
@@ -31,12 +31,28 @@
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:hint="Username or Email"/>
+        <TextView android:id="@+id/error_message_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:textColor="@color/red"
+            android:textSize="12dp"
+            android:visibility="gone"/>
+
         <EditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:hint="Password"/>
+        <TextView android:id="@+id/error_message_pwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:textColor="@color/red"
+            android:textSize="12dp"
+            android:visibility="gone"
+            android:password="true"/>
 
     </LinearLayout>
 
@@ -44,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:layout_weight="1.25">
+        android:layout_weight="0.8">
     <Button
         android:minHeight="0dp"
         android:id="@+id/login_button"

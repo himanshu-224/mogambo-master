@@ -168,9 +168,7 @@ public final class HttpAgent {
     }
 
     public static String postGenericData(String url,String postData, Activity activity) {
-        Log.i(TAG, "making POST request to : " + url + "with params" + postData);
         String data = postImplementationRawString(url, postData, activity);
-        Log.i(TAG, "response to request " + url + " is " + data);
         /* if (data == null) {
             try {
                 activity.runOnUiThread(new Runnable() {

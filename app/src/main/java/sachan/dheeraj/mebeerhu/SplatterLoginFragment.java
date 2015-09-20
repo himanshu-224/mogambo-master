@@ -43,10 +43,31 @@ public class SplatterLoginFragment extends Fragment {
     private String username;
 
     private static final String LOG_TAG = SplatterLoginFragment.class.getSimpleName();
+    private TextView err_username, err_pwd;
 
     public SplatterLoginFragment() {
         // Required empty public constructor
     }
+
+    public boolean validateUsername(String text)
+    {
+        if (text==null || text.length()==0) {
+            err_username.setText("Please enter your username");
+            err_username.setVisibility(View.VISIBLE);
+            return false;
+        }
+        return true;
+    }
+    public boolean validatePassword(String text)
+    {
+        if (text==null || text.length()==0) {
+            err_pwd.setText("Please enter your password");
+            err_pwd.setVisibility(View.VISIBLE);
+            return false;
+        }
+        return true;
+    }
+
 
 
     @Override
@@ -60,6 +81,8 @@ public class SplatterLoginFragment extends Fragment {
 
         userNameEditText = (EditText) view.findViewById(R.id.username);
         passwordEditText = (EditText) view.findViewById(R.id.password);
+        err_username = (TextView) view.findViewById(R.id.error_message_username);
+        err_pwd = (TextView) view.findViewById(R.id.error_message_pwd);
 
         loginButtonFaceBook.setReadPermissions("user_friends");
         googleButton = (com.google.android.gms.common.SignInButton) view.findViewById(R.id.google);
@@ -73,9 +96,30 @@ public class SplatterLoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.v(LOG_TAG, "Login button clicked, attempting to login");
+                username = userNameEditText.getText().toString();
+
+                boolean all_fields_ok = true;
+
+                if(!validateUsername(username)) {
+                    all_fields_ok = false;
+                }
+                else {
+                    err_username.setText("");
+                    err_username.setVisibility(View.GONE);
+                }
+                if(!validatePassword(passwordEditText.getText().toString())){
+                    all_fields_ok = false;
+                }
+                else {
+                    err_pwd.setText("");
+                    err_pwd.setVisibility(View.GONE);
+                }
+
+                if(!all_fields_ok)
+                    return;
+
                 loginInButton.setEnabled(false);
                 final HashMap<String, String> stringStringHashMap = new HashMap<String, String>();
-                username = userNameEditText.getText().toString();
                 stringStringHashMap.put("username", username);
                 stringStringHashMap.put("password", passwordEditText.getText().toString());
 
@@ -83,14 +127,14 @@ public class SplatterLoginFragment extends Fragment {
 
                     @Override
                     protected Boolean doInBackground(Void... params) {
-                        /* Temp */ HttpAgent.tokenValue = "abcdxyz";
-                        if (true) return true;
+                        /* Temp HttpAgent.tokenValue = "abcdxyz";
+                        if (true) return true; */
                         Log.d(LOG_TAG, "Posted login information to server");
                         String reply = HttpAgent.postGenericData(UrlConstants.LOGIN_URL, JsonHandler.stringifyNormal(stringStringHashMap), getActivity());
                         AccessTokenCredentials accessTokenCredentials = JsonHandler.parseNormal(reply, AccessTokenCredentials.class);
                         if (accessTokenCredentials != null) {
-                            Log.v(LOG_TAG, "Sign-in reply received, getting authentication token");
                             HttpAgent.tokenValue = accessTokenCredentials.getToken();
+                            Log.v(LOG_TAG, "Sign-in reply received, auth token = " + HttpAgent.tokenValue);
                             return true;
                         }
                         Log.v(LOG_TAG, "Access credentials returned as Null, login unsuccessful");
