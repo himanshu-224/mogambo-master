@@ -20,29 +20,6 @@
         android:textColor="#FFFFFF"
         android:textSize="40sp" />
 
-    <TextView
-        android:id="@+id/hook"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="20dp"
-        android:text="Hook on tokens"
-        android:textColor="@color/tatti"
-        android:textSize="20sp"
-        android:textStyle="normal" />
-
-    <TextView
-        android:id="@+id/fine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="Get started, you can fine tune things later"
-        android:textColor="#A63F5A" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -53,10 +30,10 @@
             android:id="@+id/flow_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
             android:layout_marginBottom="5dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="45dp"
             android:gravity="center" />
 
     </FrameLayout>
