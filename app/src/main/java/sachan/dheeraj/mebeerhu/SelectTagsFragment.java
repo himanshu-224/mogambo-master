@@ -115,11 +115,12 @@ public class SelectTagsFragment extends Fragment {
         typeface = Typeface.createFromAsset(getActivity().getBaseContext().getResources().getAssets(), "gothic.ttf");
         final View view = inflater.inflate(R.layout.fragment_follow_tags, container, false);
         ((TextView) view.findViewById(R.id.header)).setTypeface(typeface);
+        ((TextView) view.findViewById(R.id.hook)).setTypeface(typeface);
+        ((TextView) view.findViewById(R.id.fine)).setTypeface(typeface);
 
         final FlowLayout flowLayout = (FlowLayout) view.findViewById(R.id.flow_layout);
         continueTextView = (TextView) view.findViewById(R.id.continue_button);
         continueTextView.setTypeface(typeface);
-        continueTextView.setVisibility(View.GONE);
 
         continueTextView.setOnClickListener(new View.OnClickListener() {
             @Override
