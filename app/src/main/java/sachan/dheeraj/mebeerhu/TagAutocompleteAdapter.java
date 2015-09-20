@@ -69,8 +69,8 @@ public class TagAutocompleteAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Tag tag = getItem(position);
-        Log.v(LOG_TAG, String.format("Binding Tag to adapter, Name: %s, meaning: %s",
-                tag.getTagName(),tag.getTagMeaning()));
+        /* Log.v(LOG_TAG, String.format("Binding Tag to adapter, Name: %s, meaning: %s",
+                tag.getTagName(),tag.getTagMeaning())); */
 
         convertView = LayoutInflater.from(context).inflate(R.layout.list_item_tag_suggestion, parent, false);
         TextView tag_title = (TextView) convertView.findViewById(R.id.tag_title);
@@ -126,6 +126,13 @@ public class TagAutocompleteAdapter
         autocompletePredictions.add(new Tag("Burger", "Bun, cutlet, cheese and vegetables", Tag.TYPE_NOUN, true ));
         autocompletePredictions.add(new Tag("Pizza", "Flour base, cheese, vegetables and sauce", Tag.TYPE_NOUN, false ));
         autocompletePredictions.add(new Tag("Idli", "South Indian dish made of rice", Tag.TYPE_NOUN, true ));
+        autocompletePredictions.add(new Tag("Homemade", "Made at home", Tag.TYPE_ADJECTIVE, true));
+        autocompletePredictions.add(new Tag("Marinated", "A particular taste", Tag.TYPE_ADJECTIVE, true));
+        autocompletePredictions.add(new Tag("Vanilla", "A flavor used in ice creams", Tag.TYPE_NOUN, true));
+        autocompletePredictions.add(new Tag("Fruit Salad", "A variety of fruits mixed up", Tag.TYPE_NOUN, true));
+        autocompletePredictions.add(new Tag("Spicy", "Flavor due to heavy amount of spices", Tag.TYPE_ADJECTIVE, true));
+        autocompletePredictions.add(new Tag("Grilled", "Roasted on fire for a long time", Tag.TYPE_ADJECTIVE, true));
+        autocompletePredictions.add(new Tag("Burger", "A western snack made of bread", Tag.TYPE_NOUN, true));
 
         // This method should have been called off the main UI thread. Block and wait for at most 60s
         // for a result from the API.

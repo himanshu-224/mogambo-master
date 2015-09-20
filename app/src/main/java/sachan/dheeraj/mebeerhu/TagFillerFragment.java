@@ -1,10 +1,15 @@
 package sachan.dheeraj.mebeerhu;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -18,13 +23,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import sachan.dheeraj.mebeerhu.cache.MemDiskCache;
 import sachan.dheeraj.mebeerhu.localData.AppContract;
 import sachan.dheeraj.mebeerhu.localData.AppDbHelper;
 import sachan.dheeraj.mebeerhu.model.Tag;
@@ -32,6 +41,8 @@ import sachan.dheeraj.mebeerhu.model.Tag;
 import io.socket.emitter.Emitter;
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import sachan.dheeraj.mebeerhu.utils.Utils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,6 +59,11 @@ public class TagFillerFragment extends Fragment {
     private HorizontalScrollView horizontalScrollView;
     private ActionMode mActionMode;
     View removedView;
+
+    private ImageView mainImageView;
+    private Bitmap imageBitmap;
+    private String curImagePath;
+    private static final MemDiskCache mCache = MemDiskCache.getInstance();
 
     public TagFillerFragment() {
     }
@@ -152,6 +168,11 @@ public class TagFillerFragment extends Fragment {
             }
             cursor.moveToNext();
         }
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                getString(R.string.preference_file), Context.MODE_PRIVATE);
+        curImagePath = sharedPref.getString(getString(R.string.post_image_path),null);
+
+        Log.v(LOG_TAG, "Image path: " + curImagePath);
     }
 
     public void saveTagsInDB()
@@ -210,6 +231,8 @@ public class TagFillerFragment extends Fragment {
 
         Log.v(LOG_TAG, "On onCreateView for TagFillerFragment");
         View rootView = inflater.inflate(R.layout.fragment_tag_filler, container, false);
+
+        mainImageView = (ImageView) rootView.findViewById(R.id.main_image);
         autoCompleteTextView = (CustomAutoCompleteTextView) rootView.findViewById(R.id.auto_complete);
         linearLayout = (LinearLayout) rootView.findViewById(R.id.linear_layout);
         horizontalScrollView = (HorizontalScrollView) rootView.findViewById(R.id.hsv);
@@ -295,6 +318,35 @@ public class TagFillerFragment extends Fragment {
             }
         });
 
+        imageBitmap = null;
+        MessageDigest md;
+        String key="post_image";
+
+        if(curImagePath != null) {
+
+            if (mCache != null) {
+                try {
+                    md = MessageDigest.getInstance("MD5");
+                    key = Utils.toHex(md.digest(curImagePath.getBytes()));
+                    imageBitmap =  mCache.getBitmapFromCache(key);
+                }
+                catch (NoSuchAlgorithmException e)
+                {
+                    Log.e(LOG_TAG, "MD5 algorithm not recognized : " + e.getMessage());
+                }
+            }
+
+            if(imageBitmap == null ) {
+                setPic(curImagePath);
+                if (mCache!= null)
+                {
+                    mCache.addBitmapToCache(key, imageBitmap);
+                }
+            }
+            if (imageBitmap != null)
+                mainImageView.setImageBitmap(imageBitmap);
+        }
+
         rootView.setFocusableInTouchMode(true);
         rootView.requestFocus();
 
@@ -378,5 +430,36 @@ public class TagFillerFragment extends Fragment {
         }
     };
 
+    /*Helper function to get and set images */
+    private void setPic(String imagePath)
+    {
+		/* There isn't enough memory to open up more than a couple camera photos
+		 * So pre-scale the target bitmap into which the file is decoded */
+
+		/* Get the size of the ImageView */
+        int targetW = mainImageView.getWidth();
+        int targetH = mainImageView.getHeight();
+
+		/* Get the size of the image */
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+		/* Figure out which way needs to be reduced less */
+        int scaleFactor = 1;
+        if ((targetW > 0) || (targetH > 0)) {
+            scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        }
+
+		/* Set bitmap options to scale the image decode target */
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+		/* Decode the JPEG file into a Bitmap */
+        imageBitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+    }
 }
 
