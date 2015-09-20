@@ -175,28 +175,35 @@ public class SelectTagsFragment extends Fragment {
             protected TagArrayList doInBackground(Void... params) {
                 /* String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());
                  * TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class); */
-                Log.v(LOG_TAG, "Creating temporary TAGs" );
+                Log.v(LOG_TAG, "Creating temporary TAGs");
                 TagArrayList testTagList = new TagArrayList();
-                testTagList.add(new Tag("Dessert", "DishType", Tag.TYPE_NOUN, true));
-                testTagList.add(new Tag("Sweet", "Taste", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Smooth", "Taste", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Royal", "Ambiance", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Bangalore", "City", Tag.TYPE_NOUN, true));
-                testTagList.add(new Tag("Homemade", "DishType", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Homemade", "DishType", Tag.TYPE_ADJECTIVE, true));
                 testTagList.add(new Tag("Jumbo", "Taste", Tag.TYPE_ADJECTIVE, true));
                 testTagList.add(new Tag("Marinated", "Taste", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Vanilla", "Ambiance", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Veg", "City", Tag.TYPE_NOUN, true));
-                testTagList.add(new Tag("Fizzy", "DishType", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Vanilla", "Ambiance", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Fruit Salad", "City", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Spicy", "DishType", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Fizzy", "DishType", Tag.TYPE_ADJECTIVE, true));
                 testTagList.add(new Tag("Grilled", "Taste", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Burger", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Burger", "Taste", Tag.TYPE_NOUN, true));
                 testTagList.add(new Tag("Caramelized", "Ambiance", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Ice Cream", "City", Tag.TYPE_NOUN, true));
-                testTagList.add(new Tag("Hot", "DishType", Tag.TYPE_NOUN, true));
-                testTagList.add(new Tag("Pizza", "Taste", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Tatalizing", "Taste", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Royal", "Ambiance", Tag.TYPE_ADJECTIVE, true));
-                testTagList.add(new Tag("Non Veg", "City", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Nutty", "City", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Beer", "DishType", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Non Veg", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Tantalizing", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Ice Cream", "Ambiance", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Hot", "City", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Low Calorie", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Pizza", "Ambiance", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Mutton", "City", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Delicious", "DishType", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Chocolaty", "Taste", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Brunch", "Taste", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Fried", "Ambiance", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Superb", "City", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Natural", "City", Tag.TYPE_ADJECTIVE, true));
+                testTagList.add(new Tag("Ale", "DishType", Tag.TYPE_NOUN, true));
+                testTagList.add(new Tag("Sweet", "Taste", Tag.TYPE_ADJECTIVE, true));
                 return testTagList;
             }
 
