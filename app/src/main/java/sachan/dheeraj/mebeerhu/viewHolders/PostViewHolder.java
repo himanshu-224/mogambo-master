@@ -158,7 +158,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder{
         likeImageView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                getPost().setIsLiked(getPost().getIsLiked());
+                getPost().setIsLiked(!getPost().getIsLiked());
                 Bitmap bitmap = null;
                 String key;
                 int resId;
