@@ -7,39 +7,41 @@
     android:padding="5dp"
     tools:context="sachan.dheeraj.mebeerhu.FeedsFragment">
 
-    <FrameLayout
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:id="@+id/post_swipe_refresh">
 
-        <ListView
-            android:id="@+id/list_view"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@color/gray"
-            android:dividerHeight="5dp"
-            android:persistentDrawingCache="none"
-            android:visibility="gone" />
+            android:layout_height="match_parent">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/button"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/my_recycler_view"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_icon="@drawable/black"
+                fab:fab_colorNormal="@color/purple"
+                fab:fab_colorPressed="@color/tatti"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"/>
+
+        </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/loader"
+            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/black"
-            fab:fab_colorNormal="@color/purple"
-            fab:fab_colorPressed="@color/tatti"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"/>
+            android:layout_gravity="center"
+            android:gravity="center" />
 
-    </FrameLayout>
-
-    <ProgressBar
-        android:id="@+id/loader"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center" />
-
-
+    </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>
