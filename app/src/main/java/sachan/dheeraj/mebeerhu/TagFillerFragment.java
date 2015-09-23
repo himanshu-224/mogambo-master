@@ -81,7 +81,21 @@ public class TagFillerFragment extends Fragment {
          * Someone needs to define the parameters for all the non-approved TAGs in
          * the database regularly. I guess this process has to be manual for now */
         Log.v(LOG_TAG, "Adding Tag " + tag);
-        Tag thisTag = new Tag(tag, "taste", Tag.TYPE_NOUN, true);
+        Tag thisTag = new Tag(tag, "Not determined", Tag.TYPE_NOUN, false);
+        if (tags.contains(thisTag))
+        {
+            return false;
+        }
+        else
+        {
+            tags.add(thisTag);
+            return true;
+        }
+    }
+
+    public boolean addTags(Tag thisTag)
+    {
+        Log.v(LOG_TAG, "Adding Tag " + thisTag.getTagName());
         if (tags.contains(thisTag))
         {
             return false;
@@ -249,14 +263,14 @@ public class TagFillerFragment extends Fragment {
 
                 /* Store the Tags locally, and also check if it has not already been entered
                  * by the user. If already entered, inform the user and return from here */
-                if (!addTags(s.replace("\n", ""))) {
+                if (!addTags(thisTag)) {
                     autoCompleteTextView.setText("");
                     Toast.makeText(getActivity(), "Tag Already Added", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 View view1 = getActivity().getLayoutInflater().inflate(R.layout.list_item_tag, null);
                 TextView textView = (TextView) view1.findViewById(R.id.tv);
-                textView.setText(s.replace("\n", ""));
+                textView.setText(s);
                 textView.setTextColor(getActivity().getResources().getColor(R.color.white));
                 if (/*tag.getTypeId() == Tag.TYPE_NOUN*/s.length() % 2 == 0) {
                     textView.getBackground().setColorFilter(getActivity().getResources().getColor(R.color.red), PorterDuff.Mode.SRC_IN);

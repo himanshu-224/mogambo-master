@@ -1,11 +1,15 @@
 package sachan.dheeraj.mebeerhu.model;
 
+import java.io.Serializable;
+
 /**
  * Created by naveen.goel on 12/07/15.
  */
-public class Tag {
+public class Tag implements Serializable{
     public static final int TYPE_NOUN = 2;
     public static final int TYPE_ADJECTIVE = 1;
+
+    private static final long serialVersionUID = 1L;
 
     private String tagName;
     private String tagMeaning;

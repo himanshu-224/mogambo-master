@@ -88,6 +88,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="sachan.dheeraj.mebeerhu.TagsAddActivity" />
         </activity>
+
+        <service
+            android:name=".SavePostIntentService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

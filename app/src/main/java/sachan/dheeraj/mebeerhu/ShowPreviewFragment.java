@@ -152,7 +152,10 @@ public class ShowPreviewFragment extends Fragment {
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
+                SavePostIntentService.startActionSavePostServer(getActivity(), placeId, placeDetails, curImagePath, tags );
+
                 Intent intent = new Intent(getActivity(), FeedsActivity.class);
                 intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

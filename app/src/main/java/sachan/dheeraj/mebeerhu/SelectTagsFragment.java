@@ -34,6 +34,7 @@ import sachan.dheeraj.mebeerhu.customFlowLayout.FlowLayout;
 import sachan.dheeraj.mebeerhu.globalData.CommonData;
 import sachan.dheeraj.mebeerhu.model.Tag;
 import sachan.dheeraj.mebeerhu.model.TagArrayList;
+import sachan.dheeraj.mebeerhu.model.TrendyTag;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -174,7 +175,7 @@ public class SelectTagsFragment extends Fragment {
             @Override
             protected TagArrayList doInBackground(Void... params) {
                 /* String data = HttpAgent.get(UrlConstants.GET_TRENDY_TAGS_URL, getActivity());
-                 * TagArrayList tagArrayList = JsonHandler.parseNormal(data, TagArrayList.class); */
+                ArrayList<TrendyTag> trendyTagsList = JsonHandler.parseListNormal(data, TrendyTag.class); */
                 Log.v(LOG_TAG, "Creating temporary TAGs");
                 TagArrayList testTagList = new TagArrayList();
                 testTagList.add(new Tag("Homemade", "DishType", Tag.TYPE_ADJECTIVE, true));

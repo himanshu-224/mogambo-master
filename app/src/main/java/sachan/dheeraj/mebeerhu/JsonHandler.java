@@ -18,6 +18,10 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import sachan.dheeraj.mebeerhu.model.TrendyTag;
 
 public final class JsonHandler {
 
@@ -101,6 +105,23 @@ public final class JsonHandler {
                 return null;
             }
             return normalMapper.readValue(json, classOfT);
+
+        } catch (JsonParseException e) {
+            Log.e(TAG,"JsonParseException Failed to parse json correctly. ", e);
+        } catch (JsonMappingException e) {
+            Log.e(TAG,"JsonMappingException Failed to parse json correctly. ", e);
+        } catch (IOException e) {
+            Log.e(TAG,"IOException Failed to parse json correctly. " , e);
+        }
+        return null;
+    }
+
+    public static <T> ArrayList<T> parseListNormal(String json,Class<T> classOfT){
+        try {
+            if (json == null) {
+                return null;
+            }
+            return normalMapper.readValue(json, normalMapper.getTypeFactory().constructCollectionType(List.class, classOfT));
 
         } catch (JsonParseException e) {
             Log.e(TAG,"JsonParseException Failed to parse json correctly. ", e);

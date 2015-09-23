@@ -65,7 +65,7 @@ public class FeedsFragment extends Fragment{
     private Handler handler;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    LoadInitialPosts loadInitialPosts;
+    //LoadInitialPosts loadInitialPosts;
     GetInitialPostsFromNetwork getInitialPostsFromNetwork;
 
     private View.OnLongClickListener TAG_LONG_CLICK_LISTENER = new View.OnLongClickListener() {
@@ -122,19 +122,6 @@ public class FeedsFragment extends Fragment{
         mDbHelper =  new AppDbHelper(getActivity());
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.v(LOG_TAG, String.format("onActivityResult, requestCode = %d, result = %d",
-                requestCode, resultCode));
-        if (requestCode == PLACE_PICKER_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, getActivity());
-                String dataa = JsonHandler.stringifyNormal(place);
-                String toastMsg = String.format("Place: %s", place.getName());
-                Toast.makeText(getActivity(), toastMsg, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -178,8 +165,8 @@ public class FeedsFragment extends Fragment{
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        loadInitialPosts = new LoadInitialPosts();
-                        loadInitialPosts.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        getInitialPostsFromNetwork = new GetInitialPostsFromNetwork();
+                        getInitialPostsFromNetwork.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }, 2500);
@@ -198,7 +185,7 @@ public class FeedsFragment extends Fragment{
         return view;
     }
 
-    class GetInitialPostsFromNetwork extends AsyncTask<Void, Void, Void> {
+    class GetInitialPostsFromNetwork extends AsyncTask<Void, Void, ArrayList<Post>> {
 
         @Override
         protected void onPreExecute() {
@@ -206,15 +193,44 @@ public class FeedsFragment extends Fragment{
         }
 
         @Override
-        protected void onPostExecute(Void params) {
-            Log.v(LOG_TAG, "PostExecute in task for inserting feeds in db");
-            loadInitialPosts = new LoadInitialPosts();
-            loadInitialPosts.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        protected void onPostExecute(ArrayList<Post> feeds) {
+            try {
+                posts = feeds;
 
+                mAdapter = new FeedsAdapter(getActivity(), posts, mRecyclerView,
+                        LOCATION_LONG_CLICK_LISTENER, TAG_LONG_CLICK_LISTENER);
+                //mAdapter.enableFooter(true);
+
+                mAdapter.setOnLoadMoreListener(new FeedsAdapter.OnLoadMoreListener() {
+                    @Override
+                    public void onLoadMore() {
+                        //add progress item
+                        posts.add(null);
+                        mAdapter.notifyItemInserted(posts.size() - 1);
+
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                //remove progress item
+                                new LoadMorePosts().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                //or you can add all at once but do not forget to call mAdapter.notifyDataSetChanged();
+                            }
+                        }, 2000);
+                        System.out.println("load");
+                    }
+                });
+
+                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                //mSwipeRefreshLayout.setRefreshing(false);
+            }catch (Exception e){
+                Log.e(LOG_TAG, e.getMessage());
+            }
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected ArrayList<Post> doInBackground(Void... params) {
 
             Feeds feeds;
                 /*
@@ -454,7 +470,7 @@ public class FeedsFragment extends Fragment{
             finally {
                 db.endTransaction();
             }
-            return null;
+            return feeds;
         }
     };
 
@@ -774,7 +790,246 @@ public class FeedsFragment extends Fragment{
 
         @Override
         protected ArrayList<Post> doInBackground(Void... params) {
-            return Feeds.feedsBuilder();
+
+            Feeds feeds;
+                /*
+                String feedString = HttpAgent.get(UrlConstants.GET_FEED, getActivity());
+                feeds = JsonHandler.parseNormal(feedString, Feeds.class);
+                if (feeds == null) {
+                    throw new RuntimeException("json parse failed");
+                }
+                */
+
+            feeds = Feeds.feedsBuilder();
+                /* Put the feeds in the database */
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            Vector<ContentValues> cValues = new Vector<ContentValues>(feeds.size());
+            ContentValues cValue;
+
+            Log.v(LOG_TAG, "doInBackground in task for inserting feeds in db");
+
+            int numFeeds = feeds.size();
+
+            ArrayList<Post> validPosts = new ArrayList<Post>();
+
+            for(Post thisPost:feeds)
+            {
+                if (thisPost.getPostId()== null ||
+                        thisPost.getUsername() == null ||
+                        thisPost.getParentUsername() == null ||
+                        thisPost.getPostLocation() == null ||
+                        thisPost.getPostImageURL() == null ||
+                        thisPost.getName() == null ||
+                        thisPost.getAggregatedVoteCount() == null
+                        )
+                {
+                    Log.e(LOG_TAG, "Error building post, mandatory params null");
+                    Log.e(LOG_TAG, String.format("Post fields : postId %s, username %s, parent_username %s",thisPost.getPostId(),
+                            thisPost.getUsername(), thisPost.getParentUsername()));
+                    Log.e(LOG_TAG, String.format("Post fields : post_location %s, post_image_url %s", thisPost.getPostLocation(),
+                            thisPost.getPostImageURL() ));
+                    Log.e(LOG_TAG, String.format("Post fields : name %s, vote count %d", thisPost.getName(),
+                            thisPost.getAggregatedVoteCount() ));
+                }
+                else
+                {
+                    validPosts.add(thisPost);
+                    cValue = new ContentValues();
+
+                        /* Put mandatory params first */
+                    cValue.put(PostEntry.COLUMN_POST_ID, thisPost.getPostId());
+                    cValue.put(PostEntry.COLUMN_USERNAME, thisPost.getUsername());
+                    cValue.put(PostEntry.COLUMN_PARENT_USERNAME, thisPost.getParentUsername());
+                    cValue.put(PostEntry.COLUMN_POST_LOCATION, thisPost.getPostLocation());
+
+                    AppLocation thisLocation = new AppLocation(thisPost.getPostLocation());
+
+                    /** TEMP. Need to get proper description from data fetched from server **/
+                    thisLocation.createSetDescription("68 A, 4th Block", "Koramangala",
+                            "Bangalore", "Karnataka", "India", "560034"  );
+                    CommonData.locations.put(thisLocation.getLocationName(),thisLocation);
+
+                    cValue.put(PostEntry.COLUMN_POST_IMAGE_URL, thisPost.getPostImageURL());
+                    cValue.put(PostEntry.COLUMN_AGGREGATED_VOTE_COUNT, thisPost.getAggregatedVoteCount());
+
+                        /* Non-mandatory params */
+                    if (thisPost.getTimestamp() != null)
+                        cValue.put(PostEntry.COLUMN_TIMESTAMP, thisPost.getTimestamp());
+                    if (thisPost.getPriceCurrency() != null)
+                        cValue.put(PostEntry.COLUMN_PRICE_CURRENCY, thisPost.getPriceCurrency());
+                    if (thisPost.getPostPrice() != null )
+                        cValue.put(PostEntry.COLUMN_POST_PRICE, thisPost.getPostPrice());
+                    if (thisPost.getLocationGeoCode() != null )
+                        cValue.put(PostEntry.COLUMN_LOCATION_GEOCODE, thisPost.getLocationGeoCode());
+                    if (thisPost.getRetweetCount() != null )
+                        cValue.put(PostEntry.COLUMN_RETWEET_COUNT, thisPost.getRetweetCount());
+                    if (thisPost.getCity() != null )
+                        cValue.put(PostEntry.COLUMN_CITY, thisPost.getCity());
+                    if (thisPost.getState() != null )
+                        cValue.put(PostEntry.COLUMN_STATE, thisPost.getState());
+                    if (thisPost.getCountry() != null )
+                        cValue.put(PostEntry.COLUMN_COUNTRY, thisPost.getCountry());
+
+                    cValues.add(cValue);
+                }
+            }
+
+            Log.v(LOG_TAG, "Inserting Post data, num rows = " + cValues.size());
+            db.beginTransaction();
+            try
+            {
+                for(ContentValues mValue:cValues)
+                {
+                    db.replace(PostEntry.TABLE_NAME, null, mValue);
+                }
+                db.setTransactionSuccessful();
+            }
+            finally {
+                db.endTransaction();
+            }
+            cValues.clear();
+
+            Vector<ContentValues> cValuesTag = new Vector<ContentValues>();
+            Vector<ContentValues> cValuesUser = new Vector<ContentValues>();
+
+            Vector<ContentValues> cValuesPostTag = new Vector<ContentValues>();
+            Vector<ContentValues> cValuesUserAccompany = new Vector<ContentValues>();
+
+            for(Post thisPost:validPosts)
+            {
+                ArrayList<Tag> tagList = thisPost.getTagList();
+
+                ContentValues cValueUser = new ContentValues();
+                    /* We had already verified that Username and Name are not null */
+                cValueUser.put(UserEntry.COLUMN_USERNAME, thisPost.getUsername());
+                cValueUser.put(UserEntry.COLUMN_NAME, thisPost.getName());
+                if (thisPost.getUserImageURL() != null)
+                    cValueUser.put(UserEntry.COLUMN_PROFILE_IMAGE_URL, thisPost.getUserImageURL());
+                cValuesUser.add(cValueUser);
+
+                if (tagList != null && tagList.size()>0)
+                {
+                    for (Tag tag:tagList)
+                    {
+                        if (tag.getTagName() == null ||
+                                tag.getTagMeaning() == null ||
+                                tag.getTypeId() == null ||
+                                tag.isApproved() == null)
+                        {
+                            Log.e(LOG_TAG, "Error building tagList for post_id: " + thisPost.getPostId() +", mandatory params null");
+                            Log.e(LOG_TAG, String.format("Tag fields : tagName %s, tagMeaning %s, typeId %d, approved %b",tag.getTagName(),
+                                    tag.getTagMeaning(), tag.getTypeId(), tag.isApproved()));
+                        }
+                        else
+                        {
+                                /* Store tag info into common data for quick access */
+                            CommonData.tags.put(tag.getTagName(), tag);
+
+                            cValue = new ContentValues();
+                            cValue.put(TagEntry.COLUMN_TAG_NAME, tag.getTagName());
+                            cValue.put(TagEntry.COLUMN_TAG_MEANING, tag.getTagMeaning());
+                            cValue.put(TagEntry.COLUMN_TYPE_ID, tag.getTypeId());
+                            cValue.put(TagEntry.COLUMN_APPROVED, tag.isApproved());
+                            cValuesTag.add(cValue);
+
+                            ContentValues cValuePostTag = new ContentValues();
+                            cValuePostTag.put(PostTagEntry.COLUMN_POST_ID, thisPost.getPostId());
+                            cValuePostTag.put(PostTagEntry.COLUMN_TAG_NAME, tag.getTagName());
+                            cValuesPostTag.add(cValuePostTag);
+                        }
+                    }
+                }
+
+                ArrayList<User> userAccompanyList = thisPost.getAccompaniedWith();
+                if (userAccompanyList != null && userAccompanyList.size()>0)
+                {
+                    for (User mUser:userAccompanyList)
+                    {
+                        if (mUser.getUsername() == null ||
+                                mUser.getName() == null)
+                        {
+                            Log.e(LOG_TAG, "Error building UserAccompanyList for post_id: " + thisPost.getPostId() + ", mandatory params null");
+                            Log.e(LOG_TAG, String.format("Tag fields : userName %s, name %s",mUser.getUsername(),
+                                    mUser.getName()));
+                        }
+                        else
+                        {
+                            cValue = new ContentValues();
+                            cValue.put(UserEntry.COLUMN_USERNAME, mUser.getUsername() );
+                            cValue.put(UserEntry.COLUMN_NAME, mUser.getName() );
+                            cValuesUser.add(cValue);
+
+                            ContentValues cValueUserAccompany = new ContentValues();
+                            cValueUserAccompany.put(PostAccompanyingUserEntry.COLUMN_POST_ID, thisPost.getPostId());
+                            cValueUserAccompany.put(PostAccompanyingUserEntry.COLUMN_ACCOMPANYING_USERNAME, mUser.getUsername());
+                            cValuesUserAccompany.add(cValue);
+                        }
+                    }
+                }
+            }
+
+            Log.v(LOG_TAG, "Total unique tags received = " + CommonData.tags.size());
+
+            Log.v(LOG_TAG, "Inserting User data, num rows = " + cValuesUser.size());
+                /* Insert all the user records created */
+            db.beginTransaction();
+            try
+            {
+                for(ContentValues mValue:cValuesUser)
+                {
+                    db.replace(UserEntry.TABLE_NAME, null, mValue);
+                }
+                db.setTransactionSuccessful();
+            }
+            finally {
+                db.endTransaction();
+            }
+
+            Log.v(LOG_TAG, "Inserting Tags data, num rows = " + cValuesTag.size());
+                /* Insert all the tags created */
+            db.beginTransaction();
+            try
+            {
+                for(ContentValues mValue:cValuesTag)
+                {
+                    db.replace(TagEntry.TABLE_NAME, null, mValue);
+                }
+                db.setTransactionSuccessful();
+            }
+            finally {
+                db.endTransaction();
+            }
+
+            Log.v(LOG_TAG, "Inserting (Post,Tag) pair data, num rows = " + cValuesPostTag.size());
+                /* Insert all the PostTags pairs created */
+            db.beginTransaction();
+            try
+            {
+                for(ContentValues mValue:cValuesPostTag)
+                {
+                    db.replace(PostTagEntry.TABLE_NAME, null, mValue);
+                }
+                db.setTransactionSuccessful();
+            }
+            finally {
+                db.endTransaction();
+            }
+
+            Log.v(LOG_TAG, "Inserting (Post,AccompanyingUsers) pair data, num rows = " + cValuesUserAccompany.size());
+                /* Insert all the Accompanying User pairs created */
+            db.beginTransaction();
+            try
+            {
+                for(ContentValues mValue:cValuesUserAccompany)
+                {
+                    db.replace(PostAccompanyingUserEntry.TABLE_NAME, null, mValue);
+                }
+                db.setTransactionSuccessful();
+            }
+            finally {
+                db.endTransaction();
+            }
+            return feeds;
         }
     }
 }
