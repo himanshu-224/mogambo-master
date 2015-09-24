@@ -172,10 +172,10 @@ public class PostViewHolder extends RecyclerView.ViewHolder{
                 }
                 key = Utils.getKeyFromDrawable(resId);
                 if (mCache != null) {
-                    bitmap = mCache.getBitmapFromCache(key);
+                    bitmap = mCache.getBitmapFromMemCache(key);
                     if (bitmap == null) {
                         bitmap = BitmapFactory.decodeResource(cntxt.getResources(), resId);
-                        mCache.addBitmapToCache(key, bitmap);
+                        mCache.addBitmapToMemCache(key, bitmap);
                     }
                 }
                 if( bitmap == null){
@@ -289,10 +289,10 @@ public class PostViewHolder extends RecyclerView.ViewHolder{
             }
             key = Utils.getKeyFromDrawable(resId);
             if (mCache != null) {
-                bitmap = mCache.getBitmapFromCache(key);
+                bitmap = mCache.getBitmapFromMemCache(key);
                 if (bitmap == null) {
                     bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
-                    mCache.addBitmapToCache(key, bitmap);
+                    mCache.addBitmapToMemCache(key, bitmap);
                 }
             }
             if( bitmap == null){
