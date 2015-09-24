@@ -35,6 +35,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private OnLoadMoreListener onLoadMoreListener;
     private View.OnLongClickListener LOCATION_LONG_CLICK_LISTENER;
     private View.OnLongClickListener TAG_LONG_CLICK_LISTENER;
+    private View.OnClickListener LIKES_CLICK_LISTENER;
 
     private int lastPosition = -1;
 
@@ -42,13 +43,15 @@ public class FeedsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                          ArrayList<Post> dataSet,
                          RecyclerView recyclerView,
                          View.OnLongClickListener location_long_click_listener,
-                         View.OnLongClickListener tag_long_click_listener
+                         View.OnLongClickListener tag_long_click_listener,
+                         View.OnClickListener likes_click_listener
                         )
     {
         context = ctxt;
         mDataSet = dataSet;
         LOCATION_LONG_CLICK_LISTENER = location_long_click_listener;
         TAG_LONG_CLICK_LISTENER = tag_long_click_listener;
+        LIKES_CLICK_LISTENER = likes_click_listener;
 
         if(recyclerView.getLayoutManager()instanceof LinearLayoutManager) {
 
@@ -141,6 +144,7 @@ public class FeedsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             postViewHolder.getLocationTextView().setOnLongClickListener(LOCATION_LONG_CLICK_LISTENER);
             postViewHolder.getLikesTextView().setText(post.getAggregatedVoteCount() + " likes");
             postViewHolder.setPost(post);
+            postViewHolder.getLikesTextView().setOnClickListener(LIKES_CLICK_LISTENER);
             postViewHolder.loadTagsInThreeLines((Activity) context, TAG_LONG_CLICK_LISTENER);
             postViewHolder.initAndLoadImages(context);
             setAnimation(postViewHolder.getLayoutContainerView(), i);

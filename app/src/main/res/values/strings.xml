@@ -27,6 +27,7 @@
     <string name="fragment_tag_search">tagSearch</string>
     <string name="fragment_location_search">locationSearch</string>
     <string name="fragment_feeds">feedsViewer</string>
+    <string name="fragment_likes_list">likesList</string>
 
     <!-- Strings for Menu items -->
     <string name="logout_menu_item">Logout</string>
@@ -136,6 +137,7 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_likes_list">People who liked</string>
 
 
 

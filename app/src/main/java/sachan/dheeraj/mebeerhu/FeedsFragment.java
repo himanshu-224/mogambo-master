@@ -112,6 +112,16 @@ public class FeedsFragment extends Fragment{
         }
     };
 
+    private View.OnClickListener LIKES_CLICK_LISTENER = new View.OnClickListener() {
+        @Override
+        public void onClick(View v)
+        {
+            Log.v(LOG_TAG, "Going to likes activity");
+            Intent thisIntent = new Intent(getActivity(), LikesListActivity.class);
+            startActivity(thisIntent);
+        }
+    };
+
     public FeedsFragment() {
     }
 
@@ -198,7 +208,7 @@ public class FeedsFragment extends Fragment{
                 posts = feeds;
 
                 mAdapter = new FeedsAdapter(getActivity(), posts, mRecyclerView,
-                        LOCATION_LONG_CLICK_LISTENER, TAG_LONG_CLICK_LISTENER);
+                        LOCATION_LONG_CLICK_LISTENER, TAG_LONG_CLICK_LISTENER, LIKES_CLICK_LISTENER );
                 //mAdapter.enableFooter(true);
 
                 mAdapter.setOnLoadMoreListener(new FeedsAdapter.OnLoadMoreListener() {
@@ -734,7 +744,7 @@ public class FeedsFragment extends Fragment{
                 posts = Feeds.feedsBuilder();
 
                 mAdapter = new FeedsAdapter(getActivity(), posts, mRecyclerView,
-                         LOCATION_LONG_CLICK_LISTENER, TAG_LONG_CLICK_LISTENER);
+                         LOCATION_LONG_CLICK_LISTENER, TAG_LONG_CLICK_LISTENER, LIKES_CLICK_LISTENER);
                 //mAdapter.enableFooter(true);
 
                 mAdapter.setOnLoadMoreListener(new FeedsAdapter.OnLoadMoreListener() {
