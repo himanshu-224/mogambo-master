@@ -16,6 +16,8 @@ public class UrlConstants {
     public static final String FOLLOW_TAGS_URL = BASE_URL + "tag/followTag";
     public static final String GET_FEEDS_URL = BASE_URL + "feed/getFeed";
 
+    public static final String GET_EPOCH_TIME = BASE_URL + "checkServer/epochTime";
+
     /* URLs associated with creating a new post */
     /* This will get the suggestions from server for the next tags to suggest the user to based on the
      * current tag list and the characters entered by user for this tag */
