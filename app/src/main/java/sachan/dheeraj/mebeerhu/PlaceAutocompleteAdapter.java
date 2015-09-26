@@ -3,9 +3,13 @@ package sachan.dheeraj.mebeerhu;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -21,6 +25,8 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
+
+import sachan.dheeraj.mebeerhu.globalData.CommonData;
 
 import static com.google.android.gms.location.places.PlacesStatusCodes.getStatusCodeString;
 
@@ -44,11 +50,21 @@ public class PlaceAutocompleteAdapter
      */
     private LatLngBounds mBounds;
 
+    private Context context;
+
     /**
      * The autocomplete filter used to restrict queries to a specific set of place types.
      */
     private AutocompleteFilter mPlaceFilter;
 
+    public static class ViewHolder {
+        public TextView location_title;
+        public TextView location_details;
+        public ViewHolder(View v) {
+            location_title = (TextView)v.findViewById(R.id.place_title);
+            location_details = (TextView)v.findViewById(R.id.place_details);
+        }
+    }
     /**
      * Initializes with a resource for text rows and autocomplete query bounds.
      *
@@ -57,11 +73,11 @@ public class PlaceAutocompleteAdapter
     public PlaceAutocompleteAdapter(Context context, int resource, GoogleApiClient googleApiClient,
                                     LatLngBounds bounds, AutocompleteFilter filter) {
         super(context, resource);
+        this.context = context;
         mGoogleApiClient = googleApiClient;
         mBounds = bounds;
         mPlaceFilter = filter;
     }
-
     /**
      * Sets the bounds for all subsequent queries.
      */
@@ -171,6 +187,41 @@ public class PlaceAutocompleteAdapter
         }
         Log.e(LOG_TAG, "Google API client is not connected for autocomplete query.");
         return null;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        PlaceAutocomplete place = getItem(position);
+        /* Log.v(LOG_TAG, String.format("Binding Tag to adapter, Name: %s, meaning: %s",
+                tag.getTagName(),tag.getTagMeaning())); */
+        ViewHolder mViewHolder;
+        if(convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_place_suggestion, parent, false);
+            mViewHolder = new ViewHolder(convertView);
+            convertView.setTag(mViewHolder);
+        }
+        else {
+            mViewHolder = (ViewHolder)convertView.getTag();
+        }
+
+        String title, desc;
+        String placeDesc = String.valueOf(place.description);
+        int sepPos = placeDesc.indexOf(",");
+        if (sepPos != -1)
+        {
+            title = placeDesc.substring(0,sepPos);
+            desc = placeDesc.substring(sepPos + 1);
+            desc = desc.trim();
+        }
+        else
+        {
+            title = desc = placeDesc;
+        }
+
+        mViewHolder.location_title.setText(title);
+        mViewHolder.location_details.setText(desc);
+
+        return convertView;
     }
 
     /**

@@ -64,6 +64,13 @@ public class TagsAddActivity extends AppCompatActivity {
             /* Launch a service here to save the data to server */
             Intent thisIntent = new Intent(this, ShowPreviewActivity.class);
             startActivity(thisIntent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            return true;
+        }
+        else if(id == android.R.id.home)
+        {
+            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             return true;
         }
 

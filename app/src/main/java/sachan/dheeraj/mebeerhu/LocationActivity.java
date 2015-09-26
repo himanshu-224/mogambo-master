@@ -59,6 +59,13 @@ public class LocationActivity extends AppCompatActivity {
             thisIntent.putExtra("locationId", thisFragment.placeId);
             thisIntent.putExtra("locationDetails", thisFragment.placeDetails);
             startActivity(thisIntent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            return true;
+        }
+        else if(id == android.R.id.home)
+        {
+            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             return true;
         }
         return super.onOptionsItemSelected(item);

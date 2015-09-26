@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -109,7 +110,7 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
 
         // Set up the adapter that will retrieve suggestions from the Places Geo Data API that cover
         // the entire world.
-        mAdapter = new PlaceAutocompleteAdapter(getActivity(), android.R.layout.simple_list_item_1,
+        mAdapter = new PlaceAutocompleteAdapter(getActivity(), R.layout.list_item_place_suggestion,
                 mGoogleApiClient, boundsMyLocation, null);
         mAutocompleteView.setAdapter(mAdapter);
 
@@ -204,12 +205,20 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
             final PlaceAutocompleteAdapter.PlaceAutocomplete item = mAdapter.getItem(position);
             placeId = String.valueOf(item.placeId);
             placeDetails = String.valueOf(item.description);
-            Log.i(LOG_TAG, "Autocomplete item selected: " + placeDetails);
+            Log.i(LOG_TAG, String.format("Selected Place with Id: %s, details: %s ", placeId, placeDetails));
 
-            Toast.makeText(getActivity(), "Clicked: " + placeDetails,
-                    Toast.LENGTH_SHORT).show();
-            Log.i(LOG_TAG, "Called getPlaceById to get Place details for " + item.placeId);
-            //getFragmentManager().popBackStack(getString(R.string.fragment_location), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            View focusView = getActivity().getCurrentFocus();
+            if (focusView != null) {
+                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+            }
+            mAutocompleteView.clearFocus();
+            mAutocompleteView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAutocompleteView.scrollTo(0, 0);
+                }
+            }, 100);
         }
     };
 

@@ -9,5 +9,6 @@
     <color name="green">#2ACC13</color>
     <color name="blue">#000099</color>
     <color name="orange">#FF9900</color>
+    <color name="google_sign_in">#DC4E41</color>
 
 </resources>

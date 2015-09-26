@@ -6,6 +6,7 @@
 
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/MyActionBar</item>
+
     </style>
 
     <!-- ActionBar styles -->

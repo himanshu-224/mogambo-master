@@ -141,6 +141,7 @@ public class CreatePostActivity extends AppCompatActivity{
         else if (id == R.id.next_button)
         {
             startActivity(new Intent(this, LocationActivity.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             return true;
         }
 

@@ -45,6 +45,15 @@ public class TagAutocompleteAdapter
      */
     private ArrayList<Tag> mResultList;
 
+    public static class ViewHolder {
+        public TextView tag_title;
+        public TextView tag_meaning;
+        public ViewHolder(View v) {
+            tag_title = (TextView)v.findViewById(R.id.tag_title);
+            tag_meaning = (TextView)v.findViewById(R.id.tag_meaning);
+        }
+    }
+
     public TagAutocompleteAdapter(Context context, int resource) {
         super(context, resource);
         this.context = context;
@@ -72,12 +81,18 @@ public class TagAutocompleteAdapter
         /* Log.v(LOG_TAG, String.format("Binding Tag to adapter, Name: %s, meaning: %s",
                 tag.getTagName(),tag.getTagMeaning())); */
 
-        convertView = LayoutInflater.from(context).inflate(R.layout.list_item_tag_suggestion, parent, false);
-        TextView tag_title = (TextView) convertView.findViewById(R.id.tag_title);
-        TextView tag_meaning = (TextView) convertView.findViewById(R.id.tag_meaning);
+        ViewHolder mViewHolder;
+        if(convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_tag_suggestion, parent, false);
+            mViewHolder = new ViewHolder(convertView);
+            convertView.setTag(mViewHolder);
+        }
+        else {
+            mViewHolder = (ViewHolder)convertView.getTag();
+        }
 
-        tag_title.setText(tag.getTagName());
-        tag_meaning.setText(tag.getTagMeaning());
+        mViewHolder.tag_title.setText(tag.getTagName());
+        mViewHolder.tag_meaning.setText(tag.getTagMeaning());
 
         return convertView;
     }
