@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:padding="5dp"
                     android:text="with"
-                    android:textColor="@color/gray" />
+                    android:textColor="@color/grey" />
 
                 <TextView
                     android:id="@+id/x_others"

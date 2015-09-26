@@ -252,7 +252,6 @@ public class SignUpFragment extends Fragment {
                             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new SelectTagsFragment()).commit();
                         } else {
                             Log.d(LOG_TAG, "Sign-up failed");
-                            Toast.makeText(getActivity(), "Something fucked up", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }.execute();

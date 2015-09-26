@@ -218,7 +218,7 @@ public class LocationFragment extends Fragment implements GoogleApiClient.Connec
                 public void run() {
                     mAutocompleteView.scrollTo(0, 0);
                 }
-            }, 100);
+            }, 200);
         }
     };
 

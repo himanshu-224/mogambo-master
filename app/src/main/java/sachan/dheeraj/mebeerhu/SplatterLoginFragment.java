@@ -157,7 +157,6 @@ public class SplatterLoginFragment extends Fragment {
                             startActivity(intent);
                         } else {
                             Log.d(LOG_TAG, "Log-in unsuccessful");
-                            Toast.makeText(getActivity(), "Something fucked up", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }.execute();
