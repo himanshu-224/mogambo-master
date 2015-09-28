@@ -10,6 +10,8 @@ public class UrlConstants {
     public static final String LOGIN_URL = BASE_URL + "auth/login";
     public static final String RESET_PASSWORD_URL = BASE_URL + "auth/reset";
     public static final String AUTHENTICATE_URL = BASE_URL + "auth/verifyToken";
+    public static final String LOGIN_FACEBOOK = BASE_URL + "auth/loginFacebook";
+    public static final String LOGIN_GOOGLE = BASE_URL + "auth/loginGoogle";
 
     public static final String GET_TRENDY_TAGS_URL = BASE_URL + "tag/getTrendyTags";
 

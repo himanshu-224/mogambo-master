@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
-import android.view.ActionMode;
 
 import com.facebook.login.LoginManager;
 import org.apache.http.HttpEntity;
@@ -34,20 +33,12 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 
-import sachan.dheeraj.mebeerhu.events.ApiErrorEvent;
-import sachan.dheeraj.mebeerhu.events.RefreshNeededEvent;
+import static sachan.dheeraj.mebeerhu.utils.Utils.deleteCredentials;
 
 public final class HttpAgent {
     private static final String TAG = HttpAgent.class.getSimpleName();
-    private static final String API_FAT_GAI = "apiFatGai";
-    private static final String UNAUTHENTICATED = "unauthenticated";
-    private static final String CONNECTION_TIME_OUT = "connectionTimeOut";
-    private static final String NO_INTERNET_ACCESS = "noInternetAccess";
-    public static HashSet<Thread> THREAD_HASH_SET = new HashSet<>();
-    public static final Object OBJECT = new Object();
 
     public static String tokenValue;
 
@@ -62,61 +53,28 @@ public final class HttpAgent {
      */
     public static String get(String url, Activity activity) {
         Log.i(TAG, "making GET request to : " + url);
-        if(!isOnline(activity))
+
+        if( !isOnline(activity) )
         {
             Log.e(TAG, "Cannot execute GET request, device not online");
-            return null;
+            return AppConstants.NO_INTERNET_ACCESS;
         }
         String data = getImplementation(url, activity);
         Log.i(TAG, "response to request " + url + " is " + data);
-        if (data == null) {
-            try {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppUtils.BUS.post(new RefreshNeededEvent());
-                    }
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "caught exception in activity.runOnUiThread()", e);
-            }
-            THREAD_HASH_SET.add(Thread.currentThread());
-            try {
-                synchronized (OBJECT) {
-                    OBJECT.wait();
-                    return get(url, activity);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "caught interrupted exception");
-            }
-        } else if (data.equals(API_FAT_GAI)) {
-            try {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppUtils.BUS.post(new ApiErrorEvent());
-                    }
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "caught exception in activity.runOnUiThread()", e);
-            }
-            THREAD_HASH_SET.add(Thread.currentThread());
-            try {
-                synchronized (OBJECT) {
-                    OBJECT.wait();
-                    return get(url, activity);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "caught interrupted exception");
-            }
-        } else if (data.equals(UNAUTHENTICATED)) {
+
+        if(data == null)
+        {
+            Log.e(TAG, "Null response received from server");
+        }
+        else if (data.equals(AppConstants.UNAUTHENTICATED))
+        {
             try {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
                 Log.e(TAG, "caught exception in thread interrupt", e);
             }
         }
-        else if (data.equals(CONNECTION_TIME_OUT)) {
+        else if (data.equals(AppConstants.CONNECTION_TIME_OUT)) {
             if (checkNetConnection() == null)
             {
                 Log.e(TAG, "No internet connection to server");
@@ -134,61 +92,27 @@ public final class HttpAgent {
      */
     public static String post(String url, List<NameValuePair> params, Activity activity) {
         Log.i(TAG, "making POST request to : " + url + ", with params: " + params);
+
         if(!isOnline(activity))
         {
             Log.e(TAG, "Cannot execute POST request, device not online");
-            return null;
+            return AppConstants.NO_INTERNET_ACCESS;
         }
         String data = postImplementationNameValuePair(url, params, activity);
         Log.i(TAG, "response to request " + url + " is " + data);
-        if (data == null) {
-            try {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppUtils.BUS.post(new RefreshNeededEvent());
-                    }
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "caught exception in activity.runOnUiThread()", e);
-            }
-            THREAD_HASH_SET.add(Thread.currentThread());
-            try {
-                synchronized (OBJECT) {
-                    OBJECT.wait();
-                    return post(url, params, activity);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "caught interrupted exception");
-            }
-        } else if (data.equals(API_FAT_GAI)) {
-            try {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppUtils.BUS.post(new ApiErrorEvent());
-                    }
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "caught exception in activity.runOnUiThread()", e);
-            }
-            THREAD_HASH_SET.add(Thread.currentThread());
-            try {
-                synchronized (OBJECT) {
-                    OBJECT.wait();
-                    return post(url, params, activity);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "caught interrupted exception");
-            }
-        } else if (data.equals(UNAUTHENTICATED)) {
+
+        if(data == null)
+        {
+            Log.e(TAG, "Null response received from server");
+        }
+        else if (data.equals(AppConstants.UNAUTHENTICATED)) {
             try {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
                 Log.e(TAG, "caught exception in thread interrupt", e);
             }
         }
-        else if (data.equals(CONNECTION_TIME_OUT)) {
+        else if (data.equals(AppConstants.CONNECTION_TIME_OUT)) {
             if (checkNetConnection() == null)
             {
                 Log.e(TAG, "No internet connection to server");
@@ -200,60 +124,26 @@ public final class HttpAgent {
     public static String postGenericData(String url,String postData, Activity activity)
     {
         Log.i(TAG, "making POST request to : " + url + ", with params: " + postData);
+
         if(!isOnline(activity))
         {
             Log.e(TAG, "Cannot execute POST request, device not online");
-            return null;
+            return AppConstants.NO_INTERNET_ACCESS;
         }
         String data = postImplementationRawString(url, postData, activity);
-        if (data == null) {
-            try {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppUtils.BUS.post(new RefreshNeededEvent());
-                    }
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "caught exception in activity.runOnUiThread()", e);
-            }
-            THREAD_HASH_SET.add(Thread.currentThread());
-            try {
-                synchronized (OBJECT) {
-                    OBJECT.wait();
-                    return postGenericData(url, postData, activity);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "caught interrupted exception");
-            }
-        } else if (data.equals(API_FAT_GAI)) {
-            try {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AppUtils.BUS.post(new ApiErrorEvent());
-                    }
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "caught exception in activity.runOnUiThread()", e);
-            }
-            THREAD_HASH_SET.add(Thread.currentThread());
-            try {
-                synchronized (OBJECT) {
-                    OBJECT.wait();
-                    return postGenericData(url, postData, activity);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "caught interrupted exception");
-            }
-        } else if (data.equals(UNAUTHENTICATED)) {
+
+        if(data == null)
+        {
+            Log.e(TAG, "Null response received from server");
+        }
+        else if (data.equals(AppConstants.UNAUTHENTICATED)) {
             try {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
                 Log.e(TAG, "caught exception in thread interrupt", e);
             }
         }
-        else if (data.equals(CONNECTION_TIME_OUT)) {
+        else if (data.equals(AppConstants.CONNECTION_TIME_OUT)) {
             if (checkNetConnection() == null)
             {
                 Log.e(TAG, "No internet connection to server");
@@ -266,7 +156,7 @@ public final class HttpAgent {
         String response = null;
         Log.i(TAG, "sending post request = " + url + ", raw data = " + postRawData);
         final HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, AppUtils.HTTP_TIME_OUT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, AppConstants.HTTP_TIME_OUT);
         HttpClient httpClient = new DefaultHttpClient(httpParams);
         try {
             HttpPost post = new HttpPost(url);
@@ -286,7 +176,7 @@ public final class HttpAgent {
     public static String getWithNoPopUps(String url,Context context){
         String response = null;
         final HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, AppUtils.HTTP_TIME_OUT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, AppConstants.HTTP_TIME_OUT);
         HttpClient httpClient = new DefaultHttpClient(httpParams);
         try {
             HttpGet httpGet = new HttpGet(url);
@@ -313,7 +203,7 @@ public final class HttpAgent {
         String response = null;
         Log.i(TAG, "sending post request = " + url + ", params = " + params);
         final HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, AppUtils.HTTP_TIME_OUT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, AppConstants.HTTP_TIME_OUT);
         HttpClient httpClient = new DefaultHttpClient(httpParams);
         try {
             HttpPost httpPost = new HttpPost(url);
@@ -331,9 +221,9 @@ public final class HttpAgent {
         catch (Exception e) {
             Log.e(TAG, "HttpClient Exception POST : for request " + url, e);
             if (e instanceof org.apache.http.client.HttpResponseException && ((HttpResponseException) e).getStatusCode() == 401) {
-                return UNAUTHENTICATED;
+                return AppConstants.UNAUTHENTICATED;
             } else if (e instanceof org.apache.http.client.HttpResponseException && (((HttpResponseException) e).getStatusCode() == 500 || ((HttpResponseException) e).getStatusCode() == 404)) {
-                return API_FAT_GAI;
+                return AppConstants.API_RESOURCE_ERROR;
             }
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -345,7 +235,7 @@ public final class HttpAgent {
     private static String getImplementation(String url, Activity activity) {
         String response = null;
         final HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, AppUtils.HTTP_TIME_OUT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, AppConstants.HTTP_TIME_OUT);
         HttpClient httpClient = new DefaultHttpClient(httpParams);
         try {
             HttpGet httpGet = new HttpGet(url);
@@ -364,30 +254,30 @@ public final class HttpAgent {
             Log.e(TAG, "HttpClient Exception GET : for request " + url, e);
             e.printStackTrace();
             if (e.getStatusCode() == 401) {
-                deleteCredentials(activity);
-                return UNAUTHENTICATED;
+                deleteCredentials(TAG, activity);
+                return AppConstants.UNAUTHENTICATED;
             }
             else if (e.getStatusCode() == 500 ||  e.getStatusCode() == 404)
             {
-                return API_FAT_GAI;
+                return AppConstants.API_RESOURCE_ERROR;
             }
         }
         catch (ClientProtocolException e)
         {
             Log.e(TAG, "HttpClient ClientProtocolException for url:" + url + ", error:" + e);
             e.printStackTrace();
-            return API_FAT_GAI;
+            return AppConstants.API_RESOURCE_ERROR;
         }
         catch (ConnectTimeoutException e) {
             Log.e(TAG, "HttpClient ConnectTimeoutException for url:" + url + ", error:" + e);
-            return CONNECTION_TIME_OUT;
+            return AppConstants.CONNECTION_TIME_OUT;
 
         }
         catch (IOException e)
         {
             Log.e(TAG, "HttpClient IOException for url:" + url + ", error:" + e);
             e.printStackTrace();
-            return API_FAT_GAI;
+            return AppConstants.API_RESOURCE_ERROR;
         }
         finally {
             httpClient.getConnectionManager().shutdown();
@@ -396,11 +286,11 @@ public final class HttpAgent {
         return response;
     }
 
-    private static String postImplementationRawString(String url,String data, Activity activity) {
+    private static String postImplementationRawString(String url, String data, Activity activity) {
         String response = null;
         Log.i(TAG, "sending post request = " + url + ", params = " + data);
         final HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, AppUtils.HTTP_TIME_OUT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, AppConstants.HTTP_TIME_OUT);
         HttpClient httpClient = new DefaultHttpClient(httpParams);
         try {
             HttpPost httpPost = new HttpPost(url);
@@ -413,16 +303,16 @@ public final class HttpAgent {
             httpPost.setHeader(Constants.X_ACCESS_TOKEN, tokenValue);
             HttpEntity entity = new ByteArrayEntity(data.getBytes("UTF-8"));
             httpPost.setEntity(entity);
-            httpPost.setHeader("Content-Type","application/json");
+            httpPost.setHeader("Content-Type", "application/json");
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             response = httpClient.execute(httpPost, responseHandler);
         } catch (Exception e) {
             Log.e(TAG, "HttpClient Exception POST : for request " + url, e);
             if (e instanceof HttpResponseException && ((HttpResponseException) e).getStatusCode() == 401) {
-                deleteCredentials(activity);
-                return UNAUTHENTICATED;
+                deleteCredentials(TAG, activity);
+                return AppConstants.UNAUTHENTICATED;
             } else if (e instanceof HttpResponseException && (((HttpResponseException) e).getStatusCode() == 500 || ((HttpResponseException) e).getStatusCode() == 404)) {
-                return API_FAT_GAI;
+                return AppConstants.API_RESOURCE_ERROR;
             }
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -435,7 +325,7 @@ public final class HttpAgent {
         String response = null;
         Log.i(TAG, "sending post request = " + url + ", params = " + params);
         final HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, AppUtils.HTTP_TIME_OUT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, AppConstants.HTTP_TIME_OUT);
         HttpClient httpClient = new DefaultHttpClient(httpParams);
         try {
             HttpPost httpPost = new HttpPost(url);
@@ -452,10 +342,10 @@ public final class HttpAgent {
         } catch (Exception e) {
             Log.e(TAG, "HttpClient Exception POST : for request " + url, e);
             if (e instanceof HttpResponseException && ((HttpResponseException) e).getStatusCode() == 401) {
-                deleteCredentials(activity);
-                return UNAUTHENTICATED;
+                deleteCredentials(TAG, activity);
+                return AppConstants.UNAUTHENTICATED;
             } else if (e instanceof HttpResponseException && (((HttpResponseException) e).getStatusCode() == 500 || ((HttpResponseException) e).getStatusCode() == 404)) {
-                return API_FAT_GAI;
+                return AppConstants.API_RESOURCE_ERROR;
             }
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -464,24 +354,10 @@ public final class HttpAgent {
         return response;
     }
 
-    private static void deleteCredentials(Activity activity) {
-        if (LoginManager.getInstance() != null) {
-            LoginManager.getInstance().logOut();
-        }
-        boolean userDeleted = true;
-        if (userDeleted) {
-            Intent intent = new Intent(activity, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            activity.startActivity(intent);
-            activity.finish();
-        }
-    }
-
-
     public static String checkNetConnection() {
         String response = null;
         final HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, AppUtils.HTTP_CHECK_CONNECTION_TIME_OUT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, AppConstants.HTTP_CHECK_CONNECTION_TIME_OUT);
         HttpClient httpClient = new DefaultHttpClient(httpParams);
         try {
 

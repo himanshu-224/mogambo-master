@@ -19,6 +19,7 @@ import com.facebook.FacebookSdk;
 */
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -113,8 +114,9 @@ public class LoginActivity extends AppCompatActivity {
         {
             Log.i(LOG_TAG, String.format("User already logged in through %s, token = %s",
                     login_method, access_token ));
-            Intent intent = new Intent(this, FeedsActivity.class);
-            startActivity(intent);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new AutoLoginFragment()).commit();
+            //Intent intent = new Intent(this, FeedsActivity.class);
+            //startActivity(intent);
         }
     }
 

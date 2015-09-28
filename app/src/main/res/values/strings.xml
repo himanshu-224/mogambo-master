@@ -40,8 +40,9 @@
     <string name="key_username">key_username</string>
     <string name="key_fullname">key_fullname</string>
     <string name="key_email">key_email</string>
-    <string name="login_method">login_method</string>
+    <string name="key_profile_image_uri">profile_image_uri</string>
     <string name="access_token">access_token</string>
+    <string name="login_method">login_method</string>
     <string name="facebook_login">Facebook</string>
     <string name="google_login">Google</string>
     <string name="app_login">AppLogin</string>
